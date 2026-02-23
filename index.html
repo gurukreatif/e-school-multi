@@ -929,6 +929,20 @@ function patchSupabaseForTenant(client){
       };
     }
 
+    // PATCH update → auto filter npsn agar tidak update data tenant lain
+    const origUpdate = qb.update.bind(qb);
+    qb.update = function(data, opts){
+      const q = origUpdate(data, opts);
+      return npsn ? q.eq('npsn', npsn) : q;
+    };
+
+    // PATCH delete → auto filter npsn agar tidak hapus data tenant lain
+    const origDelete = qb.delete.bind(qb);
+    qb.delete = function(opts){
+      const q = origDelete(opts);
+      return npsn ? q.eq('npsn', npsn) : q;
+    };
+
     return qb;
   };
   return client;
@@ -3977,7 +3991,9 @@ function impButir(){
     reader.onload=ev=>{
       const wb=XLSX.read(ev.target.result,{type:'binary'});
       const ws=wb.Sheets[wb.SheetNames[0]];
-      const rows=XLSX.utils.sheet_to_json(ws);
+      const rawRows=XLSX.utils.sheet_to_json(ws,{defval:''});
+      // Normalisasi key: hapus BOM, trim spasi, lowercase
+      const rows=rawRows.map(r=>{const c={};Object.keys(r).forEach(k=>{const nk=k.replace(/^\uFEFF/,'').replace(/^\s+|\s+$/g,'').toLowerCase();c[nk]=r[k];});return c;});
       window._ibData=rows;
       if(!rows.length){$('ibPrev').innerHTML='<div class="al aler">File kosong atau format tidak dikenali.</div>';return;}
       $('ibPrev').innerHTML=`<div class="al alok"><i class="fa-solid fa-circle-check" style="color:var(--ok)"></i><div><strong>${rows.length} soal</strong> ditemukan. Kolom: ${Object.keys(rows[0]).join(', ')}</div></div>
@@ -4002,31 +4018,38 @@ function dlTemplateButir(e){
 }
 
 async function doImpButir(){
-  const d=window._ibData;const kode=$('ibKode')?.value;
-  if(!d?.length){toast('Pilih file terlebih dahulu!','er');return;}
+  const raw=window._ibData;const kode=$('ibKode')?.value;
+  if(!raw?.length){toast('Pilih file terlebih dahulu!','er');return;}
   if(!kode){toast('Pilih paket soal tujuan!','er');return;}
   if(demoMode){toast('Mode demo: data tidak tersimpan ke database','in');rmModal('mdImpButir');return;}
+  // Validasi: filter baris tanpa pertanyaan
+  const d=raw.filter(r=>String(r.pertanyaan||'').trim());
+  if(!d.length){toast('Tidak ada baris valid! Kolom pertanyaan kosong.','er');return;}
+  const skipped=raw.length-d.length;
   setBtn('ibBtn','<span class="spin"></span> Mengimport...');
-  let ok=0,fail=0;
-  for(const r of d){
-    try{
-      await SB.from('butir_soal').insert({
-        kode_soal:kode,
-        nomer_soal:parseInt(r.nomer_soal)||ok+1,
-        pertanyaan:String(r.pertanyaan||''),
-        tipe_soal:String(r.tipe_soal||'Pilihan Ganda'),
-        pilihan_1:String(r.pilihan_1||''),
-        pilihan_2:String(r.pilihan_2||''),
-        pilihan_3:String(r.pilihan_3||''),
-        pilihan_4:String(r.pilihan_4||''),
-        pilihan_5:String(r.pilihan_5||''),
-        jawaban_benar:String(r.jawaban_benar||''),
-        status_soal:'Aktif'
-      });ok++;
-    }catch(e){fail++;}
+  try{
+    // Bulk insert sekaligus — jauh lebih cepat & atomic
+    const payload=d.map((r,i)=>({
+      kode_soal:kode,
+      nomer_soal:parseInt(r.nomer_soal)||(i+1),
+      pertanyaan:String(r.pertanyaan||'').trim(),
+      tipe_soal:String(r.tipe_soal||'Pilihan Ganda').trim(),
+      pilihan_1:String(r.pilihan_1||'').trim(),
+      pilihan_2:String(r.pilihan_2||'').trim(),
+      pilihan_3:String(r.pilihan_3||'').trim(),
+      pilihan_4:String(r.pilihan_4||'').trim(),
+      pilihan_5:String(r.pilihan_5||'').trim(),
+      jawaban_benar:String(r.jawaban_benar||'').trim(),
+      status_soal:'Aktif'
+    }));
+    const{error}=await SB.from('butir_soal').insert(payload);
+    if(error)throw error;
+    toast(`Import selesai: ${payload.length} soal berhasil!${skipped?' ('+skipped+' baris kosong dilewati)':''}`,'ok');
+    rmModal('mdImpButir');loadButir();
+  }catch(e){
+    toast('Import gagal: '+(e.message||'Error tidak diketahui'),'er');
+    setBtn('ibBtn','<i class="fa-solid fa-file-import"></i> Import');
   }
-  toast(`Import selesai: ${ok} soal berhasil${fail?', '+fail+' gagal':''}!`,'ok');
-  rmModal('mdImpButir');loadButir();
 }
 
 // ─── MONITOR ───
