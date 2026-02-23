@@ -593,39 +593,45 @@ tbody tr:hover td{background:#fafbff}
 </div>
 
 <!-- ══════════ SUPER ADMIN LOGIN (/super) ══════════ -->
-<div id="superLoginPage" class="login-unified-wrap hidden">
-  <div class="login-u-left" style="background:linear-gradient(135deg,#022c22 0%,#064e3b 60%,#047857 100%)">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
-      <img src="https://i.imgur.com/bT70O4C.png" style="width:36px;height:36px;object-fit:contain;filter:brightness(0) invert(1)" onerror="this.style.display='none'">
-      <span style="font-size:16px;font-weight:800;opacity:.9">Emes CBT System</span>
-    </div>
-    <h1>Platform Management Console</h1>
-    <p>Kelola seluruh tenant (sekolah) dalam satu panel. Tambah, edit, dan monitor penggunaan sistem secara global.</p>
-    <div class="chips" style="gap:7px">
-      <span class="chip"><i class="fa-solid fa-circle-check"></i> Multi-tenant</span>
-      <span class="chip"><i class="fa-solid fa-circle-check"></i> Kelola Sekolah</span>
-      <span class="chip"><i class="fa-solid fa-circle-check"></i> Monitor Global</span>
-      <span class="chip"><i class="fa-solid fa-circle-check"></i> NPSN-based ID</span>
-    </div>
-    <div style="margin-top:auto;font-size:11px;color:rgba(255,255,255,.4)">&copy; 2026 Emes EduTech</div>
-  </div>
-  <div class="login-u-right">
-    <div class="login-u-box">
+<div id="superLoginPage" class="lw hidden">
+  <!-- KIRI — identik struktur loginPage sekolah -->
+  <div class="la" style="background:linear-gradient(135deg,#022c22 0%,#064e3b 60%,#047857 100%)">
+    <div class="laart">
       <div style="margin-bottom:20px">
-        <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px">
-          <div style="width:36px;height:36px;background:#d1fae5;border-radius:9px;display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="https://i.imgur.com/bT70O4C.png" style="width:24px;height:24px;object-fit:contain" onerror="this.outerHTML='<i class=\'fa-solid fa-school\' style=\'color:#059669;font-size:16px\'></i>'"></div>
-          <span style="font-size:14px;font-weight:700;color:#064e3b">Super Admin</span>
-        </div>
-        <a onclick="router('/login')" style="font-size:11.5px;color:var(--mu);cursor:pointer;display:inline-flex;align-items:center;gap:5px"><i class="fa-solid fa-arrow-left"></i> Kembali ke login</a>
+        <img src="https://i.imgur.com/bT70O4C.png" alt="Logo"
+          style="width:80px;height:80px;object-fit:contain;filter:brightness(0) invert(1);opacity:.92"
+          onerror="this.outerHTML='<i class=\'fa-solid fa-shield-halved\' style=\'font-size:64px;color:#fff;opacity:.9\'></i>'">
       </div>
-      <h2 style="margin-bottom:4px">Login Super Admin</h2>
-      <p style="font-size:13px;color:var(--mu);margin-bottom:20px">Akses eksklusif manajemen platform</p>
-      <div id="saErr" class="al aler hidden" style="margin-bottom:10px"></div>
-      <div class="fg"><label class="fl">Username</label><input id="saU" class="fc" placeholder="superadmin" onkeydown="if(event.key==='Enter')loginSuperAdmin()"></div>
-      <div class="fg"><label class="fl">Password</label><div class="pww"><input id="saP" type="password" class="fc" placeholder="Password" onkeydown="if(event.key==='Enter')loginSuperAdmin()"><button class="pwb" onclick="tpw('saP',this)"><i class="fa-solid fa-eye"></i></button></div></div>
-      <button class="btn blg" style="width:100%;background:var(--p);color:#fff;border-color:var(--p)" onclick="loginSuperAdmin()" id="saBtn">Masuk <i class="fa-solid fa-arrow-right"></i></button>
-      <div class="lp-footer" style="margin-top:20px">&copy; 2026 Emes EduTech</div>
+      <h1>Platform Management Console</h1>
+      <p>Kelola seluruh tenant (sekolah) dalam satu panel. Tambah, edit, dan monitor penggunaan sistem secara global.</p>
+      <div class="chips">
+        <span class="chip"><i class="fa-solid fa-circle-check"></i> Multi-tenant</span>
+        <span class="chip"><i class="fa-solid fa-circle-check"></i> Kelola Sekolah</span>
+        <span class="chip"><i class="fa-solid fa-circle-check"></i> Monitor Global</span>
+        <span class="chip"><i class="fa-solid fa-circle-check"></i> NPSN-based ID</span>
+        <span class="chip"><i class="fa-solid fa-circle-check"></i> Statistik Platform</span>
+      </div>
+      <div class="login-footer">&copy; 2026 Emes EduTech. All rights reserved.</div>
     </div>
+  </div>
+  <!-- KANAN — identik struktur .lp loginPage sekolah -->
+  <div class="lp">
+    <div class="llogo">
+      <div class="lic">
+        <img src="https://i.imgur.com/bT70O4C.png" alt="Logo"
+          onerror="this.outerHTML='<i class=\'fa-solid fa-clipboard-list\' style=\'color:var(--p);font-size:28px\'></i>'">
+      </div>
+      Emes CBT System
+    </div>
+    <p style="font-size:11.5px;color:var(--mu);margin-bottom:22px">Platform Management</p>
+    <h2>Login Super Admin</h2>
+    <p class="ls">Akses eksklusif manajemen platform</p>
+    <div id="saErr" class="al aler hidden"></div>
+    <div class="fg"><label class="fl">Username</label><input id="saU" class="fc" placeholder="superadmin" onkeydown="if(event.key==='Enter')loginSuperAdmin()"></div>
+    <div class="fg"><label class="fl">Password</label><div class="pww"><input id="saP" type="password" class="fc" placeholder="Password" onkeydown="if(event.key==='Enter')loginSuperAdmin()"><button class="pwb" onclick="tpw('saP',this)"><i class="fa-solid fa-eye"></i></button></div></div>
+    <button class="btn bp blg" style="width:100%" onclick="loginSuperAdmin()" id="saBtn">Masuk <i class="fa-solid fa-arrow-right"></i></button>
+    <div class="swl"><a onclick="router('/login')"><i class="fa-solid fa-arrow-left"></i> Kembali ke login sekolah</a></div>
+    <div style="font-size:11px;color:#94a3b8;text-align:center;margin-top:14px">&copy; 2026 Emes EduTech</div>
   </div>
 </div>
 
