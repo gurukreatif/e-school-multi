@@ -3963,21 +3963,39 @@ function impSiswa(){
 async function doImpSiswa(){
   const d=window._impData;if(!d?.length){toast('Pilih file terlebih dahulu!','er');return;}
   if(demoMode){toast('Mode demo: tidak bisa import ke database','in');return;}
+  const npsn=currentTenant?.npsn;
+  if(!npsn){toast('Sesi tidak valid, login ulang.','er');return;}
   setBtn('impBtn','<span class="spin"></span> Mengimport...');
-  let ok=0,fail=0;
-  for(const r of d){
-    try{
-      await SB.from('siswa').insert({
-        nama_siswa:String(r.nama_siswa||r.Nama||r.nama||''),
-        username:String(r.username||r.Username||r.nis||r.NIS||r.NISN||''),
-        password:String(r.password||r.Password||r.username||''),
-        kelas:String(r.kelas||r.Kelas||r.KELAS||''),
-        rombel:String(r.rombel||r.Rombel||r.ROMBEL||''),
-        status:'Aktif',session_token:'',page_url:'',force_logout:false
-      });ok++;
-    }catch(e){fail++;}
+
+  // Siapkan semua baris sekaligus dengan npsn eksplisit (bypass patchSupabaseForTenant)
+  const payload=d.map(r=>({
+    npsn,
+    nama_siswa:String(r.nama_siswa||r.Nama||r.nama||'').trim(),
+    username:String(r.username||r.Username||r.nis||r.NIS||r.NISN||'').trim(),
+    password:String(r.password||r.Password||r.username||r.Username||'').trim(),
+    kelas:String(r.kelas||r.Kelas||r.KELAS||'').trim(),
+    rombel:String(r.rombel||r.Rombel||r.ROMBEL||'').trim(),
+    status:'Aktif',session_token:'',page_url:'',force_logout:false
+  })).filter(r=>r.nama_siswa&&r.username);
+
+  if(!payload.length){toast('Tidak ada data valid! Pastikan kolom nama_siswa dan username terisi.','er');setBtn('impBtn','Import');return;}
+
+  // Kirim batch 50 per request, bukan 1 per 1
+  const BATCH=50;let ok=0,fail=0,failRows=[];
+  for(let i=0;i<payload.length;i+=BATCH){
+    const batch=payload.slice(i,i+BATCH);
+    const {data,error}=await SB.from('siswa').upsert(batch,{onConflict:'npsn,username'}).select('id_siswa');
+    if(error){
+      console.error('Import batch error:',error);
+      fail+=batch.length;
+      failRows.push(...batch.map(r=>r.username));
+    } else {
+      ok+=(data?.length||batch.length);
+    }
   }
-  toast(`Import selesai: ${ok} berhasil, ${fail} gagal`,'ok');
+  const msg=`Import selesai: ${ok} berhasil${fail?`, ${fail} gagal`:''}`;
+  toast(msg,fail&&!ok?'er':'ok',6000);
+  if(failRows.length) console.warn('Gagal import username:',failRows);
   rmModal('mdImp');loadSiswa();
 }
 
