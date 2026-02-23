@@ -419,28 +419,46 @@ tbody tr:hover td{background:#fafbff}
 .ql-opsi-wrap .ql-toolbar{padding:4px 6px}
 .ql-opsi-wrap .ql-toolbar .ql-formats{margin-right:6px}
 .ql-opsi-wrap .ql-editor{min-height:52px;padding:7px 10px;font-size:13px}
-/* ─── OPSI JAWABAN GRID 2 KOLOM ─── */
-.opsi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:stretch}
-.opsi-grid-item{display:flex;flex-direction:column;min-width:0}
-.opsi-grid-item .ql-opsi-wrap{flex:1;display:flex;flex-direction:column}
-.opsi-grid-item .ql-opsi-wrap .ql-editor-wrap{flex:1;display:flex;flex-direction:column}
-.opsi-grid-item .ql-opsi-wrap .ql-editor-wrap .ql-container{flex:1}
-.opsi-grid-item .ql-opsi-wrap .ql-editor-wrap .ql-editor{min-height:60px}
-/* Opsi ke-5 (E) bentang full width jika jumlah ganjil */
+/* ─── OPSI JAWABAN (PG / PGK) ─── */
+.opsi-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .opsi-grid-item.span-full{grid-column:1/-1}
-/* Label badge opsi */
-.opsi-label{display:flex;align-items:center;gap:6px;margin-bottom:5px;font-size:12px;font-weight:700;color:var(--tx)}
-.opsi-badge{width:24px;height:24px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;flex-shrink:0;color:#fff}
-.opsi-badge.primary{background:var(--p)}
-.opsi-badge.muted{background:#cbd5e1;color:#475569}
-/* Benar/salah grid sama: 2 kolom */
-.bs-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;align-items:stretch}
-.bs-grid-item{display:flex;flex-direction:column;min-width:0}
-.bs-grid-item .ql-opsi-wrap{flex:1;display:flex;flex-direction:column}
-.bs-grid-item .ql-opsi-wrap .ql-editor-wrap{flex:1;display:flex;flex-direction:column}
-.bs-grid-item .ql-opsi-wrap .ql-editor-wrap .ql-container{flex:1}
-.bs-grid-item .ql-opsi-wrap .ql-editor-wrap .ql-editor{min-height:60px}
-.bs-badge{width:24px;height:24px;border-radius:6px;display:inline-flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;flex-shrink:0}
+/* Card tiap opsi — klik untuk pilih kunci */
+.opsi-card{border:2px solid var(--br);border-radius:10px;overflow:hidden;transition:border-color .15s,box-shadow .15s;background:#fff}
+.opsi-card:hover{border-color:#94a3b8;box-shadow:0 0 0 3px rgba(0,0,0,.04)}
+.opsi-card.selected{border-color:var(--p);box-shadow:0 0 0 3px rgba(5,150,105,.10)}
+.opsi-card.selected-multi{border-color:var(--ac);box-shadow:0 0 0 3px rgba(245,158,11,.10)}
+/* Header kartu opsi */
+.opsi-card-hd{display:flex;align-items:center;gap:8px;padding:7px 10px;border-bottom:1px solid var(--br);background:var(--bg);user-select:none}
+.opsi-card.selected .opsi-card-hd{background:var(--pl);border-color:rgba(5,150,105,.25)}
+.opsi-card.selected-multi .opsi-card-hd{background:#fef9c3;border-color:#fde68a}
+.opsi-badge{width:26px;height:26px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0;color:#fff;transition:background .15s}
+.opsi-badge.state-unsel{background:#cbd5e1;color:#475569}
+.opsi-badge.state-sel{background:var(--p)}
+.opsi-badge.state-multi{background:var(--ac)}
+.opsi-card-lbl{font-size:12px;font-weight:700;flex:1}
+.opsi-card-check{font-size:12px;color:var(--p);opacity:0;transition:opacity .15s}
+.opsi-card.selected .opsi-card-check,.opsi-card.selected-multi .opsi-card-check{opacity:1}
+.opsi-card-body{padding:2px}
+/* ─── BENAR / SALAH ─── */
+.bs-row{display:flex;align-items:center;gap:10px;padding:9px 12px;border:1.5px solid var(--br);border-radius:10px;background:#fff;margin-bottom:8px;transition:border-color .12s}
+.bs-row:focus-within{border-color:#94a3b8}
+.bs-num{min-width:26px;height:26px;border-radius:6px;background:var(--p);color:#fff;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.bs-input{flex:1;border:none;outline:none;font-size:13px;font-family:inherit;background:transparent;color:var(--tx);min-width:0}
+.bs-input::placeholder{color:#94a3b8}
+.bs-toggle{display:flex;gap:4px;flex-shrink:0}
+.bs-btn{padding:5px 12px;border-radius:6px;border:1.5px solid var(--br);background:#fff;font-size:11.5px;font-weight:700;cursor:pointer;transition:all .12s;font-family:inherit;white-space:nowrap}
+.bs-btn:hover{border-color:#94a3b8}
+.bs-btn.active-b{background:#dcfce7;border-color:var(--ok);color:#15803d}
+.bs-btn.active-s{background:#fee2e2;border-color:var(--er);color:#b91c1c}
+.bs-del{width:28px;height:28px;border:1px solid var(--br);background:none;border-radius:6px;cursor:pointer;color:var(--mu);font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .12s;flex-shrink:0}
+.bs-del:hover{background:#fee2e2;color:var(--er);border-color:var(--er)}
+/* ─── MENJODOHKAN ─── */
+.jodoh-row{display:grid;grid-template-columns:1fr 28px 1fr 32px;gap:8px;align-items:center;margin-bottom:8px}
+.jodoh-input{padding:8px 11px;border:1.5px solid var(--br);border-radius:8px;font-size:13px;font-family:inherit;background:#fff;color:var(--tx);width:100%;transition:border-color .12s}
+.jodoh-input:focus{outline:none;border-color:var(--p);box-shadow:0 0 0 3px rgba(5,150,105,.08)}
+.jodoh-arrow{text-align:center;color:var(--mu);font-size:14px}
+.jodoh-del{width:32px;height:38px;border:1px solid var(--br);background:none;border-radius:8px;cursor:pointer;color:var(--mu);font-size:13px;display:flex;align-items:center;justify-content:center;transition:all .12s}
+.jodoh-del:hover{background:#fee2e2;color:var(--er);border-color:var(--er)}
   background:none;border:none;cursor:pointer;color:#444;padding:2px 5px;
   border-radius:4px;font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;
   line-height:1;display:inline-flex;align-items:center
@@ -2967,9 +2985,6 @@ function mButir(id){
   const tipeOpts=['Pilihan Ganda','Pilihan Ganda Kompleks','Benar/Salah','Uraian','Menjodohkan'].map(t=>`<option ${d.tipe_soal===t?'selected':''}>${t}</option>`).join('');
   const html=`<div class="mo" id="mdButir"><div class="md mdxl"><div class="mh">
     <div class="mtt"><i class="fa-solid fa-pen-to-square" style="color:var(--p)"></i> ${id?'Edit':'Tambah'} Butir Soal
-      <span style="font-size:10.5px;background:var(--pl);color:var(--pd);padding:2px 8px;border-radius:100px;margin-left:8px;font-weight:600">
-        <i class="fa-solid fa-image"></i> Rich Editor + KaTeX
-      </span>
     </div>
     <button class="xb" onclick="rmModal('mdButir')">✕</button></div>
     <div class="mbb">
@@ -2983,9 +2998,6 @@ function mButir(id){
       </div>
       <div class="fg">
         <label class="fl">Pertanyaan *
-          <span style="font-size:10.5px;font-weight:400;color:var(--mu);margin-left:6px">
-            <i class="fa-solid fa-circle-info"></i> Mendukung rich text, gambar (paste/drag/upload), dan rumus matematika KaTeX
-          </span>
         </label>
         <div id="qeditor_pertanyaan"></div>
       </div>
@@ -3014,161 +3026,275 @@ function mButir(id){
   }, 50);
 }
 
+// ── State dinamis untuk tipe soal ──
+let _bsState=[]; // [{text, val:'Benar'|'Salah'|''}]
+let _jodohState=[]; // [{l, r}]
+
 function upBTipe(d){
   d=d||{};const t=$('bTipe')?.value;
   const area=$('bOpsi');if(!area)return;
-  const hint=$('bKHint');if(!hint)return;
   const kunciWrap=$('bKunciWrap');
 
   // Bersihkan quill instances opsi lama
   Object.keys(window._quillEditors).forEach(k=>{
-    if (k.startsWith('qop_')) {
-      try { window._quillEditors[k] = null; } catch(e){}
-      delete window._quillEditors[k];
-    }
+    if(k.startsWith('qop_')){try{window._quillEditors[k]=null;}catch(e){} delete window._quillEditors[k];}
   });
+
+  // Sembunyikan bKunciWrap (akan tampil manual hanya untuk Uraian)
+  if(kunciWrap) kunciWrap.style.display='none';
 
   if(t==='Pilihan Ganda'||t==='Pilihan Ganda Kompleks'){
     const labels=['A','B','C','D','E'];
-    const isPG=t==='Pilihan Ganda';
+    const isPG=(t==='Pilihan Ganda');
+    const kunciSaved=d.jawaban_benar||'';
     area.innerHTML=`
-      <div style="margin-bottom:10px;padding:14px;background:#f8fafc;border-radius:8px;border:1px solid var(--br)">
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-          <div style="font-size:11.5px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.07em">
-            <i class="fa-solid fa-list-ul" style="color:var(--p)"></i>
-            Opsi Jawaban &mdash; ${isPG?'pilih <b style="color:var(--p)">1</b> benar':'bisa lebih dari 1'}
-          </div>
-          <span style="font-size:10.5px;color:var(--mu);background:#fff;border:1px solid var(--br);padding:2px 8px;border-radius:100px;flex-shrink:0">
-            <i class="fa-solid fa-image" style="color:var(--p)"></i> gambar &amp; KaTeX
-          </span>
+      <div style="background:#f8fafc;border-radius:10px;border:1px solid var(--br);padding:14px;margin-bottom:4px">
+        <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px">
+          <i class="fa-solid fa-list-ul" style="color:var(--p)"></i>
+          Opsi Jawaban — ${isPG?'klik satu opsi sebagai kunci':'klik satu atau lebih sebagai kunci'}
         </div>
         <div class="opsi-grid">
           ${labels.map((l,i)=>`
           <div class="opsi-grid-item${i===4?' span-full':''}">
-            <div class="opsi-label">
-              <span class="opsi-badge ${i<2?'primary':'muted'}">${l}</span>
-              <span>Pilihan ${l}</span>
-              ${i<2?'<span style="color:var(--er);font-size:11px">*</span>':'<span style="color:var(--mu);font-weight:400;font-size:11px">(opsional)</span>'}
+            <div class="opsi-card" id="ocard_${i+1}">
+              <div class="opsi-card-hd" onclick="${isPG?'selOpsiPG':'toggleOpsiPGK'}(${i+1},${labels.length})" style="cursor:pointer">
+                <span class="opsi-badge state-unsel" id="obadge_${i+1}">${l}</span>
+                <span class="opsi-card-lbl">Pilihan ${l}${i<2?' <span style=\"color:var(--er);font-size:10px\">*</span>':' <span style=\"color:#94a3b8;font-size:10px;font-weight:400\">(opsional)</span>'}</span>
+                <i class="fa-solid fa-check opsi-card-check" id="ocheck_${i+1}"></i>
+              </div>
+              <div class="opsi-card-body">
+                <div id="qop_bP${i+1}" class="ql-opsi-wrap"></div>
+              </div>
             </div>
-            <div id="qop_bP${i+1}" class="ql-opsi-wrap"></div>
           </div>`).join('')}
         </div>
+        <div style="margin-top:10px;font-size:12px;color:var(--mu)" id="opsiKunciDisplay">
+          <i class="fa-solid fa-key" style="color:var(--p)"></i> Kunci terpilih: <span id="opsiKunciText" style="font-weight:700;color:var(--p)">Belum dipilih</span>
+        </div>
       </div>`;
-    hint.innerHTML=isPG
-      ?'<i class="fa-solid fa-circle-info"></i> Format kunci: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px">pilihan_1</code> (masukkan angka pilihan yang benar)'
-      :'<i class="fa-solid fa-circle-info"></i> Format kunci: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px">pilihan_1,pilihan_3</code> (pisahkan dengan koma, bisa lebih dari satu)';
-    if(kunciWrap)kunciWrap.style.display='';
+    // hidden kunci sync
     setTimeout(()=>{
       labels.forEach((l,i)=>{
-        createQuillEditor(`qop_bP${i+1}`,{
-          value: d['pilihan_'+(i+1)]||'',
-          size: 'sm',
-          placeholder: `Pilihan ${l}...`,
-          toolbarType: 'compact'
-        });
+        createQuillEditor(`qop_bP${i+1}`,{value:d['pilihan_'+(i+1)]||'',size:'sm',placeholder:`Pilihan ${l}...`,toolbarType:'compact'});
       });
-    },50);
+      // restore kunci selection
+      if(kunciSaved){
+        if(isPG){
+          const idx=parseInt((kunciSaved.match(/\d+/)||['0'])[0]);
+          if(idx>=1&&idx<=5) selOpsiPG(idx,labels.length,true);
+        }else{
+          kunciSaved.split(',').forEach(k=>{const idx=parseInt((k.match(/\d+/)||['0'])[0]);if(idx>=1&&idx<=5)toggleOpsiPGK(idx,labels.length,true);});
+        }
+      }
+    },80);
 
   }else if(t==='Benar/Salah'){
+    // Parse existing data — strip HTML karena input plain text
+    const kparts=(d.jawaban_benar||'').split('|');
+    const stmts=[];
+    for(let i=1;i<=5;i++){
+      const raw=d['pilihan_'+i]||'';
+      const txt=stripHtml(raw); // strip HTML dari Quill lama
+      if(txt||stmts.length<2)stmts.push({text:txt,val:kparts[stmts.length]||''});
+    }
+    _bsState=stmts.length>=2?stmts:[{text:'',val:''},{text:'',val:''}];
     area.innerHTML=`
-      <div style="margin-bottom:10px;padding:14px;background:#f8fafc;border-radius:8px;border:1px solid var(--br)">
+      <div style="background:#f8fafc;border-radius:10px;border:1px solid var(--br);padding:14px;margin-bottom:4px">
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
-          <div style="font-size:11.5px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.07em">
+          <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.07em">
             <i class="fa-solid fa-toggle-on" style="color:var(--ok)"></i> Pernyataan Benar / Salah
           </div>
-          <span style="font-size:10.5px;color:var(--mu);background:#fff;border:1px solid var(--br);padding:2px 8px;border-radius:100px;flex-shrink:0">
-            <i class="fa-solid fa-image" style="color:var(--p)"></i> gambar &amp; KaTeX
-          </span>
+          <button type="button" class="btn bp bsm" onclick="addBsRow()"><i class="fa-solid fa-plus"></i> Tambah Pernyataan</button>
         </div>
-        <div class="bs-grid">
-          ${[1,2,3,4].map(i=>`
-          <div class="bs-grid-item">
-            <div class="opsi-label">
-              <span class="bs-badge" style="background:${i<=2?'var(--ok)':'#cbd5e1'};color:${i<=2?'#fff':'#475569'}">${i}</span>
-              <span>Pernyataan ${i}</span>
-              ${i<=2?'<span style="color:var(--er);font-size:11px">*</span>':'<span style="color:var(--mu);font-weight:400;font-size:11px">(opsional)</span>'}
-            </div>
-            <div id="qop_bP${i}bs" class="ql-opsi-wrap"></div>
-          </div>`).join('')}
-        </div>
+        <div id="bsRowsWrap"></div>
       </div>`;
-    hint.innerHTML='<i class="fa-solid fa-circle-info"></i> Format kunci: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px">Benar|Salah|Benar</code> (sesuai urutan pernyataan, pisah dengan | pipe)';
-    if(kunciWrap)kunciWrap.style.display='';
-    setTimeout(()=>{
-      [1,2,3,4].forEach(i=>{
-        createQuillEditor(`qop_bP${i}bs`,{
-          value: d['pilihan_'+i]||'',
-          size: 'sm',
-          placeholder: `Pernyataan ${i}...`,
-          toolbarType: 'compact'
-        });
-      });
-    },50);
+    renderBsRows();
+
+  }else if(t==='Menjodohkan'){
+    const existPairs=[];
+    const kparts=(d.jawaban_benar||'').split('|').filter(Boolean);
+    kparts.forEach(p=>{const[l,r]=(p+':').split(':');existPairs.push({l:l||'',r:r||''});});
+    _jodohState=existPairs.length>=2?existPairs:[{l:'',r:''},{l:'',r:''},{l:'',r:''}];
+    area.innerHTML=`
+      <div style="background:#f8fafc;border-radius:10px;border:1px solid var(--br);padding:14px;margin-bottom:4px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.07em">
+            <i class="fa-solid fa-arrows-left-right" style="color:var(--p)"></i> Pasangan Menjodohkan
+          </div>
+          <button type="button" class="btn bp bsm" onclick="addJodohRow()"><i class="fa-solid fa-plus"></i> Tambah Pasangan</button>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 24px 1fr 34px;gap:8px;align-items:center;margin-bottom:8px;padding:0 2px">
+          <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;text-align:center">Kolom Kiri</div>
+          <div></div>
+          <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.05em;text-align:center">Kolom Kanan</div>
+          <div></div>
+        </div>
+        <div id="jodohRowsWrap"></div>
+      </div>`;
+    renderJodohRows();
 
   }else if(t==='Uraian'){
     area.innerHTML=`
-      <div style="margin-bottom:10px;padding:10px 12px;background:#fffbeb;border-radius:8px;border:1px solid #fde68a">
-        <div style="font-size:12px;color:#92400e;display:flex;align-items:center;gap:7px">
-          <i class="fa-solid fa-pencil" style="font-size:14px"></i>
-          <div><strong>Soal Uraian (Essay)</strong> — Siswa mengetik jawaban bebas. Isi kunci jawaban sebagai referensi guru saat koreksi manual.</div>
-        </div>
+      <div style="padding:12px 14px;background:#fffbeb;border-radius:10px;border:1px solid #fde68a;margin-bottom:4px;font-size:12.5px;color:#92400e;display:flex;align-items:center;gap:8px">
+        <i class="fa-solid fa-pencil" style="font-size:16px"></i>
+        <div><strong>Soal Uraian</strong> — Siswa mengetik jawaban bebas. Isi kunci sebagai referensi koreksi manual guru.</div>
       </div>`;
-    hint.innerHTML='<i class="fa-solid fa-circle-info"></i> Isi kunci sebagai referensi koreksi, tidak digunakan untuk penilaian otomatis';
-    if(kunciWrap)kunciWrap.style.display='';
-
-  }else if(t==='Menjodohkan'){
-    area.innerHTML=`
-      <div style="margin-bottom:10px;padding:12px;background:#f8fafc;border-radius:8px;border:1px solid var(--br)">
-        <div style="font-size:11.5px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px">
-          <i class="fa-solid fa-arrows-left-right" style="color:var(--p)"></i> Pasangan Menjodohkan
-        </div>
-        ${[1,2,3].map(i=>`
-        <div class="fg" style="margin-bottom:10px">
-          <label class="fl" style="display:flex;align-items:center;gap:6px;margin-bottom:6px;color:var(--mu)">
-            <i class="fa-solid fa-link" style="color:var(--p);font-size:11px"></i> Pasangan ${i}${i===1?' <span style="color:var(--er)">*</span>':''}
-          </label>
-          <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center">
-            <input id="bMatchL${i}" class="fc" value="${(d.jawaban_benar||'').split('|')[i-1]?.split(':')[0]||''}" placeholder="Kolom kiri ${i}">
-            <i class="fa-solid fa-arrow-right" style="color:var(--mu)"></i>
-            <input id="bMatchR${i}" class="fc" value="${(d.jawaban_benar||'').split('|')[i-1]?.split(':')[1]||''}" placeholder="Kolom kanan ${i}">
-          </div>
-        </div>`).join('')}
-      </div>`;
-    hint.innerHTML='<i class="fa-solid fa-circle-info"></i> Kunci diisi otomatis dari pasangan di atas: <code style="background:#f1f5f9;padding:1px 5px;border-radius:3px">Kiri1:Kanan1|Kiri2:Kanan2|Kiri3:Kanan3</code>';
-    const syncMatch=()=>{
-      const pairs=[1,2,3].map(i=>{const l=$(`bMatchL${i}`)?.value||'';const r=$(`bMatchR${i}`)?.value||'';return l&&r?`${l}:${r}`:null;}).filter(Boolean);
-      const k=$('bKunci');if(k)k.value=pairs.join('|');
-    };
-    setTimeout(()=>{[1,2,3].forEach(i=>{$(`bMatchL${i}`)?.addEventListener('input',syncMatch);$(`bMatchR${i}`)?.addEventListener('input',syncMatch);});syncMatch();},50);
-    if(kunciWrap)kunciWrap.style.display='';
+    if(kunciWrap){kunciWrap.style.display='';$('bKHint').innerHTML='Digunakan sebagai referensi koreksi (tidak dihitung otomatis)';}
   }
 }
 
-async function svButir(id){
-  // Get pertanyaan from Quill editor
-  const pertanyaan = getQuillHTML('qeditor_pertanyaan');
+// ── PG: klik satu opsi ──
+function selOpsiPG(n,total,silent){
+  for(let i=1;i<=total;i++){
+    const c=document.getElementById('ocard_'+i);const b=document.getElementById('obadge_'+i);
+    if(c)c.classList.remove('selected');
+    if(b){b.className='opsi-badge state-unsel';}
+  }
+  const card=document.getElementById('ocard_'+n);const badge=document.getElementById('obadge_'+n);
+  if(card)card.classList.add('selected');
+  if(badge)badge.className='opsi-badge state-sel';
+  const k=$('bKunci');if(k)k.value='pilihan_'+n;
+  const disp=$('opsiKunciText');if(disp)disp.textContent='Pilihan '+['A','B','C','D','E'][n-1];
+}
 
-  // Get pilihan from Quill editors or plain inputs depending on tipe
-  const tipe = $('bTipe')?.value || '';
+// ── PGK: toggle multi opsi ──
+function toggleOpsiPGK(n,total,silent){
+  const card=document.getElementById('ocard_'+n);const badge=document.getElementById('obadge_'+n);
+  const isNowSel=card&&!card.classList.contains('selected-multi');
+  if(card)card.classList.toggle('selected-multi');
+  if(badge)badge.className='opsi-badge '+(isNowSel?'state-multi':'state-unsel');
+  // Rebuild kunci from all selected
+  const sel=[];
+  for(let i=1;i<=total;i++){const c=document.getElementById('ocard_'+i);if(c&&c.classList.contains('selected-multi'))sel.push('pilihan_'+i);}
+  const k=$('bKunci');if(k)k.value=sel.join(',');
+  const disp=$('opsiKunciText');if(disp)disp.textContent=sel.length?sel.map(s=>'Pilihan '+['A','B','C','D','E'][parseInt(s.slice(-1))-1]).join(', '):'Belum dipilih';
+}
+
+// ── Util: strip HTML tags untuk text plain ──
+function stripHtml(h){const d=document.createElement('div');d.innerHTML=h||'';return d.textContent||'';}
+
+// ── Benar/Salah: simpan dulu semua input sebelum re-render ──
+function saveBsInputs(){
+  _bsState.forEach((_,i)=>{const el=document.getElementById('bstxt_'+i);if(el)_bsState[i].text=el.value;});
+}
+function renderBsRows(){
+  const wrap=$('bsRowsWrap');if(!wrap)return;
+  wrap.innerHTML=_bsState.map((s,i)=>`
+    <div class="bs-row">
+      <span class="bs-num">${i+1}</span>
+      <input class="bs-input" id="bstxt_${i}"
+        value="${(s.text||'').replace(/\/g,'\\').replace(/"/g,'&quot;').replace(/</g,'&lt;')}"
+        placeholder="Isi pernyataan ${i+1}...">
+      <div class="bs-toggle">
+        <button type="button" class="bs-btn ${s.val==='Benar'?'active-b':''}"
+          onclick="setBsVal(${i},'Benar')">Benar</button>
+        <button type="button" class="bs-btn ${s.val==='Salah'?'active-s':''}"
+          onclick="setBsVal(${i},'Salah')">Salah</button>
+      </div>
+      ${_bsState.length>2
+        ?`<button type="button" class="bs-del" onclick="delBsRow(${i})"><i class="fa-solid fa-xmark"></i></button>`
+        :'<div style="width:28px"></div>'}
+    </div>`).join('');
+  // sync kunci display
+  const k=$('bKunci');if(k)k.value=_bsState.map(s=>s.val||'').join('|');
+}
+function addBsRow(){
+  if(_bsState.length>=5){toast('Maksimal 5 pernyataan','in');return;}
+  saveBsInputs(); // simpan teks yang sudah diketik
+  _bsState.push({text:'',val:''});
+  renderBsRows();
+  setTimeout(()=>document.getElementById('bstxt_'+(_bsState.length-1))?.focus(),40);
+}
+function delBsRow(i){
+  if(_bsState.length<=2)return;
+  saveBsInputs();
+  _bsState.splice(i,1);
+  renderBsRows();
+}
+function setBsVal(i,v){
+  saveBsInputs(); // !! simpan input sebelum re-render
+  _bsState[i].val=(_bsState[i].val===v)?'':v;
+  renderBsRows();
+}
+function syncBsKunci(){
+  saveBsInputs();
+  const k=$('bKunci');if(k)k.value=_bsState.map(s=>s.val||'').join('|');
+}
+
+// ── Menjodohkan: simpan dulu semua input sebelum re-render ──
+function saveJodohInputs(){
+  _jodohState.forEach((_,i)=>{
+    const l=document.getElementById('jleft_'+i);
+    const r=document.getElementById('jright_'+i);
+    if(l)_jodohState[i].l=l.value;
+    if(r)_jodohState[i].r=r.value;
+  });
+}
+function renderJodohRows(){
+  const wrap=$('jodohRowsWrap');if(!wrap)return;
+  wrap.innerHTML=_jodohState.map((p,i)=>`
+    <div class="jodoh-row">
+      <input class="jodoh-input" id="jleft_${i}"
+        value="${(p.l||'').replace(/"/g,'&quot;').replace(/</g,'&lt;')}"
+        placeholder="Pernyataan ${i+1}">
+      <div class="jodoh-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+      <input class="jodoh-input" id="jright_${i}"
+        value="${(p.r||'').replace(/"/g,'&quot;').replace(/</g,'&lt;')}"
+        placeholder="Jawaban ${i+1}">
+      ${_jodohState.length>2
+        ?`<button type="button" class="jodoh-del" onclick="delJodohRow(${i})"><i class="fa-solid fa-xmark"></i></button>`
+        :'<div style="width:34px"></div>'}
+    </div>`).join('');
+  syncJodohKunci();
+}
+function addJodohRow(){
+  if(_jodohState.length>=5){toast('Maksimal 5 pasangan','in');return;}
+  saveJodohInputs();
+  _jodohState.push({l:'',r:''});
+  renderJodohRows();
+  setTimeout(()=>document.getElementById('jleft_'+(_jodohState.length-1))?.focus(),40);
+}
+function delJodohRow(i){
+  if(_jodohState.length<=2)return;
+  saveJodohInputs();
+  _jodohState.splice(i,1);
+  renderJodohRows();
+}
+function syncJodohKunci(){
+  saveJodohInputs();
+  const pairs=_jodohState.filter(p=>p.l||p.r).map(p=>p.l+':'+p.r);
+  const k=$('bKunci');if(k)k.value=pairs.join('|');
+}
+
+async function svButir(id){
+  const pertanyaan=getQuillHTML('qeditor_pertanyaan');
+  const tipe=$('bTipe')?.value||'';
   let p1='',p2='',p3='',p4='',p5='';
 
   if(tipe==='Pilihan Ganda'||tipe==='Pilihan Ganda Kompleks'){
-    p1=getQuillHTML('qop_bP1');
-    p2=getQuillHTML('qop_bP2');
-    p3=getQuillHTML('qop_bP3');
-    p4=getQuillHTML('qop_bP4');
-    p5=getQuillHTML('qop_bP5');
+    p1=getQuillHTML('qop_bP1');p2=getQuillHTML('qop_bP2');
+    p3=getQuillHTML('qop_bP3');p4=getQuillHTML('qop_bP4');p5=getQuillHTML('qop_bP5');
   }else if(tipe==='Benar/Salah'){
-    p1=getQuillHTML('qop_bP1bs');
-    p2=getQuillHTML('qop_bP2bs');
-    p3=getQuillHTML('qop_bP3bs');
-    p4=getQuillHTML('qop_bP4bs');
+    syncBsKunci();
+    const bsList=['p1','p2','p3','p4','p5'];
+    _bsState.forEach((s,i)=>{if(i<5){if(i===0)p1=s.text;else if(i===1)p2=s.text;else if(i===2)p3=s.text;else if(i===3)p4=s.text;else if(i===4)p5=s.text;}});
+    if(_bsState.filter(s=>!s.text.trim()).length){toast('Semua pernyataan harus diisi!','er');return;}
+    if(_bsState.filter(s=>!s.val).length){toast('Setiap pernyataan harus dipilih Benar atau Salah!','er');return;}
+  }else if(tipe==='Menjodohkan'){
+    syncJodohKunci();
+    const valid=_jodohState.filter(p=>p.l&&p.r);
+    if(valid.length<2){toast('Minimal 2 pasangan lengkap!','er');return;}
   }
 
+  const kunci=$('bKunci')?.value.trim()||'';
+  if(!$('bKode').value){toast('Pilih paket soal!','er');return;}
+  if(!pertanyaan||pertanyaan==='<p><br></p>'){toast('Pertanyaan tidak boleh kosong!','er');return;}
+  if(tipe!=='Uraian'&&!kunci){toast('Pilih kunci jawaban terlebih dahulu!','er');return;}
+
   const o={kode_soal:$('bKode').value,nomer_soal:parseInt($('bNo').value),pertanyaan,tipe_soal:tipe,
-    pilihan_1:p1,pilihan_2:p2,pilihan_3:p3,
-    pilihan_4:p4,pilihan_5:p5,jawaban_benar:$('bKunci').value.trim(),status_soal:$('bSt').value};
-  if(!o.kode_soal||!pertanyaan||!o.jawaban_benar){toast('Kode, pertanyaan, dan kunci wajib diisi!','er');return;}
+    pilihan_1:p1,pilihan_2:p2,pilihan_3:p3,pilihan_4:p4,pilihan_5:p5,
+    jawaban_benar:kunci,status_soal:$('bSt').value};
+
   if(demoMode){toast('Mode demo: data tidak tersimpan','in');rmModal('mdButir');return;}
   try{
     if(id){await SB.from('butir_soal').update(o).eq('id_soal',id);toast('Soal diperbarui!','ok');}
@@ -5278,7 +5404,7 @@ function renderSoal(n){
     pilihanHtml=`<div class="al alin" style="padding:8px 12px;font-size:12px;margin-bottom:10px"><i class=\"fa-solid fa-circle-info\" style=\"color:var(--p)\"></i><div>Pilih SEMUA jawaban yang benar (bisa lebih dari satu)</div></div>
       <div class="pgk">${opts.map((k,i)=>`<div class="pk ${selArr.includes(k)?'sel':''}" onclick="pilihPGK(${n},'${k}')"><div class="pkcb"></div><div class="opk">${labels[i]}</div><div class="opt">${b[k]}</div></div>`).join('')}</div>`;
   }else if(tipe==='Benar/Salah'){
-    const stmts=[b.pilihan_1,b.pilihan_2,b.pilihan_3,b.pilihan_4].filter(Boolean);
+    const stmts=[b.pilihan_1,b.pilihan_2,b.pilihan_3,b.pilihan_4,b.pilihan_5].filter(Boolean);
     const jawArr=(jawaban||'').split('|');
     pilihanHtml=stmts.map((s,i)=>`<div class="bsrow"><div class="bst">${i+1}. ${s}</div>
       <div class="bstog">
