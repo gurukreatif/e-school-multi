@@ -66,34 +66,125 @@ img{max-width:100%;height:auto}
 .app-footer{text-align:center;font-size:11px;color:rgba(255,255,255,.28);padding:10px 12px;border-top:1px solid rgba(255,255,255,.08);letter-spacing:.02em}
 .app-footer-main{text-align:center;font-size:11.5px;color:var(--mu);padding:14px 20px;border-top:1px solid var(--br);background:#fff;margin-top:auto}
 
-/* ══════════════ MULTI-TENANT STYLES ══════════════ */
-/* Landing Page */
-.lp-wrap{min-height:100vh;background:linear-gradient(135deg,#0f172a 0%,#064e3b 60%,#0f172a 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 16px}
-.lp-head{text-align:center;color:#fff;margin-bottom:36px}
-.lp-head .lp-logo{width:72px;height:72px;margin:0 auto 16px;object-fit:contain;filter:brightness(0) invert(1);opacity:.9}
-.lp-head h1{font-size:30px;font-weight:900;margin-bottom:8px}
-.lp-head p{font-size:13.5px;color:rgba(255,255,255,.6);max-width:460px;margin:0 auto}
-.lp-search{width:100%;max-width:420px;margin:0 auto 22px;position:relative}
-.lp-search input{width:100%;padding:11px 16px 11px 44px;border-radius:10px;border:1px solid rgba(255,255,255,.15);background:rgba(255,255,255,.08);color:#fff;font-size:13.5px;outline:none;transition:.15s;font-family:inherit}
-.lp-search input:focus{border-color:rgba(5,150,105,.6);background:rgba(5,150,105,.1)}
-.lp-search input::placeholder{color:rgba(255,255,255,.4)}
-.lp-search .lp-si{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.45);font-size:13px}
-.tenant-grid{width:100%;max-width:900px;display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
-.tenant-card{background:rgba(255,255,255,.07);border:1.5px solid rgba(255,255,255,.1);border-radius:14px;padding:20px 18px;cursor:pointer;transition:all .18s;color:#fff;text-align:center;position:relative;overflow:hidden}
-.tenant-card:hover{background:rgba(5,150,105,.2);border-color:rgba(5,150,105,.5);transform:translateY(-3px);box-shadow:0 8px 32px rgba(0,0,0,.25)}
-.tenant-card .tc-logo-wrap{width:60px;height:60px;border-radius:12px;background:rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;overflow:hidden;flex-shrink:0}
+/* ══════════════ LANDING PAGE — CLEAN WHITE ══════════════ */
+.lp-wrap{min-height:100vh;background:#fff;display:flex;flex-direction:column;color:#0f172a;font-family:'Plus Jakarta Sans',sans-serif}
+/* Navbar */
+.lp-nav{position:sticky;top:0;z-index:100;padding:0 40px;height:64px;display:flex;align-items:center;justify-content:space-between;background:rgba(255,255,255,.92);backdrop-filter:blur(12px);border-bottom:1px solid #f1f5f9}
+.lp-nav-brand{display:flex;align-items:center;gap:10px;font-size:15px;font-weight:800;color:#0f172a;letter-spacing:-.02em}
+.lp-nav-brand img{width:32px;height:32px;object-fit:contain}
+.lp-nav-right{display:flex;align-items:center;gap:10px}
+.lp-nav-login{background:#059669;color:#fff;padding:9px 20px;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;border:none;transition:.15s;display:inline-flex;align-items:center;gap:7px;letter-spacing:-.01em}
+.lp-nav-login:hover{background:#047857;box-shadow:0 4px 16px rgba(5,150,105,.3)}
+/* Hero */
+.lp-hero{max-width:1100px;width:100%;margin:0 auto;padding:80px 40px 70px;display:flex;align-items:center;gap:60px}
+.lp-hero-left{flex:1;min-width:0}
+.lp-hero-badge{display:inline-flex;align-items:center;gap:7px;background:#f0fdf4;border:1px solid #bbf7d0;color:#059669;padding:5px 14px;border-radius:20px;font-size:11.5px;font-weight:700;letter-spacing:.04em;margin-bottom:22px}
+.lp-hero h1{font-size:clamp(34px,4.5vw,54px);font-weight:900;line-height:1.1;letter-spacing:-.03em;color:#0f172a;margin-bottom:18px}
+.lp-hero h1 em{font-style:normal;color:#059669}
+.lp-hero-sub{font-size:16px;color:#64748b;line-height:1.75;max-width:480px;margin-bottom:32px}
+.lp-hero-cta{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.lp-btn-primary{background:#059669;color:#fff;padding:12px 26px;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;border:none;transition:.15s;display:inline-flex;align-items:center;gap:8px;letter-spacing:-.01em}
+.lp-btn-primary:hover{background:#047857;box-shadow:0 6px 20px rgba(5,150,105,.35);transform:translateY(-1px)}
+.lp-btn-outline{background:transparent;color:#059669;padding:12px 22px;border-radius:10px;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;border:1.5px solid #bbf7d0;transition:.15s;display:inline-flex;align-items:center;gap:8px}
+.lp-btn-outline:hover{background:#f0fdf4;border-color:#059669}
+/* Hero right: mockup card */
+.lp-hero-right{flex:0 0 380px;display:flex;flex-direction:column;gap:12px}
+.lp-mock{background:#f8fafc;border:1px solid #e2e8f0;border-radius:16px;padding:18px;position:relative;overflow:hidden}
+.lp-mock-header{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.lp-mock-dot{width:8px;height:8px;border-radius:50%}
+.lp-mock-title{font-size:11px;font-weight:700;color:#94a3b8;letter-spacing:.06em}
+.lp-mock-row{display:flex;justify-content:space-between;align-items:center;padding:8px 12px;background:#fff;border:1px solid #f1f5f9;border-radius:8px;margin-bottom:7px;font-size:12.5px}
+.lp-mock-row:last-child{margin-bottom:0}
+.lp-mock-label{color:#64748b;font-weight:500}
+.lp-mock-val{font-weight:700;color:#059669}
+.lp-mock-prog{height:5px;background:#f1f5f9;border-radius:99px;overflow:hidden;margin-top:10px}
+.lp-mock-prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#10b981,#059669)}
+.lp-mock-sm{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:14px 16px;font-size:12px}
+.lp-mock-sm-row{display:flex;align-items:center;gap:9px;color:#047857;font-weight:600}
+.lp-mock-sm-row i{font-size:11px;width:14px;text-align:center}
+/* Divider */
+.lp-divider{max-width:1100px;width:100%;margin:0 auto;padding:0 40px}
+.lp-divider hr{border:none;border-top:1px solid #f1f5f9}
+/* Stats bar */
+.lp-stats-bar{background:#f8fafc;border-top:1px solid #f1f5f9;border-bottom:1px solid #f1f5f9}
+.lp-stats-inner{max-width:1100px;margin:0 auto;padding:0 40px;display:flex}
+.lp-stat{flex:1;padding:24px 20px;text-align:center;border-right:1px solid #f1f5f9}
+.lp-stat:last-child{border-right:none}
+.lp-stat-v{font-size:28px;font-weight:900;color:#059669;letter-spacing:-.03em;line-height:1}
+.lp-stat-l{font-size:11px;color:#94a3b8;margin-top:5px;font-weight:600;letter-spacing:.04em;text-transform:uppercase}
+/* Features section */
+.lp-features{max-width:1100px;width:100%;margin:0 auto;padding:72px 40px}
+.lp-section-head{text-align:center;margin-bottom:48px}
+.lp-section-head h2{font-size:clamp(24px,3vw,36px);font-weight:900;letter-spacing:-.03em;color:#0f172a;margin-bottom:8px}
+.lp-section-head p{font-size:14px;color:#64748b;max-width:460px;margin:0 auto;line-height:1.7}
+.lp-feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.lp-feat-card{background:#fff;border:1px solid #e2e8f0;border-radius:16px;padding:24px 22px;transition:.2s}
+.lp-feat-card:hover{border-color:#bbf7d0;box-shadow:0 4px 24px rgba(5,150,105,.08);transform:translateY(-2px)}
+.lp-feat-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:16px}
+.lp-feat-card h3{font-size:14px;font-weight:800;color:#0f172a;margin-bottom:7px;letter-spacing:-.01em}
+.lp-feat-card p{font-size:12.5px;color:#64748b;line-height:1.65}
+/* Paket section */
+.lp-paket-section{background:#f8fafc;border-top:1px solid #f1f5f9;border-bottom:1px solid #f1f5f9;padding:72px 40px}
+.lp-paket-inner{max-width:1100px;margin:0 auto}
+.lp-paket-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-top:48px}
+.lp-paket-card{background:#fff;border:1.5px solid #e2e8f0;border-radius:18px;padding:26px 20px;transition:.2s;position:relative;overflow:hidden}
+.lp-paket-card:hover{border-color:#bbf7d0;box-shadow:0 8px 32px rgba(5,150,105,.1)}
+.lp-paket-card.featured{border-color:#059669;box-shadow:0 8px 32px rgba(5,150,105,.15)}
+.lp-paket-card.featured::before{content:'TERPOPULER';position:absolute;top:14px;right:-26px;background:#059669;color:#fff;font-size:9px;font-weight:800;padding:4px 34px;letter-spacing:.1em;transform:rotate(35deg)}
+.lp-pk-icon{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;margin-bottom:14px}
+.lp-pk-name{font-size:17px;font-weight:900;color:#0f172a;letter-spacing:-.02em;margin-bottom:5px}
+.lp-pk-desc{font-size:12px;color:#94a3b8;line-height:1.5;margin-bottom:16px;min-height:36px}
+.lp-pk-limit{display:flex;align-items:baseline;gap:5px;padding:12px 0;border-top:1px solid #f1f5f9;border-bottom:1px solid #f1f5f9;margin-bottom:16px}
+.lp-pk-limit-n{font-size:32px;font-weight:900;color:#059669;letter-spacing:-.03em;line-height:1}
+.lp-pk-limit-u{font-size:11.5px;color:#94a3b8;line-height:1.3}
+.lp-pk-features{list-style:none;display:flex;flex-direction:column;gap:8px}
+.lp-pk-features li{font-size:12px;color:#475569;display:flex;align-items:flex-start;gap:8px;line-height:1.45}
+.lp-pk-features li .ck{color:#059669;font-size:10px;margin-top:2px;flex-shrink:0;width:12px}
+.lp-pk-features li.off{color:#cbd5e1}
+.lp-pk-features li.off .ck{color:#e2e8f0}
+/* Schools section */
+.lp-schools-section{max-width:1100px;width:100%;margin:0 auto;padding:72px 40px 80px}
+.lp-search{width:100%;max-width:420px;margin:0 auto 28px;position:relative}
+.lp-search input{width:100%;padding:11px 16px 11px 44px;border-radius:10px;border:1.5px solid #e2e8f0;background:#f8fafc;color:#0f172a;font-size:13.5px;outline:none;transition:.15s;font-family:inherit}
+.lp-search input:focus{border-color:#059669;background:#f0fdf4;box-shadow:0 0 0 3px rgba(5,150,105,.1)}
+.lp-search input::placeholder{color:#94a3b8}
+.lp-search .lp-si{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:#94a3b8;font-size:13px}
+.tenant-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:14px}
+.tenant-card{background:#fff;border:1.5px solid #e2e8f0;border-radius:14px;padding:20px 16px;cursor:pointer;transition:all .18s;color:#0f172a;text-align:center}
+.tenant-card:hover{border-color:#059669;box-shadow:0 4px 20px rgba(5,150,105,.12);transform:translateY(-2px)}
+.tenant-card .tc-logo-wrap{width:52px;height:52px;border-radius:12px;background:#f0fdf4;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;overflow:hidden;flex-shrink:0}
 .tenant-card .tc-logo-wrap img{width:100%;height:100%;object-fit:contain}
-.tenant-card .tc-name{font-size:14px;font-weight:700;margin-bottom:3px;line-height:1.3}
-.tenant-card .tc-npsn{font-size:11px;color:rgba(255,255,255,.4);font-family:'JetBrains Mono',monospace;margin-bottom:8px}
-.tenant-card .tc-alamat{font-size:11px;color:rgba(255,255,255,.45);margin-bottom:8px;line-height:1.4}
+.tenant-card .tc-name{font-size:13px;font-weight:700;margin-bottom:2px;line-height:1.3;color:#0f172a}
+.tenant-card .tc-npsn{font-size:10.5px;color:#94a3b8;font-family:'JetBrains Mono',monospace;margin-bottom:6px}
+.tenant-card .tc-alamat{font-size:11px;color:#94a3b8;margin-bottom:8px;line-height:1.4}
 .tc-badges{display:flex;gap:5px;justify-content:center;flex-wrap:wrap}
 .tc-badge{display:inline-block;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;letter-spacing:.02em}
-.tc-badge.ok{background:rgba(16,185,129,.2);color:#6ee7b7;border:1px solid rgba(16,185,129,.3)}
-.tc-badge.no{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.2)}
-.tc-badge.paket{background:rgba(99,102,241,.2);color:#a5b4fc;border:1px solid rgba(99,102,241,.3)}
-.lp-footer-wrap{margin-top:28px;text-align:center}
-.lp-sa-btn{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.15);color:rgba(255,255,255,.6);padding:8px 18px;border-radius:8px;font-size:12px;cursor:pointer;font-family:inherit;transition:.15s;display:inline-flex;align-items:center;gap:7px}
-.lp-sa-btn:hover{background:rgba(255,255,255,.15);color:#fff}
+.tc-badge.ok{background:#f0fdf4;color:#059669;border:1px solid #bbf7d0}
+.tc-badge.no{background:#fff1f2;color:#f43f5e;border:1px solid #fecdd3}
+.tc-badge.paket{background:#f0fdf4;color:#047857;border:1px solid #bbf7d0}
+/* Footer */
+.lp-footer{background:#0f172a;color:rgba(255,255,255,.5);padding:24px 40px;text-align:center;font-size:12px}
+.lp-footer-wrap{display:flex;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap;max-width:1100px;margin:0 auto}
+.lp-sa-btn{background:transparent;border:none;color:rgba(255,255,255,.25);padding:0;font-size:11px;cursor:pointer;font-family:inherit;transition:.15s}
+.lp-sa-btn:hover{color:rgba(255,255,255,.5)}
+/* Responsive */
+@media(max-width:900px){
+  .lp-hero{flex-direction:column;padding:48px 20px 40px;gap:36px}
+  .lp-hero-right{flex:none;width:100%}
+  .lp-feat-grid{grid-template-columns:1fr 1fr}
+  .lp-paket-grid{grid-template-columns:1fr 1fr}
+  .lp-nav{padding:0 20px}
+  .lp-features,.lp-schools-section{padding-left:20px;padding-right:20px}
+  .lp-paket-section{padding-left:20px;padding-right:20px}
+  .lp-stats-inner{padding:0 20px}
+}
+@media(max-width:600px){
+  .lp-feat-grid{grid-template-columns:1fr}
+  .lp-paket-grid{grid-template-columns:1fr}
+  .lp-stats-inner{flex-wrap:wrap}
+  .lp-stat{min-width:50%;border-right:none;border-bottom:1px solid #f1f5f9}
+  .lp-footer{padding:20px}
+}
 
 /* Login Unified (/login) */
 .login-unified-wrap{min-height:100vh;display:flex}
@@ -114,11 +205,11 @@ img{max-width:100%;height:auto}
 
 /* Super Admin Panel */
 .sa-wrap{min-height:100vh;display:flex;flex-direction:column;background:#f1f5f9}
-.sa-topbar{background:linear-gradient(90deg,#1e1b4b,#4338ca);color:#fff;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.2)}
+.sa-topbar{background:linear-gradient(90deg,#022c22,#064e3b);color:#fff;padding:0 24px;height:56px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50;box-shadow:0 2px 8px rgba(0,0,0,.2)}
 .sa-topbar-left{display:flex;align-items:center;gap:12px}
 .sa-topbar-left .sa-icon{width:32px;height:32px;background:rgba(255,255,255,.15);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px}
 .sa-topbar-right{display:flex;align-items:center;gap:10px}
-.sa-badge{background:#6366f1;color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.06em}
+.sa-badge{background:#059669;color:#fff;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;letter-spacing:.06em}
 .sa-logout-btn{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:6px 14px;border-radius:7px;font-size:12px;cursor:pointer;font-family:inherit;display:flex;align-items:center;gap:6px;transition:.15s}
 .sa-logout-btn:hover{background:rgba(255,255,255,.22)}
 .sa-content{padding:22px;flex:1}
@@ -132,6 +223,11 @@ img{max-width:100%;height:auto}
   .login-unified-wrap{flex-direction:column}
   .login-u-right{padding:24px 16px;align-items:stretch;justify-content:flex-start;min-height:100vh}
   .tenant-grid{grid-template-columns:1fr}
+  .lp-paket-grid{grid-template-columns:1fr 1fr}
+  .lp-stats{flex-wrap:wrap}
+  .lp-stat{min-width:50%;border-right:none;border-bottom:1px solid rgba(255,255,255,.08)}
+  .lp-nav{padding:0 16px}
+  .lp-hero{padding:48px 16px 36px}
 }
 .login-footer{font-size:11.5px;color:rgba(255,255,255,.45);text-align:center;margin-top:auto;padding-top:20px}
 .lp-footer{font-size:11px;color:#94a3b8;text-align:center;margin-top:18px;padding-top:14px;border-top:1px solid var(--br)}
@@ -527,25 +623,235 @@ tbody tr:hover td{background:#fafbff}
 
 <!-- ══════════ LANDING PAGE (/) ══════════ -->
 <div id="landingPage" class="lp-wrap hidden">
-  <div class="lp-head">
-    <img src="https://i.imgur.com/bT70O4C.png" class="lp-logo" alt="Logo" onerror="this.outerHTML='<div style=\'font-size:56px;color:#fff;opacity:.9;text-align:center;margin-bottom:16px\'><i class=\'fa-solid fa-school\'></i></div>'">
-    <h1>Emes CBT System</h1>
-    <p>Platform ujian berbasis komputer multi-tenant. Pilih sekolah Anda untuk memulai.</p>
-  </div>
-  <div class="lp-search">
-    <span class="lp-si"><i class="fa-solid fa-magnifying-glass"></i></span>
-    <input type="text" id="lpSearch" placeholder="Cari nama sekolah atau NPSN..." oninput="filterTenantGrid()" autocomplete="off">
-  </div>
-  <div class="tenant-grid" id="tenantGrid">
-    <div style="grid-column:1/-1;text-align:center;padding:48px;color:rgba(255,255,255,.5)">
-      <div class="spin" style="margin:0 auto 14px;width:28px;height:28px;border-color:rgba(255,255,255,.2);border-top-color:#fff"></div>
-      <p>Memuat daftar sekolah...</p>
+
+  <!-- Navbar -->
+  <nav class="lp-nav">
+    <div class="lp-nav-brand">
+      <img src="https://i.imgur.com/bT70O4C.png" alt="Logo" onerror="this.style.display='none'">
+      Emes CBT System
+    </div>
+    <div class="lp-nav-right">
+      <button class="lp-nav-login" onclick="router('/login')"><i class="fa-solid fa-right-to-bracket"></i> Login Sekolah</button>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="lp-hero">
+    <div class="lp-hero-left">
+      <div class="lp-hero-badge"><i class="fa-solid fa-bolt"></i> PLATFORM CBT MULTI-TENANT</div>
+      <h1>Ujian Digital<br>untuk <em>Semua Sekolah</em></h1>
+      <p class="lp-hero-sub">Platform Computer Based Test berbasis NPSN. Satu sistem terpadu untuk ratusan sekolah — dari soal, pengawasan, hingga laporan nilai otomatis.</p>
+      <div class="lp-hero-cta">
+        <button class="lp-btn-primary" onclick="document.getElementById('sec-sekolah').scrollIntoView({behavior:'smooth'})"><i class="fa-solid fa-school"></i> Lihat Sekolah</button>
+        <button class="lp-btn-outline" onclick="document.getElementById('sec-paket').scrollIntoView({behavior:'smooth'})"><i class="fa-solid fa-list"></i> Lihat Paket</button>
+      </div>
+    </div>
+    <div class="lp-hero-right">
+      <div class="lp-mock">
+        <div class="lp-mock-header">
+          <div class="lp-mock-dot" style="background:#f87171"></div>
+          <div class="lp-mock-dot" style="background:#fbbf24"></div>
+          <div class="lp-mock-dot" style="background:#34d399"></div>
+          <span class="lp-mock-title" style="margin-left:6px">MONITOR UJIAN — REAL TIME</span>
+        </div>
+        <div class="lp-mock-row"><span class="lp-mock-label">Peserta aktif</span><span class="lp-mock-val">142 siswa</span></div>
+        <div class="lp-mock-row"><span class="lp-mock-label">Sudah selesai</span><span class="lp-mock-val" style="color:#f59e0b">38 siswa</span></div>
+        <div class="lp-mock-row"><span class="lp-mock-label">Waktu tersisa</span><span class="lp-mock-val" style="color:#ef4444">14:27</span></div>
+        <div class="lp-mock-prog"><div class="lp-mock-prog-fill" style="width:73%"></div></div>
+      </div>
+      <div class="lp-mock-sm">
+        <div class="lp-mock-sm-row" style="margin-bottom:8px"><i class="fa-solid fa-circle-check" style="color:#059669"></i> Jawaban auto-save setiap 30 detik</div>
+        <div class="lp-mock-sm-row" style="margin-bottom:8px"><i class="fa-solid fa-circle-check" style="color:#059669"></i> Token ujian anti-bocor</div>
+        <div class="lp-mock-sm-row" style="margin-bottom:8px"><i class="fa-solid fa-circle-check" style="color:#059669"></i> Nilai langsung keluar otomatis</div>
+        <div class="lp-mock-sm-row"><i class="fa-solid fa-circle-check" style="color:#059669"></i> Berita acara cetak otomatis</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats bar -->
+  <div class="lp-stats-bar">
+    <div class="lp-stats-inner">
+      <div class="lp-stat">
+        <div class="lp-stat-v" id="lpStatSekolah">—</div>
+        <div class="lp-stat-l">Sekolah Aktif</div>
+      </div>
+      <div class="lp-stat">
+        <div class="lp-stat-v">5</div>
+        <div class="lp-stat-l">Tipe Soal</div>
+      </div>
+      <div class="lp-stat">
+        <div class="lp-stat-v">4</div>
+        <div class="lp-stat-l">Paket Tersedia</div>
+      </div>
+      <div class="lp-stat">
+        <div class="lp-stat-v">30s</div>
+        <div class="lp-stat-l">Auto-save Jawaban</div>
+      </div>
     </div>
   </div>
-  <div class="lp-footer-wrap">
-    <button class="lp-sa-btn" onclick="router('super')"><i class="fa-solid fa-shield-halved"></i> Super Admin</button>
-    <div style="color:rgba(255,255,255,.25);font-size:11px;margin-top:14px">&copy; 2026 Emes EduTech · All rights reserved</div>
-  </div>
+
+  <!-- Features -->
+  <section class="lp-features">
+    <div class="lp-section-head">
+      <h2>Semua yang Dibutuhkan Sekolah</h2>
+      <p>Fitur lengkap dari pembuatan soal hingga cetak laporan, dalam satu platform</p>
+    </div>
+    <div class="lp-feat-grid">
+      <div class="lp-feat-card">
+        <div class="lp-feat-icon" style="background:#f0fdf4;color:#059669"><i class="fa-solid fa-folder-open"></i></div>
+        <h3>5 Tipe Soal Lengkap</h3>
+        <p>Pilihan ganda, benar/salah, isian singkat, uraian, dan menjodohkan. Dukung LaTeX untuk soal matematika dan sains.</p>
+      </div>
+      <div class="lp-feat-card">
+        <div class="lp-feat-icon" style="background:#fef9c3;color:#ca8a04"><i class="fa-solid fa-display"></i></div>
+        <h3>Monitor Ujian Real-time</h3>
+        <p>Pantau status setiap peserta secara langsung. Lihat siapa yang sedang aktif, sudah selesai, atau bermasalah koneksi.</p>
+      </div>
+      <div class="lp-feat-card">
+        <div class="lp-feat-icon" style="background:#fff1f2;color:#f43f5e"><i class="fa-solid fa-shield-halved"></i></div>
+        <h3>Keamanan Token Ujian</h3>
+        <p>Sistem token 6–8 karakter yang wajib dimasukkan sebelum ujian dimulai, mencegah siswa masuk lebih awal.</p>
+      </div>
+      <div class="lp-feat-card">
+        <div class="lp-feat-icon" style="background:#eff6ff;color:#3b82f6"><i class="fa-solid fa-chart-line"></i></div>
+        <h3>Nilai & Analisa Otomatis</h3>
+        <p>Nilai pilihan ganda dihitung instan. Analisa per-butir soal menampilkan tingkat kesulitan dan daya pembeda.</p>
+      </div>
+      <div class="lp-feat-card">
+        <div class="lp-feat-icon" style="background:#fdf4ff;color:#a855f7"><i class="fa-solid fa-file-lines"></i></div>
+        <h3>Berita Acara & Kop Surat</h3>
+        <p>Cetak berita acara ujian dengan kop surat sekolah kustom langsung dari sistem. Format siap tanda tangan.</p>
+      </div>
+      <div class="lp-feat-card">
+        <div class="lp-feat-icon" style="background:#fff7ed;color:#f97316"><i class="fa-solid fa-comments"></i></div>
+        <h3>Chat Siswa ↔ Guru</h3>
+        <p>Fitur pesan langsung antara siswa dan guru selama ujian berlangsung, tanpa perlu keluar dari sistem.</p>
+      </div>
+      <div class="lp-feat-card">
+        <div class="lp-feat-icon" style="background:#f0fdf4;color:#059669"><i class="fa-solid fa-trophy"></i></div>
+        <h3>Leaderboard & Gamifikasi</h3>
+        <p>Papan peringkat nilai mendorong motivasi siswa. Tersedia mini game saat menunggu ujian dimulai.</p>
+      </div>
+      <div class="lp-feat-card">
+        <div class="lp-feat-icon" style="background:#f0f9ff;color:#0ea5e9"><i class="fa-solid fa-file-excel"></i></div>
+        <h3>Export Excel & PDF</h3>
+        <p>Ekspor data nilai, daftar hadir, dan kartu peserta ke Excel atau PDF dengan sekali klik.</p>
+      </div>
+      <div class="lp-feat-card">
+        <div class="lp-feat-icon" style="background:#fef3c7;color:#d97706"><i class="fa-solid fa-wifi"></i></div>
+        <h3>Mode Offline Hybrid</h3>
+        <p>Jawaban tersimpan ke IndexedDB lokal jika koneksi terputus, lalu disinkronkan otomatis saat online kembali.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Paket -->
+  <section class="lp-paket-section" id="sec-paket">
+    <div class="lp-paket-inner">
+      <div class="lp-section-head">
+        <h2>Paket Layanan</h2>
+        <p>Pilih paket sesuai skala dan kebutuhan sekolah Anda</p>
+      </div>
+      <div class="lp-paket-grid">
+
+        <div class="lp-paket-card">
+          <div class="lp-pk-icon" style="background:#f8fafc;color:#94a3b8"><i class="fa-solid fa-seedling"></i></div>
+          <div class="lp-pk-name">Free</div>
+          <p class="lp-pk-desc">Untuk sekolah kecil yang baru memulai ujian digital.</p>
+          <div class="lp-pk-limit"><span class="lp-pk-limit-n">50</span><span class="lp-pk-limit-u">siswa aktif<br>maks. 5 paket soal<br>1 admin</span></div>
+          <ul class="lp-pk-features">
+            <li><i class="fa-solid fa-check ck"></i> Ujian pilihan ganda</li>
+            <li><i class="fa-solid fa-check ck"></i> Nilai otomatis</li>
+            <li><i class="fa-solid fa-check ck"></i> Laporan nilai dasar</li>
+            <li class="off"><i class="fa-solid fa-xmark ck"></i> Soal uraian</li>
+            <li class="off"><i class="fa-solid fa-xmark ck"></i> Export Excel/PDF</li>
+            <li class="off"><i class="fa-solid fa-xmark ck"></i> Berita acara</li>
+            <li class="off"><i class="fa-solid fa-xmark ck"></i> Chat siswa</li>
+            <li class="off"><i class="fa-solid fa-xmark ck"></i> Analisa per-butir</li>
+          </ul>
+        </div>
+
+        <div class="lp-paket-card">
+          <div class="lp-pk-icon" style="background:#f0f9ff;color:#0ea5e9"><i class="fa-solid fa-leaf"></i></div>
+          <div class="lp-pk-name">Basic</div>
+          <p class="lp-pk-desc">Untuk sekolah menengah dengan beberapa kelas paralel.</p>
+          <div class="lp-pk-limit"><span class="lp-pk-limit-n">200</span><span class="lp-pk-limit-u">siswa aktif<br>maks. 25 paket soal<br>3 admin / guru</span></div>
+          <ul class="lp-pk-features">
+            <li><i class="fa-solid fa-check ck"></i> Semua soal PG + Uraian</li>
+            <li><i class="fa-solid fa-check ck"></i> Nilai otomatis</li>
+            <li><i class="fa-solid fa-check ck"></i> Export Excel</li>
+            <li><i class="fa-solid fa-check ck"></i> Analisa per-butir</li>
+            <li><i class="fa-solid fa-check ck"></i> Daftar hadir cetak</li>
+            <li class="off"><i class="fa-solid fa-xmark ck"></i> Berita acara</li>
+            <li class="off"><i class="fa-solid fa-xmark ck"></i> Chat siswa</li>
+            <li class="off"><i class="fa-solid fa-xmark ck"></i> Kop surat custom</li>
+          </ul>
+        </div>
+
+        <div class="lp-paket-card featured">
+          <div class="lp-pk-icon" style="background:#f0fdf4;color:#059669"><i class="fa-solid fa-tree"></i></div>
+          <div class="lp-pk-name">Pro</div>
+          <p class="lp-pk-desc">Solusi lengkap untuk sekolah besar dengan pengawasan penuh.</p>
+          <div class="lp-pk-limit"><span class="lp-pk-limit-n">600</span><span class="lp-pk-limit-u">siswa aktif<br>maks. 100 paket soal<br>10 admin / guru</span></div>
+          <ul class="lp-pk-features">
+            <li><i class="fa-solid fa-check ck"></i> Semua tipe soal (5 tipe)</li>
+            <li><i class="fa-solid fa-check ck"></i> Nilai + penilaian uraian</li>
+            <li><i class="fa-solid fa-check ck"></i> Export Excel & PDF</li>
+            <li><i class="fa-solid fa-check ck"></i> Berita acara otomatis</li>
+            <li><i class="fa-solid fa-check ck"></i> Chat siswa ↔ guru</li>
+            <li><i class="fa-solid fa-check ck"></i> Kop surat custom</li>
+            <li><i class="fa-solid fa-check ck"></i> Leaderboard & gamifikasi</li>
+            <li><i class="fa-solid fa-check ck"></i> Monitor real-time penuh</li>
+          </ul>
+        </div>
+
+        <div class="lp-paket-card">
+          <div class="lp-pk-icon" style="background:#fefce8;color:#ca8a04"><i class="fa-solid fa-crown"></i></div>
+          <div class="lp-pk-name">Enterprise</div>
+          <p class="lp-pk-desc">Tanpa batas untuk dinas pendidikan & yayasan multi-sekolah.</p>
+          <div class="lp-pk-limit"><span class="lp-pk-limit-n">∞</span><span class="lp-pk-limit-u">siswa & soal<br>admin tidak terbatas<br>prioritas support</span></div>
+          <ul class="lp-pk-features">
+            <li><i class="fa-solid fa-check ck"></i> Semua fitur Pro</li>
+            <li><i class="fa-solid fa-check ck"></i> Siswa tidak terbatas</li>
+            <li><i class="fa-solid fa-check ck"></i> Paket soal tidak terbatas</li>
+            <li><i class="fa-solid fa-check ck"></i> Admin tidak terbatas</li>
+            <li><i class="fa-solid fa-check ck"></i> SLA & prioritas support</li>
+            <li><i class="fa-solid fa-check ck"></i> Onboarding langsung</li>
+            <li><i class="fa-solid fa-check ck"></i> Kustomisasi lanjutan</li>
+            <li><i class="fa-solid fa-check ck"></i> Akses API (coming soon)</li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Sekolah Terdaftar -->
+  <section class="lp-schools-section" id="sec-sekolah">
+    <div class="lp-section-head">
+      <h2>Sekolah Terdaftar</h2>
+      <p>Klik kartu sekolah Anda untuk menuju halaman login</p>
+    </div>
+    <div class="lp-search">
+      <span class="lp-si"><i class="fa-solid fa-magnifying-glass"></i></span>
+      <input type="text" id="lpSearch" placeholder="Cari nama sekolah atau NPSN..." oninput="filterTenantGrid()" autocomplete="off">
+    </div>
+    <div class="tenant-grid" id="tenantGrid">
+      <div style="grid-column:1/-1;text-align:center;padding:48px;color:#94a3b8">
+        <div class="spin" style="margin:0 auto 14px;width:28px;height:28px"></div>
+        <p>Memuat daftar sekolah...</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="lp-footer">
+    <div class="lp-footer-wrap">
+      <span>&copy; 2026 Emes EduTech &nbsp;·&nbsp; All rights reserved</span>
+      <button class="lp-sa-btn" onclick="router('super')">Admin</button>
+    </div>
+  </footer>
+
 </div>
 
 <!-- ══════════ LOGIN PAGE (/login) — Admin, Guru, Proktor, Siswa ══════════ -->
@@ -642,10 +948,10 @@ tbody tr:hover td{background:#fafbff}
 
 <!-- ══════════ SUPER ADMIN LOGIN (/super) ══════════ -->
 <div id="superLoginPage" class="login-unified-wrap hidden">
-  <div class="login-u-left" style="background:linear-gradient(135deg,#1e1b4b 0%,#312e81 60%,#4338ca 100%)">
+  <div class="login-u-left" style="background:linear-gradient(135deg,#022c22 0%,#064e3b 60%,#047857 100%)">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
-      <div style="width:36px;height:36px;background:rgba(255,255,255,.15);border-radius:9px;display:flex;align-items:center;justify-content:center"><i class="fa-solid fa-shield-halved" style="font-size:18px"></i></div>
-      <span style="font-size:16px;font-weight:800;opacity:.9">Super Admin</span>
+      <img src="https://i.imgur.com/bT70O4C.png" style="width:36px;height:36px;object-fit:contain;filter:brightness(0) invert(1)" onerror="this.style.display='none'">
+      <span style="font-size:16px;font-weight:800;opacity:.9">Emes CBT System</span>
     </div>
     <h1>Platform Management Console</h1>
     <p>Kelola seluruh tenant (sekolah) dalam satu panel. Tambah, edit, dan monitor penggunaan sistem secara global.</p>
@@ -661,8 +967,8 @@ tbody tr:hover td{background:#fafbff}
     <div class="login-u-box">
       <div style="margin-bottom:20px">
         <div style="display:flex;align-items:center;gap:9px;margin-bottom:4px">
-          <div style="width:36px;height:36px;background:#ede9fe;border-radius:9px;display:flex;align-items:center;justify-content:center"><i class="fa-solid fa-shield-halved" style="color:#7c3aed;font-size:16px"></i></div>
-          <span style="font-size:14px;font-weight:700;color:#1e1b4b">Super Admin</span>
+          <div style="width:36px;height:36px;background:#d1fae5;border-radius:9px;display:flex;align-items:center;justify-content:center;overflow:hidden"><img src="https://i.imgur.com/bT70O4C.png" style="width:24px;height:24px;object-fit:contain" onerror="this.outerHTML='<i class=\'fa-solid fa-school\' style=\'color:#059669;font-size:16px\'></i>'"></div>
+          <span style="font-size:14px;font-weight:700;color:#064e3b">Super Admin</span>
         </div>
         <a onclick="router('/')" style="font-size:11.5px;color:var(--mu);cursor:pointer;display:inline-flex;align-items:center;gap:5px"><i class="fa-solid fa-arrow-left"></i> Kembali ke landing</a>
       </div>
@@ -671,7 +977,7 @@ tbody tr:hover td{background:#fafbff}
       <div id="saErr" class="al aler hidden" style="margin-bottom:10px"></div>
       <div class="fg"><label class="fl">Username</label><input id="saU" class="fc" placeholder="superadmin" onkeydown="if(event.key==='Enter')loginSuperAdmin()"></div>
       <div class="fg"><label class="fl">Password</label><div class="pww"><input id="saP" type="password" class="fc" placeholder="Password" onkeydown="if(event.key==='Enter')loginSuperAdmin()"><button class="pwb" onclick="tpw('saP',this)"><i class="fa-solid fa-eye"></i></button></div></div>
-      <button class="btn blg" style="width:100%;background:#4338ca;color:#fff;border-color:#4338ca" onclick="loginSuperAdmin()" id="saBtn">Masuk <i class="fa-solid fa-arrow-right"></i></button>
+      <button class="btn blg" style="width:100%;background:var(--p);color:#fff;border-color:var(--p)" onclick="loginSuperAdmin()" id="saBtn">Masuk <i class="fa-solid fa-arrow-right"></i></button>
       <div class="lp-footer" style="margin-top:20px">&copy; 2026 Emes EduTech</div>
     </div>
   </div>
@@ -681,7 +987,7 @@ tbody tr:hover td{background:#fafbff}
 <div id="superPanel" class="sa-wrap hidden">
   <div class="sa-topbar">
     <div class="sa-topbar-left">
-      <div class="sa-icon"><i class="fa-solid fa-shield-halved"></i></div>
+      <div class="sa-icon"><img src="https://i.imgur.com/bT70O4C.png" style="width:22px;height:22px;object-fit:contain;filter:brightness(0) invert(1)" onerror="this.outerHTML='<i class=\'fa-solid fa-school\'></i>'"></div>
       <div>
         <div style="font-weight:700;font-size:13.5px">Super Admin Panel</div>
         <div style="font-size:10.5px;opacity:.55">Emes CBT · Multi-tenant Management</div>
@@ -828,8 +1134,8 @@ tbody tr:hover td{background:#fafbff}
 </div><!-- appWrap -->
 <script>
 // ═══════════════════════════ GLOBAL STATE ═══════════════════════════
-const SUPABASE_URL='https://pfzcecdrpcemdkdsmhnd.supabase.co';
-const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmemNlY2RycGNlbWRrZHNtaG5kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4MzY1MzIsImV4cCI6MjA4NzQxMjUzMn0.LOzjAJUpO8MlSFYSIzD1iRle__TpzGjRZ041SFVl7Sk';
+const SUPABASE_URL='https://oshnmliknppofbfsbkwq.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zaG5tbGlrbnBwb2ZiZnNia3dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMTg3MzUsImV4cCI6MjA4Njg5NDczNX0.R2GyLMr0RuA4LoT60n3fYX2EFC998zlSC9AzclPealY';
 
 // ── SUPER ADMIN CREDENTIALS (ganti sebelum deploy!) ──
 const SA_USER = 'superadmin';
@@ -1405,6 +1711,9 @@ async function loadTenantGrid(){
     _allTenants = data || [];
     _tenantGridLoaded = true;
     renderTenantGrid(_allTenants);
+    // Update stat sekolah aktif
+    const el = document.getElementById('lpStatSekolah');
+    if(el) el.textContent = (_allTenants.filter(t=>t.status==='Aktif').length) || '0';
   }catch(e){
     grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px;color:rgba(255,255,255,.5)">
       <i class="fa-solid fa-triangle-exclamation" style="font-size:40px;color:#fca5a5;display:block;margin-bottom:12px"></i>
@@ -1716,17 +2025,17 @@ async function renderSuperDashboard(){
 
   el.innerHTML = `
     <div class="g g4" style="margin-bottom:18px">
-      <div class="card stc"><div class="stl">Total Sekolah</div><div class="stv">${tenants.length}</div><div class="sts"><i class="fa-solid fa-school" style="color:#6366f1"></i> Terdaftar</div></div>
+      <div class="card stc"><div class="stl">Total Sekolah</div><div class="stv">${tenants.length}</div><div class="sts"><i class="fa-solid fa-school" style="color:var(--p)"></i> Terdaftar</div></div>
       <div class="card stc"><div class="stl">Sekolah Aktif</div><div class="stv">${tenants.filter(t=>t.status==='Aktif').length}</div><div class="sts"><i class="fa-solid fa-circle-check" style="color:var(--ok)"></i> Aktif</div></div>
       <div class="card stc"><div class="stl">Total Siswa</div><div class="stv">${totalSiswa}</div><div class="sts"><i class="fa-solid fa-users" style="color:var(--p)"></i> Semua tenant</div></div>
       <div class="card stc"><div class="stl">Total Paket Soal</div><div class="stv">${totalSoal}</div><div class="sts"><i class="fa-solid fa-folder-open" style="color:var(--wa)"></i> Semua tenant</div></div>
     </div>
     <div class="card">
       <div class="ch">
-        <div class="ct"><i class="fa-solid fa-school" style="color:#6366f1"></i> Manajemen Sekolah / Tenant</div>
+        <div class="ct"><i class="fa-solid fa-school" style="color:var(--p)"></i> Manajemen Sekolah / Tenant</div>
         <div style="display:flex;gap:8px">
           <button class="btn bsm bp" onclick="copySQL()"><i class="fa-solid fa-copy"></i> Copy SQL</button>
-          <button class="btn bsm" style="background:#4338ca;color:#fff;border-color:#4338ca" onclick="mTenant()"><i class="fa-solid fa-plus"></i> Tambah Sekolah</button>
+          <button class="btn bsm" style="background:var(--p);color:#fff;border-color:var(--p)" onclick="mTenant()"><i class="fa-solid fa-plus"></i> Tambah Sekolah</button>
         </div>
       </div>
       <div class="cb" style="padding:10px 14px">
@@ -1745,7 +2054,7 @@ function renderSaTenantRows(list){
   return list.map(function(t){
     var logo = t.logo
       ? '<img src="'+escH(t.logo)+'" style="width:28px;height:28px;border-radius:6px;object-fit:contain;background:#f1f5f9">'
-      : '<div style="width:28px;height:28px;border-radius:6px;background:#e0e7ff;display:flex;align-items:center;justify-content:center"><i class="fa-solid fa-school" style="color:#6366f1;font-size:12px"></i></div>';
+      : '<div style="width:28px;height:28px;border-radius:6px;background:#d1fae5;display:flex;align-items:center;justify-content:center"><i class="fa-solid fa-school" style="color:var(--p);font-size:12px"></i></div>';
     var toggleIco = t.status==='Aktif'
       ? '<i class="fa-solid fa-circle-xmark" style="color:var(--er)"></i>'
       : '<i class="fa-solid fa-circle-check" style="color:var(--ok)"></i>';
@@ -1756,7 +2065,7 @@ function renderSaTenantRows(list){
       +'<td><div style="display:flex;align-items:center;gap:9px">'+logo
         +'<div><div style="font-weight:600">'+escH(t.nama)+'</div></div></div></td>'
       +'<td style="font-size:12px;color:var(--mu)">'+escH(t.alamat||'—')+'</td>'
-      +'<td><span class="badge" style="background:#ede9fe;color:#7c3aed;font-size:11px">'+escH(t.paket||'Free')+'</span></td>'
+      +'<td><span class="badge" style="background:#d1fae5;color:#047857;font-size:11px">'+escH(t.paket||'Free')+'</span></td>'
       +'<td>'+bst(t.status)+'</td>'
       +'<td style="font-size:11.5px;color:var(--mu)">'+fd(t.created_at)+'</td>'
       +'<td><div style="display:flex;gap:5px;flex-wrap:wrap">'
@@ -1788,7 +2097,7 @@ function mTenant(npsn){
   var npsnExtra=(isEdit?'readonly':'')+' '+(isEdit?'':'oninput="validateNpsnField()"');
   var html=''
     +'<div class="mo" id="mdTenant"><div class="md"><div class="mh">'
-    +'<div class="mtt"><i class="fa-solid fa-school" style="color:#6366f1"></i> '+(isEdit?'Edit':'Tambah')+' Sekolah</div>'
+    +'<div class="mtt"><i class="fa-solid fa-school" style="color:var(--p)"></i> '+(isEdit?'Edit':'Tambah')+' Sekolah</div>'
     +'<button class="xb" onclick="rmModal(&quot;mdTenant&quot;)">&#x2715;</button></div>'
     +'<div class="mbb">'
     +'<div class="fr">'
@@ -1813,7 +2122,7 @@ function mTenant(npsn){
     +'</div>'
     +'<div class="mf">'
     +'<button class="btn bo" onclick="rmModal(&quot;mdTenant&quot;)">Batal</button>'
-    +'<button class="btn" style="background:#4338ca;color:#fff;border-color:#4338ca" data-npsn="'+escH(npsn||'')+'" onclick="saveTenant(this.dataset.npsn)"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>'
+    +'<button class="btn" style="background:var(--p);color:#fff;border-color:var(--p)" data-npsn="'+escH(npsn||'')+'" onclick="saveTenant(this.dataset.npsn)"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>'
     +'</div>'
     +'</div></div>';
   document.body.insertAdjacentHTML('beforeend',html);
@@ -1918,7 +2227,7 @@ function getRoleColor(){
   const r=getRole();
   if(r==='admin')return'var(--p)';
   if(r==='guru'||r==='editor')return'var(--ok)';
-  return'#6366f1';
+  return'var(--mu)';
 }
 
 // ── ACCORDION SIDEBAR DEFINITION ──
