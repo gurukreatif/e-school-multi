@@ -2342,6 +2342,19 @@ function ftSoal(){
   </tr>`).join('');
 }
 
+function hitungJamSelesai(){
+  const mulai=$('mJamMulai')?.value;
+  const durasi=parseInt($('mWaktu')?.value)||0;
+  const out=$('mJamSelesai');
+  if(!out)return;
+  if(!mulai||!durasi){out.value='';return;}
+  const [hh,mm]=mulai.split(':').map(Number);
+  const totalMenit=hh*60+mm+durasi;
+  const jSelesai=Math.floor(totalMenit/60)%24;
+  const mSelesai=totalMenit%60;
+  out.value=String(jSelesai).padStart(2,'0')+':'+String(mSelesai).padStart(2,'0');
+}
+
 function makeToken(){return Math.random().toString(36).slice(2,8).toUpperCase();}
 function refreshToken(){const el=$('mToken');if(el)el.value=makeToken();}
 
@@ -2366,11 +2379,11 @@ function mSoal(id){
       </div>
       <div class="fr">
         <div class="fg"><label class="fl">Tanggal Pelaksanaan</label><input id="mTgl" type="date" class="fc" value="${d.tanggal||today()}"></div>
-        <div class="fg"><label class="fl">Waktu Ujian (menit) *</label><input id="mWaktu" type="number" class="fc" value="${d.waktu_ujian||60}" min="5" max="300"></div>
+        <div class="fg"><label class="fl">Waktu Ujian (menit) *</label><input id="mWaktu" type="number" class="fc" value="${d.waktu_ujian||60}" min="5" max="300" oninput="hitungJamSelesai()"></div>
       </div>
       <div class="fr">
-        <div class="fg"><label class="fl">Jam Mulai</label><input id="mJamMulai" type="time" class="fc" value="${d.jam_mulai||''}"><p class="fh">Kosong = ujian bisa dimulai kapan saja</p></div>
-        <div class="fg"><label class="fl">Jam Selesai</label><input id="mJamSelesai" type="time" class="fc" value="${d.jam_selesai||''}"><p class="fh">Kosong = tidak ada batas jam selesai</p></div>
+        <div class="fg"><label class="fl">Jam Mulai</label><input id="mJamMulai" type="time" class="fc" value="${d.jam_mulai||''}" oninput="hitungJamSelesai()"><p class="fh">Kosong = ujian bisa dimulai kapan saja</p></div>
+        <div class="fg"><label class="fl">Jam Selesai <span style="font-size:10px;color:var(--ok);font-weight:600">(otomatis)</span></label><input id="mJamSelesai" type="time" class="fc" value="${d.jam_selesai||''}" readonly style="background:#f8fafc;color:var(--mu);cursor:default"><p class="fh">Dihitung otomatis dari jam mulai + durasi</p></div>
       </div>
       <div class="fr">
         <div class="fg"><label class="fl">Token Ujian</label>
@@ -2398,6 +2411,7 @@ function mSoal(id){
     <div class="mf"><button class="btn bo" onclick="rmModal('mdSoal')">Batal</button><button class="btn bp" onclick="svSoal(${id||0})"><i class="fa-solid fa-floppy-disk"><\/i> Simpan</button></div>
   </div></div>`;
   document.body.insertAdjacentHTML('beforeend',html);
+  hitungJamSelesai();
 }
 
 async function svSoal(id){
