@@ -127,6 +127,29 @@ img{max-width:100%;height:auto}
 .tblob{background:none;border:1.5px solid var(--br);color:var(--mu);font-size:12.5px;padding:5px 11px;border-radius:7px;cursor:pointer;transition:all .12s;display:flex;align-items:center;gap:6px;font-weight:600;font-family:inherit}
 .tblob:hover{color:var(--er);border-color:var(--er);background:#fff1f2}
 .tbusr-div{width:1px;height:24px;background:var(--br);flex-shrink:0}
+/* ── Admin Topbar icon buttons ── */
+.tb-icon-btn{width:34px;height:34px;border-radius:8px;border:1.5px solid var(--br);background:#fff;color:var(--mu);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:all .12s;flex-shrink:0;position:relative}
+.tb-icon-btn:hover{background:var(--bg);color:var(--tx);border-color:#cbd5e1}
+.tb-icon-btn .tb-badge{position:absolute;top:-4px;right:-4px;width:16px;height:16px;border-radius:50%;background:var(--er);color:#fff;font-size:9px;font-weight:800;display:flex;align-items:center;justify-content:center;border:2px solid #fff}
+/* ── Admin User Dropdown Button ── */
+.adm-user-btn{display:flex;align-items:center;gap:8px;cursor:pointer;padding:4px 10px 4px 4px;border-radius:10px;border:1.5px solid var(--br);background:#fff;transition:all .15s;position:relative;user-select:none}
+.adm-user-btn:hover{background:var(--bg);border-color:#cbd5e1;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.adm-user-btn.open{background:var(--bg);border-color:var(--p);box-shadow:0 0 0 3px rgba(5,150,105,.08)}
+.adm-user-chevron{font-size:10px;color:var(--mu);transition:transform .2s;flex-shrink:0}
+.adm-user-btn.open .adm-user-chevron{transform:rotate(180deg)}
+/* ── Admin Dropdown Menu ── */
+.adm-dropdown{position:absolute;top:calc(100% + 8px);right:0;background:#fff;border:1px solid var(--br);border-radius:12px;box-shadow:0 8px 32px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06);min-width:200px;z-index:200;overflow:hidden;display:none;animation:mdin .15s ease}
+.adm-dropdown.open{display:block}
+.adm-drop-head{padding:13px 16px;border-bottom:1px solid var(--br);background:var(--bg)}
+.adm-drop-av{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px;flex-shrink:0;color:#fff;margin-bottom:8px}
+.adm-drop-name{font-size:13.5px;font-weight:700;color:var(--tx)}
+.adm-drop-role{font-size:11px;color:var(--mu);margin-top:1px}
+.adm-drop-item{display:flex;align-items:center;gap:9px;padding:10px 16px;font-size:13px;color:#374151;cursor:pointer;transition:.12s;border:none;background:none;width:100%;text-align:left;font-family:inherit;font-weight:500}
+.adm-drop-item:hover{background:var(--bg);color:var(--tx)}
+.adm-drop-item.danger{color:var(--er)}
+.adm-drop-item.danger:hover{background:#fff1f2;color:#dc2626}
+.adm-drop-item i{width:15px;text-align:center;font-size:12.5px;opacity:.8}
+.adm-drop-divider{height:1px;background:var(--br);margin:2px 0}
 .pb{padding:20px;flex:1}
 .g{display:grid;gap:13px}.g2{grid-template-columns:repeat(2,1fr)}.g3{grid-template-columns:repeat(3,1fr)}.g4{grid-template-columns:repeat(4,1fr)}
 .card{background:var(--card);border:1px solid var(--br);border-radius:var(--r);box-shadow:var(--sh);overflow:hidden}
@@ -755,18 +778,49 @@ tbody tr:hover td{background:#fafbff}
   </aside>
   <div class="main">
     <div class="topbar">
-      <div class="tbtt" id="admPT">Dashboard</div>
-      <div class="tbusr">
+      <div style="display:flex;align-items:center;gap:10px">
         <button class="btn bo bsm" id="mbtn" onclick="toggleMobile()" style="display:none"><i class="fa-solid fa-bars"></i></button>
-        <div class="tbusr-div" id="mbtnDiv" style="display:none"></div>
+        <div class="tbtt" id="admPT">Dashboard</div>
+      </div>
+      <div class="tbusr">
+        <!-- Tenant chip (muncul saat super admin preview) -->
         <div class="tenant-chip" id="tenantChip" style="display:none"><i class="fa-solid fa-school"></i> <span id="tenantChipName"></span></div>
-        <div class="tbuav" id="admAv" style="background:var(--p)">A</div>
-        <div>
-          <div class="tbunm" id="admName">Admin</div>
-          <div class="tburl" id="admRole">Administrator</div>
-        </div>
+        <!-- Icon: Notifikasi -->
+        <button class="tb-icon-btn" title="Notifikasi" onclick="toast('Tidak ada notifikasi baru','in')">
+          <i class="fa-regular fa-bell"></i>
+        </button>
+        <!-- Icon: Bantuan -->
+        <button class="tb-icon-btn" title="Bantuan" onclick="nav('faq')">
+          <i class="fa-regular fa-circle-question"></i>
+        </button>
         <div class="tbusr-div"></div>
-        <button class="tblob" onclick="logoutAdmin()" title="Logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
+        <!-- User Dropdown -->
+        <div style="position:relative" id="admUserWrap">
+          <div class="adm-user-btn" id="admUserBtn" onclick="toggleAdmDropdown()">
+            <div class="tbuav" id="admAv" style="background:var(--p)">A</div>
+            <div>
+              <div class="tbunm" id="admName">Admin</div>
+              <div class="tburl" id="admRole">Administrator</div>
+            </div>
+            <i class="fa-solid fa-chevron-down adm-user-chevron"></i>
+          </div>
+          <div class="adm-dropdown" id="admDropdown">
+            <div class="adm-drop-head">
+              <div class="adm-drop-av" id="admDropAv" style="background:var(--p)">A</div>
+              <div class="adm-drop-name" id="admDropName">Admin</div>
+              <div class="adm-drop-role" id="admDropRole">Administrator</div>
+            </div>
+            <div style="padding:6px 0">
+              <button class="adm-drop-item" onclick="closeAdmDropdown();nav('set')">
+                <i class="fa-solid fa-gear"></i> Pengaturan Akun
+              </button>
+              <div class="adm-drop-divider"></div>
+              <button class="adm-drop-item danger" onclick="logoutAdmin()">
+                <i class="fa-solid fa-right-from-bracket"></i> Keluar / Logout
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
     <div class="pb" id="admBody"></div>
@@ -1673,6 +1727,23 @@ async function loginSiswa(){
   setBtn('sisBtn','Masuk <i class="fa-solid fa-arrow-right"></i>');
 }
 
+// ── Admin Topbar Dropdown ──
+function toggleAdmDropdown(){
+  const btn=$('admUserBtn'), dd=$('admDropdown');
+  if(!btn||!dd)return;
+  const isOpen=dd.classList.contains('open');
+  if(isOpen){ closeAdmDropdown(); } else { btn.classList.add('open'); dd.classList.add('open'); }
+}
+function closeAdmDropdown(){
+  $('admUserBtn')?.classList.remove('open');
+  $('admDropdown')?.classList.remove('open');
+}
+// Close dropdown on outside click
+document.addEventListener('click', function(e){
+  const wrap=$('admUserWrap');
+  if(wrap && !wrap.contains(e.target)) closeAdmDropdown();
+});
+
 function logoutAdmin(){
   if(!confirm('Yakin ingin keluar?'))return;
   adm=null;
@@ -2117,6 +2188,10 @@ function showAdminPanel(){
   // Update topbar
   if($('admAv')){ $('admAv').textContent=adm.nama_admin[0].toUpperCase(); $('admAv').style.background=getRoleColor(); }
   if($('admName')) $('admName').textContent=adm.nama_admin;
+  // Sync dropdown head
+  if($('admDropAv')){ $('admDropAv').textContent=adm.nama_admin[0].toUpperCase(); $('admDropAv').style.background=getRoleColor(); }
+  if($('admDropName')) $('admDropName').textContent=adm.nama_admin;
+  if($('admDropRole')) $('admDropRole').textContent=getRoleLabel();
   if($('admRole')) $('admRole').textContent=getRoleLabel();
   // Tenant chip
   const chip=$('tenantChip'); const chipName=$('tenantChipName');
