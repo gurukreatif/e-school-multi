@@ -146,14 +146,8 @@ img{max-width:100%;height:auto}
   .lp-footer{padding:20px}
 }
 
-/* Login Unified (/login) */
-.login-unified-wrap{min-height:100vh;display:flex}
-.login-u-left{width:45%;background:linear-gradient(135deg,#064e3b 0%,#047857 60%,#10b981 100%);display:flex;flex-direction:column;justify-content:center;padding:40px 44px;color:#fff}
-.login-u-left h1{font-size:26px;font-weight:900;margin-bottom:10px;line-height:1.3}
-.login-u-left p{font-size:13px;color:rgba(255,255,255,.7);line-height:1.7;margin-bottom:24px}
-.login-u-right{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:40px 24px;background:#f8fafc}
-.login-u-box{width:100%;max-width:400px}
-.login-u-tabs{display:flex;background:#e2e8f0;border-radius:10px;padding:4px;gap:2px;margin-bottom:24px}
+/* Login Page — struktur .lw/.la/.lp (60:40 splitscreen) */
+.login-u-tabs{display:flex;background:#e2e8f0;border-radius:10px;padding:4px;gap:2px;margin-bottom:20px}
 .login-u-tab{flex:1;padding:8px 10px;border-radius:7px;border:none;background:none;font-size:12.5px;font-weight:600;color:#64748b;cursor:pointer;transition:.15s;font-family:inherit}
 .login-u-tab.active{background:#fff;color:#0f172a;box-shadow:0 1px 4px rgba(0,0,0,.1)}
 .school-info-banner{background:linear-gradient(135deg,rgba(5,150,105,.1),rgba(16,185,129,.08));border:1px solid rgba(5,150,105,.2);border-radius:10px;padding:12px 14px;margin-bottom:20px;display:flex;align-items:center;gap:12px}
@@ -179,9 +173,7 @@ img{max-width:100%;height:auto}
 .npsn-chip{font-family:'JetBrains Mono',monospace;font-size:10px;color:#64748b;background:#f1f5f9;padding:2px 6px;border-radius:4px}
 
 @media(max-width:700px){
-  .login-u-left{display:none}
-  .login-unified-wrap{flex-direction:column}
-  .login-u-right{padding:24px 16px;align-items:stretch;justify-content:flex-start;min-height:100vh}
+  .la{display:none}.lp{width:100%;padding:28px 20px}
   .lp-nav{padding:0 16px}
   .lp-hero{padding:48px 16px 36px}
 }
@@ -709,94 +701,105 @@ tbody tr:hover td{background:#fafbff}
 
 </div>
 
-<div id="loginPage" class="login-unified-wrap hidden">
-  <!-- LEFT PANEL -->
-  <div class="login-u-left" id="loginLeftPanel">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:24px">
-      <img src="https://i.imgur.com/bT70O4C.png" style="width:40px;height:40px;object-fit:contain;filter:brightness(0) invert(1)" onerror="this.outerHTML=''">
-      <span style="font-size:16px;font-weight:800;opacity:.9">Emes CBT System</span>
+<div id="loginPage" class="lw hidden">
+  <!-- KIRI: branding/ilustrasi — flex:1 (~60%) — identik versi 9 -->
+  <div class="la" id="loginLeftPanel" style="background:linear-gradient(135deg,#064e3b 0%,#059669 60%,#10b981 100%)">
+    <div class="laart">
+      <div style="margin-bottom:20px">
+        <img id="loginLeftLogo" src="https://i.imgur.com/bT70O4C.png" alt="Logo"
+          style="width:80px;height:80px;object-fit:contain;filter:brightness(0) invert(1);opacity:.92"
+          onerror="this.outerHTML='<i class=\'fa-solid fa-laptop-code\' style=\'font-size:64px;color:#fff;opacity:.9\'></i>'">
+      </div>
+      <h1 id="loginLeftTitle">Emes CBT System</h1>
+      <p id="loginLeftDesc">Sistem ujian berbasis komputer modern. 5 tipe soal, penilaian otomatis, monitor real-time, analisa per-butir, chat, dan leaderboard.</p>
+      <div class="chips">
+        <span class="chip"><i class="fa-solid fa-circle-check"></i> Pilihan Ganda</span>
+        <span class="chip"><i class="fa-solid fa-circle-check"></i> PG Kompleks</span>
+        <span class="chip"><i class="fa-solid fa-circle-check"></i> Benar/Salah</span>
+        <span class="chip"><i class="fa-solid fa-circle-check"></i> Uraian</span>
+        <span class="chip"><i class="fa-solid fa-circle-check"></i> Menjodohkan</span>
+        <span class="chip"><i class="fa-solid fa-circle-check"></i> Monitor Real-time</span>
+        <span class="chip"><i class="fa-solid fa-circle-check"></i> Analisa Per-butir</span>
+        <span class="chip"><i class="fa-solid fa-circle-check"></i> Chat Siswa</span>
+        <span class="chip"><i class="fa-solid fa-circle-check"></i> Export Excel</span>
+        <span class="chip"><i class="fa-solid fa-circle-check"></i> Import Siswa</span>
+      </div>
+      <div class="login-footer">&copy; 2026 Emes EduTech. All rights reserved.</div>
     </div>
-    <h1 id="loginLeftTitle">Selamat Datang</h1>
-    <p id="loginLeftDesc">Sistem ujian berbasis komputer modern dengan 5 tipe soal, penilaian otomatis, dan monitor real-time.</p>
-    <div class="chips" style="gap:7px">
-      <span class="chip"><i class="fa-solid fa-circle-check"></i> Pilihan Ganda</span>
-      <span class="chip"><i class="fa-solid fa-circle-check"></i> PG Kompleks</span>
-      <span class="chip"><i class="fa-solid fa-circle-check"></i> Benar/Salah</span>
-      <span class="chip"><i class="fa-solid fa-circle-check"></i> Uraian</span>
-      <span class="chip"><i class="fa-solid fa-circle-check"></i> Menjodohkan</span>
-      <span class="chip"><i class="fa-solid fa-circle-check"></i> Monitor Real-time</span>
-    </div>
-    <div style="margin-top:auto;font-size:11px;color:rgba(255,255,255,.4)">&copy; 2026 Emes EduTech</div>
   </div>
-  <!-- RIGHT PANEL -->
-  <div class="login-u-right">
-    <div class="login-u-box">
-      <!-- Logo + back link -->
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
-        <div style="display:flex;align-items:center;gap:9px">
-          <div class="lic" style="width:32px;height:32px;border-radius:8px"><img src="https://i.imgur.com/bT70O4C.png" style="width:20px;height:20px;object-fit:contain" onerror="this.outerHTML=''"></div>
-          <span style="font-size:13.5px;font-weight:700;color:#0f172a" id="loginBoxTitle">Emes CBT</span>
-        </div>
-        <a onclick="router('/')" style="font-size:11.5px;color:var(--mu);cursor:pointer;display:flex;align-items:center;gap:5px;text-decoration:none"><i class="fa-solid fa-arrow-left"></i> Ganti Sekolah</a>
-      </div>
 
-      <!-- School info banner -->
-      <div class="school-info-banner" id="schoolInfoBanner" style="display:none">
-        <div class="sib-logo" id="sibLogoWrap">
-          <i class="fa-solid fa-school" style="color:var(--p);font-size:18px"></i>
-        </div>
-        <div>
-          <div class="sib-name" id="sibName">—</div>
-          <div class="sib-npsn">NPSN: <span id="sibNpsn">—</span></div>
-        </div>
+  <!-- KANAN: form login — width:400px (~40%) — identik versi 9 -->
+  <div class="lp">
+    <!-- Logo + nama sekolah -->
+    <div class="llogo">
+      <div class="lic">
+        <img src="https://i.imgur.com/bT70O4C.png" id="loginBoxTitle" alt="Logo"
+          onerror="this.outerHTML='<i class=\'fa-solid fa-clipboard-list\' style=\'color:var(--p);font-size:28px\'></i>'">
       </div>
-
-      <!-- Tabs: Admin/Guru/Proktor | Siswa -->
-      <div class="login-u-tabs" id="loginTabs">
-        <button class="login-u-tab active" id="tabAdmin" onclick="switchLoginTab('admin')">
-          <i class="fa-solid fa-user-tie"></i> Admin / Guru / Proktor
-        </button>
-        <button class="login-u-tab" id="tabSiswa" onclick="switchLoginTab('siswa')">
-          <i class="fa-solid fa-graduation-cap"></i> Siswa
-        </button>
-      </div>
-
-      <!-- NPSN field — muncul di kedua tab jika belum auto-filled -->
-      <div class="fg" id="npsnFieldWrap">
-        <label class="fl">NPSN Sekolah <span style="color:var(--er)">*</span></label>
-        <div style="position:relative">
-          <input id="loginNPSN" class="fc" placeholder="Contoh: 10200001" maxlength="10"
-            oninput="onNpsnInput()" onkeydown="if(event.key==='Enter')lookupNpsn()"
-            style="padding-right:80px">
-          <button onclick="lookupNpsn()" id="npsnLookupBtn"
-            style="position:absolute;right:4px;top:50%;transform:translateY(-50%);background:var(--p);color:#fff;border:none;padding:5px 11px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600">
-            Cari
-          </button>
-        </div>
-        <div class="npsn-hint" id="npsnHint" style="display:none"></div>
-      </div>
-
-      <!-- ADMIN FORM -->
-      <div id="formAdmin">
-        <div class="fg"><label class="fl">Username</label><input id="admU" class="fc" placeholder="Masukkan username" onkeydown="if(event.key==='Enter')loginAdmin()"></div>
-        <div class="fg"><label class="fl">Password</label><div class="pww"><input id="admP" type="password" class="fc" placeholder="Masukkan password" onkeydown="if(event.key==='Enter')loginAdmin()"><button class="pwb" onclick="tpw('admP',this)"><i class="fa-solid fa-eye"></i></button></div></div>
-        <div id="admErr" class="al aler hidden" style="margin-bottom:10px"></div>
-        <button class="btn bp blg" style="width:100%" onclick="loginAdmin()" id="admBtn">Masuk <i class="fa-solid fa-arrow-right"></i></button>
-      </div>
-
-      <!-- SISWA FORM -->
-      <div id="formSiswa" style="display:none">
-        <div class="fg"><label class="fl">Nomor Peserta / NIS</label><input id="sisU" class="fc" placeholder="Masukkan nomor peserta" onkeydown="if(event.key==='Enter')loginSiswa()"></div>
-        <div class="fg"><label class="fl">Password</label><div class="pww"><input id="sisP" type="password" class="fc" placeholder="Masukkan password" onkeydown="if(event.key==='Enter')loginSiswa()"><button class="pwb" onclick="tpw('sisP',this)"><i class="fa-solid fa-eye"></i></button></div></div>
-        <div id="sisErr" class="al aler hidden" style="margin-bottom:10px"></div>
-        <button class="btn bs blg" style="width:100%;background:#059669;border-color:#059669" onclick="loginSiswa()" id="sisBtn">Masuk <i class="fa-solid fa-arrow-right"></i></button>
-      </div>
-
-      <div style="font-size:11.5px;color:var(--mu);text-align:center;margin-top:18px">
-        Belum menemukan sekolah? <a onclick="router('/')" style="color:var(--p);cursor:pointer;font-weight:600">Lihat daftar sekolah</a>
-      </div>
-      <div class="lp-footer" style="margin-top:20px">&copy; 2026 Emes EduTech</div>
+      Emes CBT System
     </div>
+    <p style="font-size:11.5px;color:var(--mu);margin-bottom:16px">Admin, Guru &amp; Siswa</p>
+
+    <!-- School info banner (muncul setelah NPSN valid) -->
+    <div class="school-info-banner" id="schoolInfoBanner" style="display:none">
+      <div class="sib-logo" id="sibLogoWrap">
+        <i class="fa-solid fa-school" style="color:var(--p);font-size:18px"></i>
+      </div>
+      <div>
+        <div class="sib-name" id="sibName">—</div>
+        <div class="sib-npsn">NPSN: <span id="sibNpsn">—</span></div>
+      </div>
+    </div>
+
+    <!-- Tab: Admin/Guru/Proktor | Siswa -->
+    <div class="login-u-tabs" id="loginTabs">
+      <button class="login-u-tab active" id="tabAdmin" onclick="switchLoginTab('admin')">
+        <i class="fa-solid fa-user-tie"></i> Admin / Guru / Proktor
+      </button>
+      <button class="login-u-tab" id="tabSiswa" onclick="switchLoginTab('siswa')">
+        <i class="fa-solid fa-graduation-cap"></i> Siswa
+      </button>
+    </div>
+
+    <!-- NPSN field -->
+    <div class="fg" id="npsnFieldWrap">
+      <label class="fl">NPSN Sekolah <span style="color:var(--er)">*</span></label>
+      <div style="position:relative">
+        <input id="loginNPSN" class="fc" placeholder="Contoh: 10200001" maxlength="10"
+          oninput="onNpsnInput()" onkeydown="if(event.key==='Enter')lookupNpsn()"
+          style="padding-right:72px">
+        <button onclick="lookupNpsn()" id="npsnLookupBtn"
+          style="position:absolute;right:4px;top:50%;transform:translateY(-50%);background:var(--p);color:#fff;border:none;padding:5px 11px;border-radius:6px;font-size:12px;cursor:pointer;font-family:inherit;font-weight:600">
+          Cari
+        </button>
+      </div>
+      <div class="npsn-hint" id="npsnHint" style="display:none"></div>
+    </div>
+
+    <!-- ADMIN FORM -->
+    <div id="formAdmin">
+      <h2>Selamat Datang</h2>
+      <p class="ls">Masuk ke panel pengelolaan ujian</p>
+      <div id="admErr" class="al aler hidden"></div>
+      <div class="fg"><label class="fl">Username</label><input id="admU" class="fc" placeholder="Username" onkeydown="if(event.key==='Enter')loginAdmin()"></div>
+      <div class="fg"><label class="fl">Password</label><div class="pww"><input id="admP" type="password" class="fc" placeholder="Password" onkeydown="if(event.key==='Enter')loginAdmin()"><button class="pwb" onclick="tpw('admP',this)"><i class="fa-solid fa-eye"></i></button></div></div>
+      <button class="btn bp blg" style="width:100%" onclick="loginAdmin()" id="admBtn">Masuk <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+
+    <!-- SISWA FORM -->
+    <div id="formSiswa" style="display:none">
+      <h2>Login Siswa</h2>
+      <p class="ls">Masukkan nomor peserta dan password</p>
+      <div id="sisErr" class="al aler hidden"></div>
+      <div class="fg"><label class="fl">Nomor Peserta / NIS</label><input id="sisU" class="fc" placeholder="Nomor peserta" onkeydown="if(event.key==='Enter')loginSiswa()"></div>
+      <div class="fg"><label class="fl">Password</label><div class="pww"><input id="sisP" type="password" class="fc" placeholder="Password" onkeydown="if(event.key==='Enter')loginSiswa()"><button class="pwb" onclick="tpw('sisP',this)"><i class="fa-solid fa-eye"></i></button></div></div>
+      <button class="btn bs blg" style="width:100%;background:#059669;border-color:#059669" onclick="loginSiswa()" id="sisBtn">Masuk <i class="fa-solid fa-arrow-right"></i></button>
+    </div>
+
+    <div class="swl">
+      <a onclick="router('/')"><i class="fa-solid fa-arrow-left"></i> Kembali ke daftar sekolah</a>
+    </div>
+    <div class="lp-footer">&copy; 2026 Emes EduTech</div>
   </div>
 </div>
 
