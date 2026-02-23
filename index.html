@@ -1062,20 +1062,28 @@ function getSQL(){return`-- ═════════════════�
 create table if not exists tenants (
   npsn        text primary key,          -- NPSN 8 digit, PK sekaligus tenant ID
   nama        text not null,
-  alamat      text default '',
+  kabkota     text default '',           -- Kabupaten / Kota
+  kontak      text default '',           -- Nomor telepon/WA sekolah
+  kepala      text default '',           -- Nama kepala sekolah
   logo        text default '',           -- URL logo sekolah
   status      text default 'Aktif',     -- Aktif | Nonaktif
-  paket       text default 'Free',      -- Free | Basic | Pro | Enterprise
-  kepsek      text default '',
-  nip_kepsek  text default '',
   created_at  timestamptz default now()
 );
 alter table tenants enable row level security;
 create policy "allow all tenants" on tenants for all using (true) with check (true);
 
+-- Migrasi kolom (jika tabel sudah ada, jalankan perintah alter ini):
+-- alter table tenants add column if not exists kabkota text default '';
+-- alter table tenants add column if not exists kontak  text default '';
+-- alter table tenants add column if not exists kepala  text default '';
+-- alter table tenants drop column if exists paket;
+-- alter table tenants drop column if exists alamat;
+-- alter table tenants drop column if exists kepsek;
+-- alter table tenants drop column if exists nip_kepsek;
+
 -- Insert sekolah contoh
-insert into tenants (npsn, nama, alamat, status, paket)
-values ('10200001','MIN Singkawang','Jl. Pendidikan No.1, Singkawang','Aktif','Pro')
+insert into tenants (npsn, nama, kabkota, kontak, kepala, status)
+values ('10200001','MIN Singkawang','Kota Singkawang','081234567890','Ahmad Fauzi, S.Pd.','Aktif')
 on conflict (npsn) do nothing;
 
 -- ── 2. ADMINS ──
@@ -1381,7 +1389,7 @@ async function loadTenantGrid(){
   grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:48px 20px;color:rgba(255,255,255,.5)"><div class="spin" style="margin:0 auto 14px;width:26px;height:26px;border-color:rgba(255,255,255,.2);border-top-color:#fff"></div><p>Memuat daftar sekolah...</p></div>`;
 
   if(!SB){
-    _allTenants = [{npsn:'00000000',nama:'Demo Sekolah',alamat:'Mode Demo',logo:'',status:'Aktif',paket:'Free'}];
+    _allTenants = [{npsn:'00000000',nama:'Demo Sekolah',kabkota:'Mode Demo',kontak:'',kepala:'',logo:'',status:'Aktif'}];
     renderTenantGrid(_allTenants); _tenantGridLoaded = true; return;
   }
   try{
@@ -1688,15 +1696,17 @@ async function renderSuperDashboard(){
   const el=document.getElementById('saBody'); if(!el) return;
   el.innerHTML=`<div style="display:flex;align-items:center;gap:9px;padding:20px;color:var(--mu)"><div class="spin"></div> Memuat data...</div>`;
 
+  window._spt={};
   let tenants=[], totalSiswa=0, totalSoal=0;
   if(SB){
     try{
       const [tr, sr, pr] = await Promise.all([
         SB.from('tenants').select('*').order('nama'),
-        SB.from('siswa').select('id_siswa'),
+        SB.from('siswa').select('npsn'),
         SB.from('soal').select('id_soal'),
       ]);
       tenants = tr.data||[];
+      (sr.data||[]).forEach(s=>{ window._spt=window._spt||{}; window._spt[s.npsn]=(window._spt[s.npsn]||0)+1; });
       totalSiswa = sr.data?.length||0;
       totalSoal  = pr.data?.length||0;
     }catch(e){ console.error(e); }
@@ -1721,7 +1731,7 @@ async function renderSuperDashboard(){
         <div class="sbar"><div class="siw"><input type="text" id="srTenant" class="fc si" placeholder="Cari nama sekolah atau NPSN..." oninput="filterSaTenantList()"></div></div>
       </div>
       <div class="tw"><table>
-        <thead><tr><th>NPSN</th><th>Nama Sekolah</th><th>Alamat</th><th>Paket</th><th>Status</th><th>Terdaftar</th><th>Aksi</th></tr></thead>
+        <thead><tr><th>NPSN</th><th>Nama Sekolah</th><th>Kab/Kota</th><th>Kontak</th><th style="text-align:center">Siswa</th><th>Status</th><th>Aksi</th></tr></thead>
         <tbody id="tbTenants">${renderSaTenantRows(tenants)}</tbody>
       </table></div>
     </div>`;
@@ -1732,26 +1742,29 @@ function renderSaTenantRows(list){
   if(!list.length) return '<tr><td colspan="7"><div class="empty" style="padding:16px"><p>Belum ada sekolah</p></div></td></tr>';
   return list.map(function(t){
     var logo = t.logo
-      ? '<img src="'+escH(t.logo)+'" style="width:28px;height:28px;border-radius:6px;object-fit:contain;background:#f1f5f9">'
-      : '<div style="width:28px;height:28px;border-radius:6px;background:#d1fae5;display:flex;align-items:center;justify-content:center"><i class="fa-solid fa-school" style="color:var(--p);font-size:12px"></i></div>';
+      ? '<img src="'+escH(t.logo)+'" style="width:32px;height:32px;border-radius:7px;object-fit:contain;background:#f1f5f9;border:1px solid #e2e8f0">'
+      : '<div style="width:32px;height:32px;border-radius:7px;background:#d1fae5;display:flex;align-items:center;justify-content:center;flex-shrink:0"><i class="fa-solid fa-school" style="color:var(--p);font-size:13px"></i></div>';
     var toggleIco = t.status==='Aktif'
-      ? '<i class="fa-solid fa-circle-xmark" style="color:var(--er)"></i>'
-      : '<i class="fa-solid fa-circle-check" style="color:var(--ok)"></i>';
+      ? '<i class="fa-solid fa-circle-pause" style="color:var(--er)"></i>'
+      : '<i class="fa-solid fa-circle-play" style="color:var(--ok)"></i>';
     var toggleTitle = t.status==='Aktif' ? 'Nonaktifkan' : 'Aktifkan';
     var npsn = escH(t.npsn), nama = escH(t.nama);
+    var jml = (window._spt||{})[t.npsn]||0;
+    var kepalaRow = t.kepala ? '<div style="font-size:10.5px;color:var(--mu);margin-top:1px">'+escH(t.kepala)+'</div>' : '';
     return '<tr>'
-      +'<td><span class="mono" style="background:#f1f5f9;padding:2px 8px;border-radius:5px;font-size:11.5px">'+npsn+'</span></td>'
-      +'<td><div style="display:flex;align-items:center;gap:9px">'+logo
-        +'<div><div style="font-weight:600">'+escH(t.nama)+'</div></div></div></td>'
-      +'<td style="font-size:12px;color:var(--mu)">'+escH(t.alamat||'—')+'</td>'
-      +'<td><span class="badge" style="background:#d1fae5;color:#047857;font-size:11px">'+escH(t.paket||'Free')+'</span></td>'
+      +'<td><span class="mono" style="background:#f1f5f9;padding:2px 8px;border-radius:5px;font-size:11.5px;letter-spacing:.04em">'+npsn+'</span></td>'
+      +'<td><div style="display:flex;align-items:center;gap:10px">'+logo
+        +'<div><div style="font-weight:600;font-size:13px">'+escH(t.nama)+'</div>'+kepalaRow+'</div>'
+        +'</div></td>'
+      +'<td style="font-size:12.5px;color:var(--mu)">'+escH(t.kabkota||'—')+'</td>'
+      +'<td style="font-size:12.5px;color:var(--mu)">'+escH(t.kontak||'—')+'</td>'
+      +'<td style="text-align:center;font-weight:700;color:var(--p);font-size:13px">'+jml+'</td>'
       +'<td>'+bst(t.status)+'</td>'
-      +'<td style="font-size:11.5px;color:var(--mu)">'+fd(t.created_at)+'</td>'
-      +'<td><div style="display:flex;gap:5px;flex-wrap:wrap">'
+      +'<td><div style="display:flex;gap:4px">'
         +'<button class="btn bsm bo" data-n="'+npsn+'" onclick="mTenant(this.dataset.n)" title="Edit"><i class="fa-solid fa-pen"></i></button>'
         +'<button class="btn bsm bo" data-n="'+npsn+'" onclick="saEnterTenant(this.dataset.n)" title="Masuk ke panel sekolah"><i class="fa-solid fa-arrow-right-to-bracket" style="color:var(--p)"></i></button>'
         +'<button class="btn bsm bo" data-n="'+npsn+'" data-s="'+escH(t.status)+'" onclick="toggleSaTenantStatus(this.dataset.n,this.dataset.s)" title="'+toggleTitle+'">'+toggleIco+'</button>'
-        +'<button class="btn bsm bd" data-n="'+npsn+'" data-nm="'+nama+'" onclick="deleteSaTenant(this.dataset.n,this.dataset.nm)" title="Hapus"><i class="fa-solid fa-trash"></i></button>'
+        +'<button class="btn bsm bd" data-n="'+npsn+'" data-nm="'+nama+'" onclick="deleteSaTenant(this.dataset.n,this.dataset.nm)" title="Hapus permanen"><i class="fa-solid fa-trash"></i></button>'
       +'</div></td>'
     +'</tr>';
   }).join('');
@@ -1759,7 +1772,7 @@ function renderSaTenantRows(list){
 
 function filterSaTenantList(){
   const q=(document.getElementById('srTenant')?.value||'').toLowerCase();
-  const filtered=(window._saTenants||[]).filter(t=>t.nama.toLowerCase().includes(q)||t.npsn.includes(q));
+  const filtered=(window._saTenants||[]).filter(t=>t.nama.toLowerCase().includes(q)||t.npsn.includes(q)||(t.kabkota||'').toLowerCase().includes(q)||(t.kontak||'').toLowerCase().includes(q));
   const tb=document.getElementById('tbTenants'); if(tb) tb.innerHTML=renderSaTenantRows(filtered);
 }
 
@@ -1768,40 +1781,39 @@ function mTenant(npsn){
   var d=npsn?all.find(function(t){return t.npsn===npsn;})||{}:{};
   document.getElementById('mdTenant')&&document.getElementById('mdTenant').remove();
   var isEdit=!!npsn;
-  var paketOpts=['Free','Basic','Pro','Enterprise'].map(function(pk){
-    return '<option value="'+pk+'"'+(d.paket===pk?' selected':'')+'>'+pk+'</option>';
-  }).join('');
-  var infoBox=isEdit?'':'<div class="al alin" style="margin-top:4px"><i class="fa-solid fa-circle-info"></i> Saat ditambahkan, akan otomatis dibuat admin default (<strong>username: admin, password: admin</strong>) dan pengaturan awal.</div>';
-  var npsnHint=isEdit?'NPSN tidak dapat diubah.':'8 digit Nomor Pokok Sekolah Nasional — digunakan sebagai ID unik tenant.';
-  var npsnExtra=(isEdit?'readonly':'')+' '+(isEdit?'':'oninput="validateNpsnField()"');
+  var npsnAttr=isEdit?'readonly':'oninput="validateNpsnField()"';
+  var infoBox=isEdit?'':'<div class="al alin" style="margin-top:10px"><i class="fa-solid fa-circle-info"></i> Akun admin default <strong>admin / admin</strong> dan pengaturan awal akan dibuat otomatis.</div>';
   var html=''
     +'<div class="mo" id="mdTenant"><div class="md"><div class="mh">'
     +'<div class="mtt"><i class="fa-solid fa-school" style="color:var(--p)"></i> '+(isEdit?'Edit':'Tambah')+' Sekolah</div>'
     +'<button class="xb" onclick="rmModal(&quot;mdTenant&quot;)">&#x2715;</button></div>'
     +'<div class="mbb">'
+    // Baris 1: NPSN | Nama Sekolah
     +'<div class="fr">'
     +'<div class="fg"><label class="fl">NPSN <span style="color:var(--er)">*</span></label>'
-    +'<input id="tNpsn" class="fc mono" value="'+escH(d.npsn||'')+'" placeholder="8 digit angka" maxlength="8" '+npsnExtra+'>'
-    +'<p class="fh">'+npsnHint+'</p></div>'
+    +'<input id="tNpsn" class="fc mono" value="'+escH(d.npsn||'')+'" placeholder="12345678" maxlength="8" '+npsnAttr+'>'
+    +'<p class="fh">'+(isEdit?'NPSN tidak dapat diubah.':'8 digit — ID unik tenant sekolah.')+'</p></div>'
     +'<div class="fg"><label class="fl">Nama Sekolah <span style="color:var(--er)">*</span></label>'
-    +'<input id="tNama" class="fc" value="'+escH(d.nama||'')+'" placeholder="MIN Contoh Sekolah"></div>'
+    +'<input id="tNama" class="fc" value="'+escH(d.nama||'')+'" placeholder="MIN / SDN / SMP Contoh"></div>'
     +'</div>'
-    +'<div class="fg"><label class="fl">Alamat Sekolah</label>'
-    +'<input id="tAlamat" class="fc" value="'+escH(d.alamat||'')+'" placeholder="Jl. Pendidikan No.1..."></div>'
+    // Baris 2: Kab/Kota | Kontak
     +'<div class="fr">'
+    +'<div class="fg"><label class="fl">Kabupaten / Kota</label>'
+    +'<input id="tKabkota" class="fc" value="'+escH(d.kabkota||'')+'" placeholder="Kota Singkawang"></div>'
+    +'<div class="fg"><label class="fl">Nomor Kontak</label>'
+    +'<input id="tKontak" class="fc" value="'+escH(d.kontak||'')+'" placeholder="08xxxxxxxxxx"></div>'
+    +'</div>'
+    // Baris 3: Nama Kepala Sekolah (full width)
+    +'<div class="fg"><label class="fl">Nama Kepala Sekolah</label>'
+    +'<input id="tKepala" class="fc" value="'+escH(d.kepala||'')+'" placeholder="Dr. Ahmad Fauzi, S.Pd., M.M."></div>'
+    // Baris 4: URL Logo (full width)
     +'<div class="fg"><label class="fl">URL Logo Sekolah</label>'
     +'<input id="tLogo" class="fc" value="'+escH(d.logo||'')+'" placeholder="https://..."></div>'
-    +'<div class="fg"><label class="fl">Paket</label><select id="tPaket" class="fc">'+paketOpts+'</select></div>'
-    +'</div>'
-    +'<div class="fg"><label class="fl">Status</label><select id="tStatus" class="fc">'
-    +'<option value="Aktif"'+(d.status!=='Nonaktif'?' selected':'')+'>Aktif</option>'
-    +'<option value="Nonaktif"'+(d.status==='Nonaktif'?' selected':'')+'>Nonaktif</option>'
-    +'</select></div>'
     +infoBox
     +'</div>'
     +'<div class="mf">'
     +'<button class="btn bo" onclick="rmModal(&quot;mdTenant&quot;)">Batal</button>'
-    +'<button class="btn" style="background:var(--p);color:#fff;border-color:var(--p)" data-npsn="'+escH(npsn||'')+'" onclick="saveTenant(this.dataset.npsn)"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>'
+    +'<button class="btn bp" data-npsn="'+escH(npsn||'')+'" onclick="saveTenant(this.dataset.npsn)"><i class="fa-solid fa-floppy-disk"></i> Simpan</button>'
     +'</div>'
     +'</div></div>';
   document.body.insertAdjacentHTML('beforeend',html);
@@ -1813,32 +1825,31 @@ function validateNpsnField(){
 }
 
 async function saveTenant(existingNpsn){
-  const npsn  = (document.getElementById('tNpsn')?.value||'').trim();
-  const nama  = (document.getElementById('tNama')?.value||'').trim();
-  const alamat= (document.getElementById('tAlamat')?.value||'').trim();
-  const logo  = (document.getElementById('tLogo')?.value||'').trim();
-  const paket = document.getElementById('tPaket')?.value;
-  const status= document.getElementById('tStatus')?.value;
+  const npsn   = (document.getElementById('tNpsn')?.value||'').trim();
+  const nama   = (document.getElementById('tNama')?.value||'').trim();
+  const kabkota= (document.getElementById('tKabkota')?.value||'').trim();
+  const kontak = (document.getElementById('tKontak')?.value||'').trim();
+  const kepala = (document.getElementById('tKepala')?.value||'').trim();
+  const logo   = (document.getElementById('tLogo')?.value||'').trim();
   if(!npsn||!/^\d{8}$/.test(npsn)){ toast('NPSN harus 8 digit angka!','er'); return; }
   if(!nama){ toast('Nama sekolah wajib diisi!','er'); return; }
   if(!SB){ toast('Tidak ada koneksi database','er'); return; }
+  const payload = {nama, kabkota, kontak, kepala, logo};
   try{
     if(existingNpsn){
-      await SB.from('tenants').update({nama,alamat,logo,paket,status}).eq('npsn',existingNpsn);
-      toast('Data sekolah diperbarui!','ok');
+      await SB.from('tenants').update(payload).eq('npsn',existingNpsn);
+      toast('Data sekolah berhasil diperbarui!','ok');
     } else {
-      const {error} = await SB.from('tenants').insert({npsn,nama,alamat,logo,paket,status});
+      const {error} = await SB.from('tenants').insert({npsn,...payload});
       if(error) throw error;
-      // Buat admin default
       await SB.from('admins').insert({npsn,username:'admin',password:'admin',nama_admin:'Administrator',role:'admin'});
-      // Buat pengaturan default
-      await SB.from('pengaturan').insert({npsn,nama_sekolah:nama,nama_app:'CBT E-School',alamat_sekolah:alamat});
-      toast('Sekolah berhasil ditambahkan! Admin default: admin/admin','ok',6000);
-      _tenantGridLoaded = false; // refresh cache
+      await SB.from('pengaturan').insert({npsn,nama_sekolah:nama,nama_app:'CBT E-School',alamat_sekolah:kabkota});
+      toast('Sekolah berhasil ditambahkan! Login admin: admin / admin','ok',6000);
+      _tenantGridLoaded=false;
     }
     rmModal('mdTenant');
     await renderSuperDashboard();
-  }catch(e){ toast('Gagal: '+(e.message||e),'er'); }
+  }catch(e){ toast('Gagal menyimpan: '+(e.message||e),'er'); }
 }
 
 async function toggleSaTenantStatus(npsn, current){
