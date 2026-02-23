@@ -3635,13 +3635,16 @@ async function rSiswa(el){
 }
 
 async function loadSiswa(){
-  let d=demoMode?DEMO.siswa:((await SB.from('siswa').select('*').order('id_siswa',{ascending:false})).data||[]);
+  let d=demoMode?DEMO.siswa:((await SB.from('siswa').select('*').order('rombel',{ascending:true}).order('nama_siswa',{ascending:true})).data||[]);
+  d=[...d].sort((a,b)=>(a.rombel||'').localeCompare(b.rombel||'')||(a.nama_siswa||'').localeCompare(b.nama_siswa||''));
   window._siswa=d;ftSiswa();
 }
 
 function ftSiswa(){
   const q=($('srSiswa')?.value||'').toLowerCase(),kls=$('ftKls')?.value||'',rbl=$('ftRbl')?.value||'';
-  const d=(window._siswa||[]).filter(s=>(!q||(s.nama_siswa+s.username).toLowerCase().includes(q))&&(!kls||s.kelas===kls)&&(!rbl||s.rombel===rbl));
+  const d=(window._siswa||[])
+    .filter(s=>(!q||(s.nama_siswa+s.username).toLowerCase().includes(q))&&(!kls||s.kelas===kls)&&(!rbl||s.rombel===rbl))
+    .sort((a,b)=>(a.rombel||'').localeCompare(b.rombel||'')||(a.nama_siswa||'').localeCompare(b.nama_siswa||''));
   const tb=$('tbSiswa');if(!tb)return;
   const cnt=$('sisCnt');if(cnt)cnt.textContent=`Menampilkan ${d.length} dari ${(window._siswa||[]).length} siswa`;
   if(!d.length){tb.innerHTML=`<tr><td colspan="6"><div class="empty"><div class="ei"><i class=\"fa-solid fa-users\" style=\"font-size:40px;color:var(--mu)\"></i></div><h3>Tidak ada siswa ditemukan</h3><button class="btn bp" onclick="mSiswa()">+ Tambah Siswa</button></div></td></tr>`;return;}
