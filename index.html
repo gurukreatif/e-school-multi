@@ -1806,9 +1806,6 @@ function mTenant(npsn){
     // Baris 3: Nama Kepala Sekolah (full width)
     +'<div class="fg"><label class="fl">Nama Kepala Sekolah</label>'
     +'<input id="tKepala" class="fc" value="'+escH(d.kepala||'')+'" placeholder="Dr. Ahmad Fauzi, S.Pd., M.M."></div>'
-    // Baris 4: URL Logo (full width)
-    +'<div class="fg"><label class="fl">URL Logo Sekolah</label>'
-    +'<input id="tLogo" class="fc" value="'+escH(d.logo||'')+'" placeholder="https://..."></div>'
     +infoBox
     +'</div>'
     +'<div class="mf">'
@@ -1830,11 +1827,10 @@ async function saveTenant(existingNpsn){
   const kabkota= (document.getElementById('tKabkota')?.value||'').trim();
   const kontak = (document.getElementById('tKontak')?.value||'').trim();
   const kepala = (document.getElementById('tKepala')?.value||'').trim();
-  const logo   = (document.getElementById('tLogo')?.value||'').trim();
   if(!npsn||!/^\d{8}$/.test(npsn)){ toast('NPSN harus 8 digit angka!','er'); return; }
   if(!nama){ toast('Nama sekolah wajib diisi!','er'); return; }
   if(!SB){ toast('Tidak ada koneksi database','er'); return; }
-  const payload = {nama, kabkota, kontak, kepala, logo};
+  const payload = {nama, kabkota, kontak, kepala};
   try{
     if(existingNpsn){
       await SB.from('tenants').update(payload).eq('npsn',existingNpsn);
