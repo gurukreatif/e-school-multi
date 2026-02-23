@@ -2975,6 +2975,7 @@ function getQuillHTML(id) {
 
 function mButir(id){
   const d=id?(window._butir||[]).find(b=>b.id_soal===id)||{}:{};
+  _editingButir=d; // reset cache setiap kali form dibuka
   document.getElementById('mdButir')?.remove();
   // Destroy semua Quill instance lama agar tidak ada konflik
   Object.keys(window._quillEditors).forEach(k=>{
@@ -3029,9 +3030,12 @@ function mButir(id){
 // ── State dinamis untuk tipe soal ──
 let _bsState=[]; // [{text, val:'Benar'|'Salah'|''}]
 let _jodohState=[]; // [{l, r}]
+let _editingButir={}; // cache data soal yg sedang diedit
 
 function upBTipe(d){
-  d=d||{};const t=$('bTipe')?.value;
+  // Simpan data asli soal agar kunci bisa direstore kapanpun (termasuk saat onchange)
+  if(d && d.jawaban_benar!==undefined) _editingButir=d;
+  d=d||_editingButir||{};const t=$('bTipe')?.value;
   const area=$('bOpsi');if(!area)return;
   const kunciWrap=$('bKunciWrap');
 
@@ -3086,7 +3090,7 @@ function upBTipe(d){
           kunciSaved.split(',').forEach(k=>{const idx=parseInt((k.match(/\d+/)||['0'])[0]);if(idx>=1&&idx<=5)toggleOpsiPGK(idx,labels.length,true);});
         }
       }
-    },80);
+    },150);
 
   }else if(t==='Benar/Salah'){
     // Parse existing data — strip HTML karena input plain text
