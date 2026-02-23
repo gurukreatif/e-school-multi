@@ -3183,7 +3183,7 @@ function renderBsRows(){
     <div class="bs-row">
       <span class="bs-num">${i+1}</span>
       <input class="bs-input" id="bstxt_${i}"
-        value="${(s.text||'').replace(/\/g,'\\').replace(/"/g,'&quot;').replace(/</g,'&lt;')}"
+        value="${(s.text||'').replace(/\//g,'\\').replace(/"/g,'&quot;').replace(/</g,'&lt;')}"
         placeholder="Isi pernyataan ${i+1}...">
       <div class="bs-toggle">
         <button type="button" class="bs-btn ${s.val==='Benar'?'active-b':''}"
