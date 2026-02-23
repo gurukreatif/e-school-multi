@@ -1238,6 +1238,8 @@ create table if not exists soal (
   token               text default '',
   jumlah_opsi         integer default 4,
   tampil_tombol_selesai integer default 1,
+  jam_mulai           time,
+  jam_selesai         time,
   created_at          timestamptz default now(),
   unique(npsn, kode_soal)
 );
@@ -1367,6 +1369,12 @@ create index if not exists idx_admins_npsn on admins(npsn);
 create index if not exists idx_siswa_npsn on siswa(npsn);
 create index if not exists idx_soal_npsn on soal(npsn);
 create index if not exists idx_butir_npsn on butir_soal(npsn);
+
+-- ── MIGRASI: tambah kolom baru (jalankan sekali untuk DB yang sudah ada) ──
+-- Jika sudah menjalankan schema di atas, LEWATI bagian ini.
+-- Jika DB sudah ada sebelum update, jalankan ALTER TABLE berikut:
+alter table soal add column if not exists jam_mulai time;
+alter table soal add column if not exists jam_selesai time;
 create index if not exists idx_jawaban_npsn on jawaban_siswa(npsn);
 create index if not exists idx_nilai_npsn on nilai(npsn);
 create index if not exists idx_chat_npsn on chat(npsn);
@@ -1674,7 +1682,7 @@ async function lookupNpsn(){
 function showSQLGuide(){
   document.getElementById('mdSQL')?.remove();
   const html=`<div class="mo" id="mdSQL"><div class="md mdxl"><div class="mh"><div class="mtt"><i class=\"fa-solid fa-database\"></i> SQL Setup — Jalankan di Supabase SQL Editor</div><button class="xb" onclick="rmModal('mdSQL')">✕</button></div>
-    <div class="mbb"><div class="al alin"><i class=\"fa-solid fa-circle-info\" style=\"color:var(--p)\"></i><div>Salin SQL ini dan jalankan di <strong>Supabase Dashboard → SQL Editor → New query</strong></div></div>
+    <div class="mbb"><div class="al alin"><i class=\"fa-solid fa-circle-info\" style=\"color:var(--p)\"></i><div>Salin SQL ini dan jalankan di <strong>Supabase Dashboard → SQL Editor → New query</strong>.<br><span style=\"font-size:11.5px;color:var(--mu)\">DB baru: jalankan semua. DB sudah ada: cukup jalankan bagian <strong>MIGRASI</strong> di bawah (ALTER TABLE).</span></div></div>
     <textarea class="fc" style="min-height:380px;font-family:'JetBrains Mono',monospace;font-size:11.5px" readonly>${getSQL()}</textarea></div>
     <div class="mf"><button class="btn bo" onclick="rmModal('mdSQL')">Tutup</button><button class="btn bp" onclick="copySQL()">Salin SQL</button></div>
   </div></div>`;
@@ -2319,7 +2327,7 @@ function ftSoal(){
   if(!d.length){tb.innerHTML=`<tr><td colspan="8"><div class="empty"><div class="ei"><i class=\"fa-solid fa-folder-open\" style=\"font-size:40px;color:var(--mu)\"></i></div><h3>Belum ada paket soal</h3><button class="btn bp" onclick="mSoal()">+ Tambah</button></div></td></tr>`;return;}
   tb.innerHTML=d.map(s=>`<tr>
     <td><span class="mono">${s.kode_soal}</span></td>
-    <td><div style="font-weight:600">${s.nama_soal}</div><div style="font-size:11px;color:var(--mu)">${fd(s.tanggal)}</div></td>
+    <td><div style="font-weight:600">${s.nama_soal}</div><div style="font-size:11px;color:var(--mu)">${s.tanggal?fd(s.tanggal)+(s.jam_mulai?' · '+s.jam_mulai.slice(0,5):''):'—'}</div></td>
     <td>${s.mapel}</td><td>Kelas ${s.kelas}</td><td>${s.waktu_ujian}m</td>
     <td>${s.token?`<span class="mono">${s.token}</span>`:'<span class="badge bgr">—</span>'}</td>
     <td>${bst(s.status)}</td>
@@ -2334,32 +2342,58 @@ function ftSoal(){
   </tr>`).join('');
 }
 
+function makeToken(){return Math.random().toString(36).slice(2,8).toUpperCase();}
+function refreshToken(){const el=$('mToken');if(el)el.value=makeToken();}
+
 function mSoal(id){
   const d=id?(window._soal||[]).find(s=>s.id_soal===id)||{}:{};
+  const autoToken=id?'':(d.token||makeToken());
   document.getElementById('mdSoal')?.remove();
-  const html=`<div class="mo" id="mdSoal"><div class="md mdlg"><div class="mh"><div class="mtt">${id?'Edit':'Tambah'} Paket Soal</div><button class="xb" onclick="rmModal('mdSoal')">✕</button></div>
+  const html=`<div class="mo" id="mdSoal"><div class="md mdlg"><div class="mh"><div class="mtt"><i class="fa-solid fa-folder-open" style="color:var(--p)"></i> ${id?'Edit':'Tambah'} Paket Soal</div><button class="xb" onclick="rmModal('mdSoal')">✕</button></div>
     <div class="mbb">
-      <div class="fr"><div class="fg"><label class="fl">Kode Soal *</label><input id="mKode" class="fc" value="${d.kode_soal||''}" placeholder="MTK9-UAS-01"></div>
-      <div class="fg"><label class="fl">Nama Soal *</label><input id="mNama" class="fc" value="${d.nama_soal||''}" placeholder="Ujian Akhir Semester Matematika"></div></div>
-      <div class="fr"><div class="fg"><label class="fl">Mata Pelajaran *</label><input id="mMapel" class="fc" value="${d.mapel||''}" placeholder="Matematika"></div>
-      <div class="fg"><label class="fl">Kelas *</label><select id="mKelas" class="fc">
-        <option value="" disabled>— Pilih Kelas —</option>
-        <optgroup label="SD (Kelas 1–6)">
-          ${['1','2','3','4','5','6'].map(k=>`<option value="${k}" ${d.kelas===k?'selected':''}>${k}</option>`).join('')}
-        </optgroup>
-        <optgroup label="SMP (Kelas 7–9)">
-          ${['7','8','9'].map(k=>`<option value="${k}" ${d.kelas===k?'selected':''}>${k}</option>`).join('')}
-        </optgroup>
-        <optgroup label="SMA/SMK (Kelas 10–12)">
-          ${['10','11','12'].map(k=>`<option value="${k}" ${d.kelas===k?'selected':''}>${k}</option>`).join('')}
-        </optgroup>
-      </select></div></div>
-      <div class="fr"><div class="fg"><label class="fl">Waktu Ujian (menit) *</label><input id="mWaktu" type="number" class="fc" value="${d.waktu_ujian||60}" min="5" max="300"></div>
-      <div class="fg"><label class="fl">Tanggal Ujian</label><input id="mTgl" type="date" class="fc" value="${d.tanggal||today()}"></div></div>
-      <div class="fr"><div class="fg"><label class="fl">Token Ujian</label><input id="mToken" class="fc" value="${d.token||''}" placeholder="Kosong = tanpa token" maxlength="10"><p class="fh">Kode yang harus dimasukkan siswa sebelum ujian</p></div>
-      <div class="fg"><label class="fl">Tampilan Soal</label><select id="mTampil" class="fc"><option value="Urut" ${d.tampilan_soal==='Urut'?'selected':''}>Urut (Tidak Diacak)</option><option value="Acak" ${d.tampilan_soal==='Acak'?'selected':''}>Acak (Random)</option></select></div></div>
-      <div class="fr"><div class="fg"><label class="fl">Tombol Selesai</label><select id="mTombol" class="fc"><option value="1" ${d.tampil_tombol_selesai?'selected':''}>Tampilkan (siswa bisa selesai lebih awal)</option><option value="0" ${!d.tampil_tombol_selesai?'selected':''}>Sembunyikan (auto-submit saat waktu habis)</option></select></div>
-      <div class="fg"><label class="fl">Status</label><select id="mStatus" class="fc"><option value="Aktif" ${d.status!=='Nonaktif'?'selected':''}>Aktif</option><option value="Nonaktif" ${d.status==='Nonaktif'?'selected':''}>Nonaktif</option></select></div></div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Kode Soal *</label><input id="mKode" class="fc" value="${d.kode_soal||''}" placeholder="MTK9-UAS-01"></div>
+        <div class="fg"><label class="fl">Nama Soal *</label><input id="mNama" class="fc" value="${d.nama_soal||''}" placeholder="Ujian Akhir Semester Matematika"></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Mata Pelajaran *</label><input id="mMapel" class="fc" value="${d.mapel||''}" placeholder="Matematika"></div>
+        <div class="fg"><label class="fl">Kelas *</label><select id="mKelas" class="fc">
+          <option value="" disabled>— Pilih Kelas —</option>
+          <optgroup label="SD (Kelas 1–6)">${['1','2','3','4','5','6'].map(k=>`<option value="${k}" ${d.kelas===k?'selected':''}>${k}</option>`).join('')}</optgroup>
+          <optgroup label="SMP (Kelas 7–9)">${['7','8','9'].map(k=>`<option value="${k}" ${d.kelas===k?'selected':''}>${k}</option>`).join('')}</optgroup>
+          <optgroup label="SMA/SMK (Kelas 10–12)">${['10','11','12'].map(k=>`<option value="${k}" ${d.kelas===k?'selected':''}>${k}</option>`).join('')}</optgroup>
+        </select></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Tanggal Pelaksanaan</label><input id="mTgl" type="date" class="fc" value="${d.tanggal||today()}"></div>
+        <div class="fg"><label class="fl">Waktu Ujian (menit) *</label><input id="mWaktu" type="number" class="fc" value="${d.waktu_ujian||60}" min="5" max="300"></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Jam Mulai</label><input id="mJamMulai" type="time" class="fc" value="${d.jam_mulai||''}"><p class="fh">Kosong = ujian bisa dimulai kapan saja</p></div>
+        <div class="fg"><label class="fl">Jam Selesai</label><input id="mJamSelesai" type="time" class="fc" value="${d.jam_selesai||''}"><p class="fh">Kosong = tidak ada batas jam selesai</p></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Token Ujian</label>
+          <div style="display:flex;gap:6px;align-items:center">
+            <input id="mToken" class="fc" value="${id?(d.token||''):autoToken}" placeholder="Kosong = tanpa token" maxlength="10" style="flex:1;font-family:'JetBrains Mono',monospace;font-weight:700;letter-spacing:.06em">
+            <button type="button" class="btn bo bsm" onclick="refreshToken()" title="Generate ulang token" style="flex-shrink:0"><i class="fa-solid fa-rotate"></i></button>
+            <button type="button" class="btn bo bsm" onclick="$('mToken').value=''" title="Hapus token (tanpa token)" style="flex-shrink:0"><i class="fa-solid fa-xmark"></i></button>
+          </div>
+          <p class="fh">Kode yang harus dimasukkan siswa sebelum ujian</p>
+        </div>
+        <div class="fg"><label class="fl">Tampilan Soal</label>
+          <select id="mTampil" class="fc">
+            <option value="Urut" ${d.tampilan_soal==='Urut'||!d.tampilan_soal?'selected':''}>Urut — Tidak Diacak</option>
+            <option value="Acak Soal" ${d.tampilan_soal==='Acak Soal'||d.tampilan_soal==='Acak'?'selected':''}>Acak Soal — Urutan soal diacak</option>
+            <option value="Acak Opsi" ${d.tampilan_soal==='Acak Opsi'?'selected':''}>Acak Opsi — Pilihan jawaban diacak</option>
+            <option value="Acak Soal & Opsi" ${d.tampilan_soal==='Acak Soal & Opsi'?'selected':''}>Acak Soal & Opsi — Keduanya diacak</option>
+          </select>
+        </div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label class="fl">Tombol Selesai</label><select id="mTombol" class="fc"><option value="1" ${d.tampil_tombol_selesai||d.tampil_tombol_selesai===undefined?'selected':''}>Tampilkan (siswa bisa selesai lebih awal)</option><option value="0" ${d.tampil_tombol_selesai===0?'selected':''}>Sembunyikan (auto-submit saat waktu habis)</option></select></div>
+        <div class="fg"><label class="fl">Status</label><select id="mStatus" class="fc"><option value="Aktif" ${d.status!=='Nonaktif'?'selected':''}>Aktif</option><option value="Nonaktif" ${d.status==='Nonaktif'?'selected':''}>Nonaktif</option></select></div>
+      </div>
     </div>
     <div class="mf"><button class="btn bo" onclick="rmModal('mdSoal')">Batal</button><button class="btn bp" onclick="svSoal(${id||0})"><i class="fa-solid fa-floppy-disk"><\/i> Simpan</button></div>
   </div></div>`;
@@ -2367,7 +2401,9 @@ function mSoal(id){
 }
 
 async function svSoal(id){
-  const o={kode_soal:$('mKode').value.trim(),nama_soal:$('mNama').value.trim(),mapel:$('mMapel').value.trim(),kelas:$('mKelas').value.trim(),waktu_ujian:parseInt($('mWaktu').value),tanggal:$('mTgl').value,token:$('mToken').value.trim(),tampilan_soal:$('mTampil').value,status:$('mStatus').value,tampil_tombol_selesai:parseInt($('mTombol').value)};
+  const jamMulai=$('mJamMulai').value||null;
+  const jamSelesai=$('mJamSelesai').value||null;
+  const o={kode_soal:$('mKode').value.trim(),nama_soal:$('mNama').value.trim(),mapel:$('mMapel').value.trim(),kelas:$('mKelas').value.trim(),waktu_ujian:parseInt($('mWaktu').value),tanggal:$('mTgl').value||null,jam_mulai:jamMulai,jam_selesai:jamSelesai,token:$('mToken').value.trim(),tampilan_soal:$('mTampil').value,status:$('mStatus').value,tampil_tombol_selesai:parseInt($('mTombol').value)};
   if(!o.kode_soal||!o.nama_soal||!o.mapel||!o.kelas){toast('Field bertanda * wajib diisi!','er');return;}
   if(demoMode){toast('Mode demo: data tidak tersimpan ke database','in');rmModal('mdSoal');return;}
   try{
@@ -5035,7 +5071,7 @@ async function konfirmUjian(idSoal){
         <div class="resgrid" style="margin-top:14px">
           <div class="resst"><div class="ressv"><i class="fa-solid fa-stopwatch"></i></div><div class="ressl">${soal.waktu_ujian} menit</div></div>
           <div class="resst"><div class="ressv"><i class="fa-solid fa-pen-to-square"></i></div><div class="ressl">Ujian CBT</div></div>
-          <div class="resst"><div class="ressv"><i class="fa-solid fa-${soal.tampilan_soal==='Acak'?'shuffle':'list-ol'}"></i></div><div class="ressl">${soal.tampilan_soal}</div></div>
+          <div class="resst"><div class="ressv"><i class="fa-solid fa-${['Acak Soal','Acak Opsi','Acak Soal & Opsi'].includes(soal.tampilan_soal)?'shuffle':'list-ol'}"></i></div><div class="ressl">${soal.tampilan_soal}</div></div>
         </div>
       </div>
       ${soal.token?`<div class="fg"><label class="fl">Token Ujian *</label><input id="inToken" class="fc" placeholder="Masukkan token dari guru/admin" maxlength="10"><p class="fh">Minta token kepada pengawas ujian Anda</p></div>`:'<div class="al alok"><i class="fa-solid fa-circle-check"></i><div>Ujian ini tidak membutuhkan token. Anda bisa langsung mulai.</div></div>'}
@@ -5049,6 +5085,25 @@ async function konfirmUjian(idSoal){
 // ─── SHUFFLE HELPERS ───
 const TIPE_ORDER=['Pilihan Ganda','Pilihan Ganda Kompleks','Benar/Salah','Menjodohkan','Uraian'];
 function shuffleArr(a){const b=[...a];for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]];}return b;}
+function shuffleButirSaja(butirs){
+  // Acak urutan soal per tipe, tapi opsi TIDAK diacak
+  const groups={};
+  butirs.forEach(b=>{if(!groups[b.tipe_soal])groups[b.tipe_soal]=[];groups[b.tipe_soal].push(b);});
+  const keys=[...TIPE_ORDER.filter(t=>groups[t]),...Object.keys(groups).filter(t=>!TIPE_ORDER.includes(t))];
+  const result=[];
+  keys.forEach(tipe=>shuffleArr(groups[tipe]).forEach(b=>result.push({...b})));
+  return result;
+}
+function tambahAcakOpsi(butirs){
+  // Urutan soal TIDAK diacak, tapi opsi pilihan diacak
+  return butirs.map(b=>{
+    const s={...b};
+    if(b.tipe_soal==='Pilihan Ganda'||b.tipe_soal==='Pilihan Ganda Kompleks'){
+      s._shuffledOpts=shuffleArr(['pilihan_1','pilihan_2','pilihan_3','pilihan_4','pilihan_5'].filter(k=>s[k]&&s[k].trim()!==''));
+    }
+    return s;
+  });
+}
 function shuffleButirPerTipe(butirs){
   const groups={};
   butirs.forEach(b=>{if(!groups[b.tipe_soal])groups[b.tipe_soal]=[];groups[b.tipe_soal].push(b);});
@@ -5100,7 +5155,15 @@ async function mulaiUjian(idSoal, expectedToken){
   }
   
   if(!butirs.length){toast('Tidak ada soal dalam paket ini!','er');return;}
-  if(soal.tampilan_soal==='Acak')butirs=shuffleButirPerTipe(butirs);
+  // Terapkan mode tampilan soal
+  const modeAcak=soal.tampilan_soal||'Urut';
+  if(modeAcak==='Acak Soal'||modeAcak==='Acak'){
+    butirs=shuffleButirSaja(butirs); // shuffle urutan soal saja
+  }else if(modeAcak==='Acak Opsi'){
+    butirs=tambahAcakOpsi(butirs); // shuffle opsi saja
+  }else if(modeAcak==='Acak Soal & Opsi'){
+    butirs=shuffleButirPerTipe(butirs); // shuffle soal & opsi (existing)
+  }
   
   // Cek apakah ada sesi yang belum selesai
   let existingJaw=null;
