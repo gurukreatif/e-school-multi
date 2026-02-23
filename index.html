@@ -3951,7 +3951,16 @@ function impSiswa(){
     reader.onload=ev=>{
       const wb=XLSX.read(ev.target.result,{type:'binary'});
       const ws=wb.Sheets[wb.SheetNames[0]];
-      const rows=XLSX.utils.sheet_to_json(ws);
+      const rawRows=XLSX.utils.sheet_to_json(ws,{defval:''});
+      // Normalize key: hapus BOM, trim spasi, lowercase — agar nama kolom konsisten
+      const rows=rawRows.map(r=>{
+        const clean={};
+        Object.keys(r).forEach(k=>{
+          const nk=k.replace(/^\uFEFF/,'').replace(/^\s+|\s+$/g,'').toLowerCase();
+          clean[nk]=r[k];
+        });
+        return clean;
+      });
       window._impData=rows;
       $('impPrev').innerHTML=`<div class="al alok"><span><i class="fa-solid fa-circle-check" style="color:var(--ok)"></i></span><div><strong>${rows.length} baris</strong> ditemukan. Kolom: ${Object.keys(rows[0]||{}).join(', ')}</div></div>
         <div class="tw" style="max-height:180px;overflow-y:auto"><table><thead><tr>${Object.keys(rows[0]||{}).map(k=>`<th>${k}</th>`).join('')}</tr></thead><tbody>${rows.slice(0,5).map(r=>`<tr>${Object.values(r).map(v=>`<td>${v}</td>`).join('')}</tr>`).join('')}</tbody></table></div>
@@ -3968,13 +3977,14 @@ async function doImpSiswa(){
   setBtn('impBtn','<span class="spin"></span> Mengimport...');
 
   // Siapkan semua baris sekaligus dengan npsn eksplisit (bypass patchSupabaseForTenant)
+  // Key sudah dinormalize ke lowercase saat parsing file
   const payload=d.map(r=>({
     npsn,
-    nama_siswa:String(r.nama_siswa||r.Nama||r.nama||'').trim(),
-    username:String(r.username||r.Username||r.nis||r.NIS||r.NISN||'').trim(),
-    password:String(r.password||r.Password||r.username||r.Username||'').trim(),
-    kelas:String(r.kelas||r.Kelas||r.KELAS||'').trim(),
-    rombel:String(r.rombel||r.Rombel||r.ROMBEL||'').trim(),
+    nama_siswa:String(r.nama_siswa||r.nama||'').trim(),
+    username:String(r.username||r.nis||r.nisn||'').trim(),
+    password:String(r.password||r.username||r.nis||'').trim(),
+    kelas:String(r.kelas||'').trim(),
+    rombel:String(r.rombel||'').trim(),
     status:'Aktif',session_token:'',page_url:'',force_logout:false
   })).filter(r=>r.nama_siswa&&r.username);
 
