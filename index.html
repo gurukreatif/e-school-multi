@@ -1134,8 +1134,8 @@ tbody tr:hover td{background:#fafbff}
 </div><!-- appWrap -->
 <script>
 // ═══════════════════════════ GLOBAL STATE ═══════════════════════════
-const SUPABASE_URL='https://oshnmliknppofbfsbkwq.supabase.co';
-const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9zaG5tbGlrbnBwb2ZiZnNia3dxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzEzMTg3MzUsImV4cCI6MjA4Njg5NDczNX0.R2GyLMr0RuA4LoT60n3fYX2EFC998zlSC9AzclPealY';
+const SUPABASE_URL='https://pfzcecdrpcemdkdsmhnd.supabase.co';
+const SUPABASE_ANON_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmemNlY2RycGNlbWRrZHNtaG5kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4MzY1MzIsImV4cCI6MjA4NzQxMjUzMn0.LOzjAJUpO8MlSFYSIzD1iRle__TpzGjRZ041SFVl7Sk';
 
 // ── SUPER ADMIN CREDENTIALS (ganti sebelum deploy!) ──
 const SA_USER = 'superadmin';
@@ -1659,14 +1659,41 @@ async function init(){
   // Connect to Supabase
   try{
     SB = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    patchSupabaseForTenant(SB); // inject tenant npsn filter
-    const {error} = await SB.from('tenants').select('npsn').limit(1);
-    if(error) throw error;
-    EX.pendingSync = await getPendingSync();
-    if(EX.pendingSync.length > 0 && !EX.offline) setTimeout(syncPendingData, 2000);
+    patchSupabaseForTenant(SB);
+
+    // Cek koneksi: gunakan endpoint ping ringan, bukan query ke tabel tertentu
+    // sehingga tidak error 404 jika tabel belum dibuat
+    const {data, error} = await SB.from('tenants').select('npsn').limit(1);
+
+    if(error){
+      if(error.code === 'PGRST116' || error.message?.includes('does not exist') || error.code === '42P01'){
+        // Tabel belum ada — koneksi OK tapi migration belum dijalankan
+        console.warn('Tabel tenants belum ada. Jalankan SQL migration terlebih dahulu.');
+        toast('Database terhubung, tapi tabel belum dibuat. Jalankan SQL migration.','wa',8000);
+      } else if(error.status === 404 || error.message?.includes('relation') || error.message?.includes('not found')){
+        console.warn('Tabel tenants tidak ditemukan:', error);
+        toast('Tabel database belum dibuat. Jalankan SQL migration di Supabase.','wa',8000);
+      } else {
+        // Error lain (auth, network, dll)
+        throw error;
+      }
+    } else {
+      // Koneksi dan tabel OK
+      EX.pendingSync = await getPendingSync();
+      if(EX.pendingSync.length > 0 && !EX.offline) setTimeout(syncPendingData, 2000);
+    }
   }catch(e){
     console.error('Supabase error:', e);
-    toast('Gagal terhubung ke database. Mode demo tersedia.','wa',5000);
+    // Hanya tampilkan "mode demo" jika benar-benar tidak bisa konek (network error, invalid key, dll)
+    const isNetworkErr = !navigator.onLine || e.message?.includes('fetch') || e.message?.includes('network') || e.message?.includes('Failed to fetch');
+    const isAuthErr = e.message?.includes('Invalid API key') || e.message?.includes('apikey') || e.status === 401;
+    if(isAuthErr){
+      toast('API Key Supabase tidak valid. Periksa konfigurasi.','er',7000);
+    } else if(isNetworkErr){
+      toast('Tidak ada koneksi internet. Mode demo tersedia.','wa',5000);
+    } else {
+      toast('Gagal terhubung ke database. Mode demo tersedia.','wa',5000);
+    }
   }
 
   hide('ov'); show('appWrap');
