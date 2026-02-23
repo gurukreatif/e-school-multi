@@ -3847,30 +3847,30 @@ async function cetakKartuSiswa(){
   const css=[
     '*{margin:0;padding:0;box-sizing:border-box}',
     'body{font-family:Arial,sans-serif;background:#fff}',
-    '@page{size:A4 portrait;margin:8mm 12mm}',
-    '.halaman{width:186mm;display:flex;flex-direction:column;gap:3mm;page-break-after:always}',
+    '@page{size:A4 portrait;margin:5mm}',
+    '.halaman{width:200mm;height:287mm;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(4,1fr);gap:2mm;page-break-after:always}',
     '.halaman:last-child{page-break-after:auto}',
-    '.kartu{border:1pt solid #000;display:flex;flex-direction:column;overflow:hidden;background:#fff;break-inside:avoid}',
-    '.k-head{display:flex;align-items:center;border-bottom:1pt solid #000;padding:2mm 3mm;gap:2mm;flex-shrink:0}',
-    '.k-logo{width:15mm;height:15mm;flex-shrink:0;display:flex;align-items:center;justify-content:center}',
-    '.k-logo img{width:15mm;height:15mm;object-fit:contain}',
-    '.k-logo-ph{width:15mm;height:15mm;flex-shrink:0;border:1pt solid #ccc;display:flex;align-items:center;justify-content:center;font-size:5.5pt;color:#bbb;text-align:center;line-height:1.3}',
+    '.kartu{border:1pt solid #000;display:flex;flex-direction:column;overflow:hidden;background:#fff}',
+    '.k-head{display:flex;align-items:center;border-bottom:1pt solid #000;padding:1.2mm 2mm;gap:1.5mm;flex-shrink:0}',
+    '.k-logo{width:11mm;height:11mm;flex-shrink:0;display:flex;align-items:center;justify-content:center}',
+    '.k-logo img{width:11mm;height:11mm;object-fit:contain}',
+    '.k-logo-ph{width:11mm;height:11mm;flex-shrink:0;border:1pt solid #ccc;display:flex;align-items:center;justify-content:center;font-size:4pt;color:#bbb;text-align:center;line-height:1.3}',
     '.k-title{flex:1;text-align:center;line-height:1.4}',
-    '.k-title .t1{display:block;font-size:10pt;font-weight:700;text-transform:uppercase;letter-spacing:.03em}',
-    '.k-title .t2{display:block;font-size:8.5pt;font-weight:700;text-transform:uppercase}',
-    '.k-title .t3{display:block;font-size:7.5pt}',
-    '.k-info{padding:1.5mm 3mm;flex:1;display:flex;flex-direction:column;justify-content:center}',
-    '.k-row{display:flex;align-items:flex-start;font-size:8pt;padding:.8mm 0;border-bottom:.3pt solid #e0e0e0;line-height:1.4}',
+    '.k-title .t1{display:block;font-size:7pt;font-weight:700;text-transform:uppercase;letter-spacing:.03em}',
+    '.k-title .t2{display:block;font-size:6pt;font-weight:700;text-transform:uppercase}',
+    '.k-title .t3{display:block;font-size:5.5pt}',
+    '.k-info{padding:1mm 2mm;flex:1;display:flex;flex-direction:column;justify-content:center}',
+    '.k-row{display:flex;align-items:flex-start;font-size:5.8pt;padding:.4mm 0;border-bottom:.3pt solid #e0e0e0;line-height:1.35}',
     '.k-row:last-child{border-bottom:none}',
-    '.k-lbl{width:34mm;flex-shrink:0;color:#222}',
-    '.k-sep{width:4mm;flex-shrink:0;text-align:center}',
-    '.k-val{flex:1;color:#000;font-weight:600;word-break:break-word}',
-    '.k-foot{display:flex;align-items:flex-end;padding:1.5mm 3mm 2.5mm;gap:3mm;flex-shrink:0;border-top:.3pt solid #e8e8e8}',
-    '.k-foto{width:18mm;height:25mm;border:1pt solid #999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:7pt;color:#aaa;text-align:center;flex-shrink:0;background:#f8f8f8;line-height:1.5}',
-    '.k-ttd{flex:1;font-size:7pt;line-height:1.7;color:#000}',
-    '.k-ttd-ruang{height:14mm}',
-    '.k-ttd-nama{font-weight:700;font-size:7.5pt}',
-    '.k-ttd-nip{font-size:6.5pt;color:#333}',
+    '.k-lbl{width:24mm;flex-shrink:0;color:#222}',
+    '.k-sep{width:3mm;flex-shrink:0;text-align:center}',
+    '.k-val{flex:1;color:#000;word-break:break-word}',
+    '.k-foot{display:flex;align-items:flex-end;padding:.8mm 2mm 1.5mm;gap:2mm;flex-shrink:0;border-top:.3pt solid #e8e8e8}',
+    '.k-foto{width:13mm;height:18mm;border:1pt solid #999;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:5pt;color:#aaa;text-align:center;flex-shrink:0;background:#f8f8f8;line-height:1.5}',
+    '.k-ttd{flex:1;font-size:5pt;line-height:1.6;color:#000}',
+    '.k-ttd-ruang{height:9mm}',
+    '.k-ttd-nama{font-weight:700;font-size:5.2pt}',
+    '.k-ttd-nip{font-size:4.8pt;color:#333}',
     '.k-empty{border-color:transparent!important;background:transparent!important}'
   ].join('\n');
 
@@ -3914,7 +3914,7 @@ async function cetakKartuSiswa(){
   const pw=window.open('','_blank');
   pw.document.write('<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Kartu Peserta</title><style>'+css+'</style></head><body>');
 
-  const perHalaman=4;
+  const perHalaman=8;
   for(let i=0;i<siswa.length;i+=perHalaman){
     const halaman=siswa.slice(i,i+perHalaman);
     pw.document.write('<div class="halaman">');
@@ -3922,6 +3922,9 @@ async function cetakKartuSiswa(){
       var urut=i+j+1;
       pw.document.write(buatKartu(s,urut));
     });
+    for(var k=halaman.length;k<perHalaman;k++){
+      pw.document.write('<div class="kartu k-empty"></div>');
+    }
     pw.document.write('</div>');
   }
 
