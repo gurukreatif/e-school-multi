@@ -1415,7 +1415,8 @@ async function syncPendingData(){
         await clearPendingSync(item.id);
         EX.pendingSync=EX.pendingSync.filter(p=>p.id!==item.id);
       }else if(item.type==='nilai'){
-        await SB.from('nilai').insert(item.data);
+        // ignoreDuplicates: skip jika sudah ada (idempotent)
+        await SB.from('nilai').insert(item.data,{ignoreDuplicates:true});
         await clearPendingSync(item.id);
         EX.pendingSync=EX.pendingSync.filter(p=>p.id!==item.id);
       }
@@ -5567,6 +5568,7 @@ async function rSUjian(el){
       SB.from('nilai').select('kode_soal,nilai,status_penilaian,tanggal_ujian').eq('id_siswa',sis.id_siswa)
     ]);
     soalList = soalRes.data||[];
+    window._soalList = soalList; // cache untuk offline cache key lookup
     (nilaiRes.data||[]).forEach(n=>{ sudahDikerjakan[n.kode_soal]=n; });
   }
 
@@ -5743,22 +5745,26 @@ async function mulaiUjian(idSoal, expectedToken){
     soal=DEMO.soal.find(s=>s.id_soal===idSoal);
     butirs=DEMO.butir.filter(b=>b.kode_soal===soal.kode_soal);
   }else{
+    // Cari kode_soal dari cache daftar ujian (untuk fallback offline)
+    const soalMeta=(window._soalList||[]).find(s=>s.id_soal===idSoal);
+    const kodeForCache=soalMeta?.kode_soal||String(idSoal);
     try{
       soal=(await SB.from('soal').select('*').eq('id_soal',idSoal).single()).data;
       butirs=(await SB.from('butir_soal').select('*').eq('kode_soal',soal.kode_soal).eq('status_soal','Aktif').order('nomer_soal')).data||[];
-      
-      // Cache for offline use
+      // Cache untuk dipakai saat offline
       await cacheExam(soal.kode_soal,soal,butirs);
     }catch(e){
-      // Load from cache if online fetch fails
+      // Fallback ke cache IndexedDB
       toast('Memuat dari cache offline...','in');
-      const cached=await getCachedExam(soal?.kode_soal||'');
+      const cached=await getCachedExam(kodeForCache);
       if(cached){
         soal=cached.soal;
         butirs=cached.butirs;
+        EX.offline=true;
+        updateOfflineIndicator();
         toast('Ujian dimuat dari cache. Mode offline aktif.','wa',5000);
       }else{
-        toast('Tidak dapat memuat soal. Periksa koneksi.','er');
+        toast('Tidak dapat memuat soal. Buka ujian ini saat online terlebih dahulu agar bisa diakses offline.','er',6000);
         return;
       }
     }
@@ -6114,16 +6120,11 @@ async function saveJawaban(isFinish=false){
       updateOfflineIndicator();
     }
   }else{
-    // Offline - queue for sync
-    await addPendingSync({
-      type:'jawaban',
-      data:{
-        id_siswa:EX.sid,
-        nama_siswa:sis.nama_siswa,
-        kode_soal:EX.soal.kode_soal,
-        ...jawData
-      }
-    });
+    // Offline — queue untuk sync saat kembali online
+    const queueData={id_siswa:EX.sid,nama_siswa:sis.nama_siswa,kode_soal:EX.soal.kode_soal,...jawData};
+    // Sertakan id_jawaban agar upsert update record yang benar (bukan insert duplikat)
+    if(EX.asi) queueData.id_jawaban=EX.asi;
+    await addPendingSync({type:'jawaban',data:queueData});
     EX.pendingSync=await getPendingSync();
     updateOfflineIndicator();
   }
@@ -6179,8 +6180,24 @@ function hitungNilai(){
 
 async function simpanNilai(obj,nilaiTotal,benar,salah,total,hasUraian){
   let idNilai=null;
-  if(!demoMode){try{const{data:nv}=await SB.from('nilai').insert(obj).select().single();idNilai=nv?.id_nilai;}catch(e){}}
-  else{const id=Date.now();DEMO.nilai.push({...obj,id_nilai:id,tanggal_ujian:new Date().toISOString()});idNilai=id;}
+  if(demoMode){
+    const id=Date.now();
+    DEMO.nilai.push({...obj,id_nilai:id,tanggal_ujian:new Date().toISOString()});
+    idNilai=id;
+  } else {
+    const nilaiWithDate={...obj,tanggal_ujian:new Date().toISOString()};
+    try{
+      const{data:nv}=await SB.from('nilai').insert(nilaiWithDate).select().single();
+      idNilai=nv?.id_nilai;
+    }catch(e){
+      // Offline atau error — queue nilai ke pending sync agar tidak hilang
+      console.error('Simpan nilai gagal, queue ke pending sync:',e);
+      await addPendingSync({type:'nilai',data:nilaiWithDate});
+      EX.pendingSync=await getPendingSync();
+      updateOfflineIndicator();
+      toast('Koneksi bermasalah. Nilai Anda tersimpan lokal dan akan dikirim saat online.','wa',6000);
+    }
+  }
   showHasilUjian(nilaiTotal,benar,salah,total,hasUraian,EX.soal.nama_soal);
 }
 
