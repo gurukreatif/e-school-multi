@@ -3246,15 +3246,24 @@ async function svButir(id){
     p1=getQuillHTML('qop_bP1');p2=getQuillHTML('qop_bP2');
     p3=getQuillHTML('qop_bP3');p4=getQuillHTML('qop_bP4');p5=getQuillHTML('qop_bP5');
   }else if(tipe==='Benar/Salah'){
-    const stmts=[b.pilihan_1,b.pilihan_2,b.pilihan_3,b.pilihan_4,b.pilihan_5].filter(Boolean);
-    // Guard: pastikan jawaban selalu string sebelum split
-    const jawStr=typeof jawaban==='string'?jawaban:(jawaban==null?'':String(jawaban));
-    const jawArr=jawStr?jawStr.split('|'):[];
-    pilihanHtml=stmts.map((s,i)=>`<div class="bsrow" id="bsrow-${n}-${i}"><div class="bst">${i+1}. ${applyArabic(s)}</div>
-      <div class="bstog">
-        <button class="bsb ${jawArr[i]==='Benar'?'b':''}" onclick="pilihBS(${n},${i},'Benar')">Benar</button>
-        <button class="bsb ${jawArr[i]==='Salah'?'s':''}" onclick="pilihBS(${n},${i},'Salah')">Salah</button>
-      </div></div>`).join('');
+    p1=$('bP1')?.value||'';p2=$('bP2')?.value||'';
+    p3=$('bP3')?.value||'';p4=$('bP4')?.value||'';p5=$('bP5')?.value||'';
+  }else if(tipe==='Menjodohkan'){
+    syncJodohKunci();
+  }
+  
+  const kunci=$('bKunci')?.value||'';
+  const obj={pertanyaan,tipe_soal:tipe,pilihan_1:p1,pilihan_2:p2,pilihan_3:p3,pilihan_4:p4,pilihan_5:p5,jawaban_benar:kunci};
+  
+  if(demoMode){
+    if(id){const i=DEMO.bank.findIndex(x=>x.id==id);if(i>=0)DEMO.bank[i]={...DEMO.bank[i],...obj};}
+    else{DEMO.bank.push({...obj,id:Date.now(),status_soal:'Aktif'});}
+    toast('Soal disimpan!','ok');closeModal('mdlButir');loadBank();return;
+  }
+  
+  if(id){await SB.from('bank_soal').update(obj).eq('id',id);}
+  else{await SB.from('bank_soal').insert(obj);}
+  toast('Soal disimpan!','ok');closeModal('mdlButir');loadBank();
 }
 
 function cetakLaporanHasil(){
