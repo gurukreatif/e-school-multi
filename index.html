@@ -3232,15 +3232,30 @@ async function svButir(id){
     p1=getQuillHTML('qop_bP1');p2=getQuillHTML('qop_bP2');
     p3=getQuillHTML('qop_bP3');p4=getQuillHTML('qop_bP4');p5=getQuillHTML('qop_bP5');
   }else if(tipe==='Benar/Salah'){
-    const stmts=[b.pilihan_1,b.pilihan_2,b.pilihan_3,b.pilihan_4,b.pilihan_5].filter(Boolean);
-    // Guard: pastikan jawaban selalu string sebelum split
-    const jawStr=typeof jawaban==='string'?jawaban:(jawaban==null?'':String(jawaban));
-    const jawArr=jawStr?jawStr.split('|'):[];
-    pilihanHtml=stmts.map((s,i)=>`<div class="bsrow" id="bsrow-${n}-${i}"><div class="bst">${i+1}. ${applyArabic(s)}</div>
-      <div class="bstog">
-        <button class="bsb ${jawArr[i]==='Benar'?'b':''}" onclick="pilihBS(${n},${i},'Benar')">Benar</button>
-        <button class="bsb ${jawArr[i]==='Salah'?'s':''}" onclick="pilihBS(${n},${i},'Salah')">Salah</button>
-      </div></div>`).join('');
+    syncBsKunci();
+    if(_bsState.filter(s=>!s.text.trim()).length){toast('Semua pernyataan harus diisi!','er');return;}
+    if(_bsState.filter(s=>!s.val).length){toast('Setiap pernyataan harus dipilih Benar atau Salah!','er');return;}
+  }else if(tipe==='Menjodohkan'){
+    syncJodohKunci();
+    const valid=_jodohState.filter(p=>p.l&&p.r);
+    if(valid.length<2){toast('Minimal 2 pasangan lengkap!','er');return;}
+  }
+
+  const kunci=$('bKunci')?.value.trim()||'';
+  if(!$('bKode').value){toast('Pilih paket soal!','er');return;}
+  if(!pertanyaan||pertanyaan==='<p><br></p>'){toast('Pertanyaan tidak boleh kosong!','er');return;}
+  if(tipe!=='Uraian'&&!kunci){toast('Pilih kunci jawaban terlebih dahulu!','er');return;}
+
+  const o={kode_soal:$('bKode').value,nomer_soal:parseInt($('bNo').value),pertanyaan,tipe_soal:tipe,
+    pilihan_1:p1,pilihan_2:p2,pilihan_3:p3,pilihan_4:p4,pilihan_5:p5,
+    jawaban_benar:kunci,status_soal:$('bSt').value};
+
+  if(demoMode){toast('Mode demo: data tidak tersimpan','in');rmModal('mdButir');return;}
+  try{
+    if(id){await SB.from('butir_soal').update(o).eq('id_soal',id);toast('Soal diperbarui!','ok');}
+    else{await SB.from('butir_soal').insert(o);toast('Soal ditambahkan!','ok');}
+    rmModal('mdButir');loadButir();
+  }catch(e){toast('Error: '+e.message,'er');}
 }
 
 function cetakLaporanHasil(){
