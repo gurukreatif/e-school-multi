@@ -1278,13 +1278,33 @@ span.arab-inline{font-family:'Amiri',serif;font-size:1.15em;direction:rtl;unicod
     <div class="topbar">
       <div class="tbtt" id="sisPT">Dashboard</div>
       <div class="tbusr">
-        <div class="tbuav" id="sisAv" style="background:#059669">S</div>
-        <div>
-          <div class="tbunm" id="sisName">Siswa</div>
-          <div class="tburl" id="sisKls">Kelas</div>
+        <div style="position:relative" id="sisUserWrap">
+          <div class="adm-user-btn" id="sisUserBtn" onclick="toggleSisDropdown()">
+            <div class="tbuav" id="sisAv" style="background:#059669">S</div>
+            <div>
+              <div class="tbunm" id="sisName">Siswa</div>
+              <div class="tburl" id="sisKls">Kelas</div>
+            </div>
+            <i class="fa-solid fa-chevron-down adm-user-chevron"></i>
+          </div>
+          <div class="adm-dropdown" id="sisDropdown">
+            <div class="adm-drop-head">
+              <div style="display:flex;align-items:center;gap:10px">
+                <div class="adm-drop-av" id="sisDropAv" style="background:#059669">S</div>
+                <div>
+                  <div class="adm-drop-name" id="sisDropName">Siswa</div>
+                  <div class="adm-drop-role" id="sisDropKls">Portal Siswa</div>
+                </div>
+              </div>
+            </div>
+            <div style="padding:4px 0">
+              <button class="adm-drop-item" onclick="closeSisDropdown();snav('sdash')"><i class="fa-solid fa-house"></i> Dashboard</button>
+              <button class="adm-drop-item" onclick="closeSisDropdown();snav('snilai')"><i class="fa-solid fa-chart-bar"></i> Nilai Saya</button>
+              <div class="adm-drop-divider"></div>
+              <button class="adm-drop-item danger" onclick="logoutSiswa()"><i class="fa-solid fa-right-from-bracket"></i> Keluar / Logout</button>
+            </div>
+          </div>
         </div>
-        <div class="tbusr-div"></div>
-        <button class="tblob" onclick="logoutSiswa()" title="Logout"><i class="fa-solid fa-right-from-bracket"></i> Logout</button>
       </div>
     </div>
     <div class="pb" id="sisBody"></div>
@@ -2254,6 +2274,21 @@ function logoutAdmin(){
 }
 function logoutSiswa(){if(!confirm('Yakin ingin keluar?'))return;sis=null;router('/login');switchLoginTab('siswa');}
 
+// ── Siswa Topbar Dropdown ──
+function toggleSisDropdown(){
+  const btn=$('sisUserBtn'),dd=$('sisDropdown');
+  if(!btn||!dd)return;
+  dd.classList.contains('open')?closeSisDropdown():(btn.classList.add('open'),dd.classList.add('open'));
+}
+function closeSisDropdown(){
+  $('sisUserBtn')?.classList.remove('open');
+  $('sisDropdown')?.classList.remove('open');
+}
+document.addEventListener('click',function(e){
+  const w=$('sisUserWrap');
+  if(w&&!w.contains(e.target))closeSisDropdown();
+});
+
 // ═══════════════════════════ SUPER ADMIN ═══════════════════════════
 function resetSuperLoginForm(){
   ['saU','saP'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
@@ -2697,8 +2732,8 @@ function showAdminPanel(){
   // Tenant chip
   const chip=$('tenantChip'); const chipName=$('tenantChipName');
   if(currentTenant&&chip){ chip.style.display='flex'; if(chipName) chipName.textContent=currentTenant.nama; }
-  // Sidebar title update
-  const at=document.getElementById('admSBTitle'); if(at&&currentTenant) at.textContent=currentTenant.nama||'Emes CBT System';
+  // Sidebar title — tetap nama aplikasi, bukan nama sekolah
+  // (nama sekolah tampil di tenant-chip di topbar, bukan di sidebar)
   buildSidebarNav();
   const firstPage=(ROLE_PAGES[getRole()]||['dash'])[0];
   nav(firstPage);
@@ -4380,14 +4415,14 @@ async function kartulSiswa(id){
   const pgD=demoMode?DEMO.pengaturan:((await SB.from('pengaturan').select('*').maybeSingle()).data||{});
   const namaSkl=pgD.nama_sekolah||'NAMA SEKOLAH';
   const logoSkl=pgD.logo_sekolah||'';
-  const logoHead=logoSkl
-    ?`<div class="kartu-logo"><img src="${logoSkl}" alt="Logo" style="width:28px;height:28px;object-fit:contain" onerror="this.style.display='none'"></div>`
-    :`<div class="kartu-logo" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:#f1f5f9;border-radius:4px;border:1px solid #e2e8f0"><i class="fa-solid fa-school" style="color:var(--p);font-size:14px"></i></div>`;
+  const logoHtml=logoSkl
+    ?`<img src="${logoSkl}" alt="Logo" style="width:28px;height:28px;object-fit:contain" onerror="this.style.display='none'">`
+    :`<i class="fa-solid fa-school" style="color:#64748b;font-size:18px"></i>`;
   const html=`<div class="mo" id="mdKartu"><div class="md"><div class="mh"><div class="mtt"><i class="fa-solid fa-id-card"></i> Kartu Peserta — ${s.nama_siswa}</div><button class="xb" onclick="rmModal('mdKartu')">✕</button></div>
     <div class="mbb" id="kartuArea">
       <div class="kartu" style="margin:0 auto">
         <div class="kartu-head">
-          ${logoHead}
+          <div class="kartu-logo">${logoHtml}</div>
           <div><div style="font-weight:800;font-size:13px">${namaSkl}</div><div style="font-size:11px;color:var(--mu)">Kartu Peserta Ujian</div></div>
         </div>
         <div style="display:flex;gap:12px">
@@ -5757,11 +5792,16 @@ function showSiswaPanel(){
   const allPages2=['loginPage','superLoginPage','superPanel','adminPanel','examScreen','gameScreen'];
   allPages2.forEach(id=>{ const el=document.getElementById(id); if(el) el.classList.add('hidden'); });
   show('siswaPanel');
-  // Update sidebar title
-  const st=document.getElementById('sisSBTitle'); if(st&&currentTenant) st.textContent=currentTenant.nama;
-  $('sisAv').textContent=sis.nama_siswa[0].toUpperCase();
-  $('sisName').textContent=sis.nama_siswa;
-  $('sisKls').textContent=`Kelas ${sis.kelas}-${sis.rombel}`;
+  // Sidebar title — tetap nama APLIKASI (Emes CBT System), tidak diubah ke nama sekolah
+  const inisial = sis.nama_siswa[0].toUpperCase();
+  const kelasStr = `Kelas ${sis.kelas}-${sis.rombel}`;
+  $('sisAv').textContent = inisial;
+  $('sisName').textContent = sis.nama_siswa;
+  $('sisKls').textContent = kelasStr;
+  // Isi dropdown fields
+  if($('sisDropAv'))   $('sisDropAv').textContent   = inisial;
+  if($('sisDropName')) $('sisDropName').textContent  = sis.nama_siswa;
+  if($('sisDropKls'))  $('sisDropKls').textContent   = kelasStr;
   snav('sdash');
 }
 
