@@ -2129,7 +2129,7 @@ function updateLoginPageUI(){
     }
     // Auto-fill NPSN field
     const npsnField = document.getElementById('loginNPSN');
-    if(npsnField){ npsnField.value = t.npsn; npsnField.readOnly = true; }
+    if(npsnField){ npsnField.value = t.npsn; }
     const npsnHint = document.getElementById('npsnHint');
     if(npsnHint){ npsnHint.style.display='flex'; npsnHint.innerHTML=`<i class="fa-solid fa-circle-check" style="color:var(--ok)"></i> ${t.nama}`; }
     // Left panel
