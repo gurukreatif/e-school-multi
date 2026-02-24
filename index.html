@@ -6762,10 +6762,18 @@ function pilihPGK(n,val){
   EX.jaw[n]=cur.join(',');updateNumGrid();renderSoal(n);
 }
 function pilihBS(n,idx,val){
-  const stmts=[EX.butirs[n-1].pilihan_1,EX.butirs[n-1].pilihan_2,EX.butirs[n-1].pilihan_3,EX.butirs[n-1].pilihan_4].filter(Boolean);
-  const arr=(EX.jaw[n]||stmts.map(()=>'')).split('|');
+  const b=EX.butirs[n-1];
+  const stmts=[b.pilihan_1,b.pilihan_2,b.pilihan_3,b.pilihan_4,b.pilihan_5].filter(Boolean);
+  let arr=[];
+  if(EX.jaw[n]){
+    arr=EX.jaw[n].split('|');
+  }
+  // Pastikan array memiliki panjang yang sama dengan jumlah pernyataan
   while(arr.length<stmts.length)arr.push('');
-  arr[idx]=val;EX.jaw[n]=arr.join('|');updateNumGrid();renderSoal(n);
+  arr[idx]=val;
+  EX.jaw[n]=arr.join('|');
+  updateNumGrid();
+  renderSoal(n);
 }
 function pilihUraian(n){const el=$('jawUraian');if(el)EX.jaw[n]=el.value;updateNumGrid();}
 function pilihJodoh(n){
