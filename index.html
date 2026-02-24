@@ -309,21 +309,24 @@ tbody tr:hover td{background:#fafbff}
 
 /* ── Sub-header di dalam card (nomor soal + mapel kiri | timer + tombol kanan) ── */
 .ex-card-head{
-  padding:14px 24px 12px;
-  display:flex;flex-direction:column;gap:10px;
-  border-bottom:1px solid #e5e7eb;
+  padding:14px 24px 10px;
+  display:flex;flex-direction:column;gap:0;
 }
-.ex-card-head-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.ex-card-head-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:10px}
 .ex-card-head-l{}
 .exsoal-nomor{font-size:20px;font-weight:800;color:#111827;margin:0 0 2px;line-height:1.2}
 .exsoal-mapel{font-size:12px;color:#6b7280;font-weight:500;margin:0}
 .ex-card-head-r{display:flex;align-items:center;gap:8px;flex-shrink:0;padding-top:2px}
 /* Font control inline — sejajar dengan sub-header */
 .ex-fontctrl-inline{
-  display:flex;align-items:center;gap:5px;
+  display:flex;align-items:center;gap:4px;
   font-size:11px;color:#9ca3af;font-weight:500;
+  justify-content:flex-end;
+  padding:5px 24px 6px;
+  border-top:1px solid #f1f5f9;
+  background:#fafafa;
 }
-.ex-fontctrl-inline span{font-size:11px;font-weight:500;color:#9ca3af;margin-right:2px}
+.ex-fontctrl-inline span{font-size:11px;font-weight:500;color:#9ca3af;margin-right:4px}
 
 /* Timer — kotak border seperti ANBK (bukan pill transparan) */
 .timebox{
@@ -373,11 +376,12 @@ tbody tr:hover td{background:#fafbff}
 .ex-fontctrl{display:none}
 .ex-fontctrl span{font-size:11px;font-weight:500;color:#9ca3af}
 .ex-fbtn{
-  background:none;border:none;cursor:pointer;
-  font-weight:700;color:#6b7280;padding:1px 5px;
+  background:none;border:1px solid transparent;cursor:pointer;
+  font-weight:800;color:#9ca3af;padding:1px 6px;
   border-radius:4px;transition:all .12s;font-family:inherit;line-height:1;
 }
-.ex-fbtn:hover,.ex-fbtn.active{color:var(--em);background:var(--em-ll)}
+.ex-fbtn:hover{color:var(--em);border-color:var(--em-l)}
+.ex-fbtn.active{color:var(--em);background:var(--em-ll);border-color:var(--em-l)}
 .ex-fbtn.sm{font-size:11px}
 .ex-fbtn.md{font-size:14px}
 .ex-fbtn.lg{font-size:18px}
@@ -1537,7 +1541,7 @@ const DEMO={
   pengaturan:{
     npsn:'00000000',
     nama_sekolah:'MIN Singkawang',
-    nama_app:'CBT E-School',
+    // nama_app dihapus — identitas app hardcoded
     alamat_sekolah:'Jl. Pendidikan No.1, Kec. Singkawang Tengah, Kota Singkawang, Kalimantan Barat 79122',
     nama_kepsek:'H. Ahmad Fauzi, S.Pd., M.M.',
     nip_kepsek:'196504151990031004',
@@ -1820,7 +1824,7 @@ create table if not exists pengaturan (
   id                bigint primary key generated always as identity,
   npsn              text unique not null references tenants(npsn) on delete cascade,
   nama_sekolah      text default 'Sekolah',
-  nama_app          text default 'CBT E-School',
+  nama_app          text default 'Emes CBT',   -- nilai ini tidak dipakai, identitas app hardcoded
   alamat_sekolah    text default '',
   nama_kepsek       text default '',
   nip_kepsek        text default '',
@@ -1836,7 +1840,7 @@ create policy "allow all pengaturan" on pengaturan for all using (true) with che
 
 -- Insert pengaturan default
 insert into pengaturan (npsn, nama_sekolah, nama_app, alamat_sekolah)
-values ('10200001','MIN Singkawang','CBT E-School','Jl. Pendidikan No.1, Singkawang')
+values ('10200001','MIN Singkawang','Emes CBT','Jl. Pendidikan No.1, Singkawang')
 on conflict (npsn) do nothing;
 
 -- ── INDEX PERFORMA ──
@@ -2458,7 +2462,7 @@ async function saveTenant(existingNpsn){
       const {error} = await SB.from('tenants').insert({npsn,...payload});
       if(error) throw error;
       await SB.from('admins').insert({npsn,username:'admin',password:'admin',nama_admin:'Administrator',role:'admin'});
-      await SB.from('pengaturan').insert({npsn,nama_sekolah:nama,nama_app:'CBT E-School',alamat_sekolah:kabkota});
+      await SB.from('pengaturan').insert({npsn,nama_sekolah:nama,alamat_sekolah:kabkota});
       toast('Sekolah berhasil ditambahkan! Login admin: admin / admin','ok',6000);
       _tenantGridLoaded=false;
     }
@@ -3814,8 +3818,8 @@ async function rHasil(el){
            ${(pg.logo_sekolah) ? `<img src="${pg.logo_sekolah}" class="print-kop-logo" onerror="this.style.display='none'" alt="">` : ''}
            <div class="print-kop-teks">
              <p class="ks-nama" id="phNamaSekolahH">${pg.nama_sekolah||'NAMA SEKOLAH'}</p>
-             <p class="ks-sub" id="phNamaAppH">${pg.nama_app||'Sistem Ujian CBT'}</p>
-             <p class="ks-alamat">${pg.alamat_sekolah||'Sistem Penilaian Ujian Berbasis Komputer (Computer Based Test)'}</p>
+             ${pg.npsn?`<p class="ks-sub" id="phNamaAppH">NPSN: ${pg.npsn}</p>`:''}
+             <p class="ks-alamat">${pg.alamat_sekolah||''}</p>
            </div>
          </div>`
     }
@@ -3954,8 +3958,8 @@ function cetakLaporanHasil(){
         ${pg.logo_sekolah?`<img src="${pg.logo_sekolah}" class="print-kop-logo" onerror="this.style.display='none'" alt="">`:'<div class="print-kop-logo" style="display:flex;align-items:center;justify-content:center;border:1pt solid #ccc;font-size:8pt;color:#999;text-align:center;line-height:1.2">Logo<br>Sekolah</div>'}
         <div class="print-kop-teks">
           <p class="ks-nama">${pg.nama_sekolah||'NAMA SEKOLAH'}</p>
-          <p class="ks-sub">${pg.nama_app||'Sistem Ujian CBT'}</p>
-          <p class="ks-alamat">${pg.alamat_sekolah||'Sistem Penilaian Ujian Berbasis Komputer (Computer Based Test)'}</p>
+          ${pg.npsn?`<p class="ks-sub">NPSN: ${pg.npsn}</p>`:''}
+          <p class="ks-alamat">${pg.alamat_sekolah||''}</p>
         </div></div>`;
     }
   }
@@ -4079,8 +4083,8 @@ async function rAnalisa(el){
            ${(pg.logo_sekolah) ? `<img src="${pg.logo_sekolah}" class="print-kop-logo" onerror="this.style.display='none'" alt="">` : ''}
            <div class="print-kop-teks">
              <p class="ks-nama" id="phNamaSekolahA">${pg.nama_sekolah||'NAMA SEKOLAH'}</p>
-             <p class="ks-sub" id="phNamaAppA">${pg.nama_app||'Sistem Ujian CBT'}</p>
-             <p class="ks-alamat">${pg.alamat_sekolah||'Analisis Butir Soal — Sistem Penilaian Berbasis Komputer'}</p>
+             ${pg.npsn?`<p class="ks-sub" id="phNamaAppA">NPSN: ${pg.npsn}</p>`:''}
+             <p class="ks-alamat">${pg.alamat_sekolah||''}</p>
            </div>
          </div>`
     }
@@ -4268,8 +4272,8 @@ function cetakLaporanAnalisa(){
         ${pg.logo_sekolah?`<img src="${pg.logo_sekolah}" class="print-kop-logo" onerror="this.style.display='none'" alt="">`:'<div class="print-kop-logo" style="display:flex;align-items:center;justify-content:center;border:1pt solid #ccc;font-size:8pt;color:#999;text-align:center;line-height:1.2">Logo<br>Sekolah</div>'}
         <div class="print-kop-teks">
           <p class="ks-nama">${pg.nama_sekolah||'NAMA SEKOLAH'}</p>
-          <p class="ks-sub">${pg.nama_app||'Sistem Ujian CBT'}</p>
-          <p class="ks-alamat">${pg.alamat_sekolah||'Analisis Butir Soal — Sistem Penilaian Berbasis Komputer'}</p>
+          ${pg.npsn?`<p class="ks-sub">NPSN: ${pg.npsn}</p>`:''}
+          <p class="ks-alamat">${pg.alamat_sekolah||''}</p>
         </div></div>`;
     }
   }
@@ -4370,15 +4374,21 @@ async function svSiswa(id){
   }catch(e){toast('Error: '+e.message,'er');}
 }
 
-function kartulSiswa(id){
+async function kartulSiswa(id){
   const s=(window._siswa||[]).find(x=>x.id_siswa===id);if(!s)return;
   document.getElementById('mdKartu')?.remove();
+  const pgD=demoMode?DEMO.pengaturan:((await SB.from('pengaturan').select('*').maybeSingle()).data||{});
+  const namaSkl=pgD.nama_sekolah||'NAMA SEKOLAH';
+  const logoSkl=pgD.logo_sekolah||'';
+  const logoHead=logoSkl
+    ?`<div class="kartu-logo"><img src="${logoSkl}" alt="Logo" style="width:28px;height:28px;object-fit:contain" onerror="this.style.display='none'"></div>`
+    :`<div class="kartu-logo" style="width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:#f1f5f9;border-radius:4px;border:1px solid #e2e8f0"><i class="fa-solid fa-school" style="color:var(--p);font-size:14px"></i></div>`;
   const html=`<div class="mo" id="mdKartu"><div class="md"><div class="mh"><div class="mtt"><i class="fa-solid fa-id-card"></i> Kartu Peserta — ${s.nama_siswa}</div><button class="xb" onclick="rmModal('mdKartu')">✕</button></div>
     <div class="mbb" id="kartuArea">
       <div class="kartu" style="margin:0 auto">
         <div class="kartu-head">
-          <div class="kartu-logo"><img src="https://i.imgur.com/bT70O4C.png" alt="Logo" style="width:28px;height:28px;object-fit:contain" onerror="this.outerHTML='<i class=\'fa-solid fa-clipboard-list\' style=\'color:var(--p);font-size:18px\'></i>'"></div>
-          <div><div style="font-weight:800;font-size:13px">CBT E-School</div><div style="font-size:11px;color:var(--mu)">Kartu Peserta Ujian</div></div>
+          ${logoHead}
+          <div><div style="font-weight:800;font-size:13px">${namaSkl}</div><div style="font-size:11px;color:var(--mu)">Kartu Peserta Ujian</div></div>
         </div>
         <div style="display:flex;gap:12px">
           <div style="width:56px;height:80px;border:1.5px solid #94a3b8;border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;color:#94a3b8;text-align:center;line-height:1.4;flex-shrink:0;background:#f8fafc">
@@ -6056,6 +6066,9 @@ async function mulaiUjian(idSoal, expectedToken){
       }
     }
   }
+  // Identitas aplikasi hardcoded — tidak diambil dari DB
+  EX.appName = 'Emes CBT';
+  EX.appLogo = 'https://i.imgur.com/bT70O4C.png';
   renderExam();
 }
 
@@ -6071,10 +6084,10 @@ function renderExam(){
       <div class="exhd">
         <div class="exhd-left">
           <div class="exhd-logo">
-            ${s.logo_sekolah?`<img src="${s.logo_sekolah}" alt="logo">`:`<i class="fa-solid fa-book-open"></i>`}
+            <img src="https://i.imgur.com/bT70O4C.png" alt="Emes CBT" style="filter:brightness(0) invert(1);width:28px;height:28px;object-fit:contain">
           </div>
           <div class="exhd-title">
-            <h2>${s.nama_soal}</h2>
+            <h2>Emes CBT</h2>
             <p>${s.mapel} · ${s.waktu_ujian} menit · ${b.length} soal</p>
           </div>
         </div>
@@ -6204,7 +6217,7 @@ function renderSoal(n){
               <i class="fa-solid fa-table-cells-large"></i>
               <span>Daftar Soal</span>
             </button>
-            ${EX.soal.tampil_tombol_selesai?`<button class="exhd-btn danger" onclick="selesaiUjian()"><i class="fa-solid fa-flag-checkered"></i><span>Selesai</span></button>`:''}
+
           </div>
         </div>
         <div class="ex-fontctrl-inline">
