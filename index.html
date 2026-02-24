@@ -356,7 +356,8 @@ tbody tr:hover td{background:#fafbff}
   font-size:15px;line-height:1.8;
   margin-bottom:24px;color:#1e293b;font-weight:500;
 }
-.stxt img{max-width:100%;border-radius:8px;margin:8px 0;border:1px solid #e2e8f0}
+.stxt img{max-width:100%;max-height:150px;object-fit:contain;border-radius:8px;margin:8px 0;border:1px solid #e2e8f0;display:block}
+.opt img,.pgk img,.bst img,.jleft img{max-width:100%;max-height:100px;object-fit:contain;border-radius:6px;margin:4px 0;border:1px solid #e2e8f0;display:block}
 
 /* ══ ARABIC TEXT ══ */
 .arab{
@@ -772,7 +773,8 @@ span.arab-inline{
 .ql-editor-wrap .ql-container{border:none;font-family:'Plus Jakarta Sans',sans-serif;font-size:13px}
 .ql-editor-wrap .ql-editor{min-height:90px;padding:10px 12px;line-height:1.6;color:var(--tx)}
 .ql-editor-wrap .ql-editor p{margin:0 0 4px}
-.ql-editor-wrap .ql-editor img{max-width:100%;border-radius:6px;margin:4px 0;cursor:pointer}
+.ql-editor-wrap .ql-editor img{max-width:100%;max-height:150px;object-fit:contain;border-radius:6px;margin:4px 0;cursor:pointer;display:block}
+.ql-opsi-wrap .ql-editor img{max-height:100px}
 .ql-editor-wrap .ql-editor img:hover{outline:2px solid var(--p)}
 .ql-editor-wrap.ql-sm .ql-editor{min-height:64px}
 .ql-editor-wrap.ql-lg .ql-editor{min-height:140px}
