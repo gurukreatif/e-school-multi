@@ -16,6 +16,9 @@
 <!-- Quill Editor (Snow theme) -->
 <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
 <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+<!-- SweetAlert2 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <style>
 :root{--p:#059669;--pd:#047857;--pl:#d1fae5;--ac:#f59e0b;--ok:#10b981;--er:#ef4444;--wa:#f59e0b;--bg:#f8fafc;--card:#fff;--br:#e2e8f0;--tx:#0f172a;--mu:#64748b;--sw:260px;--r:12px;--sh:0 1px 3px rgba(0,0,0,.07),0 4px 16px rgba(0,0,0,.05);--sh2:0 4px 12px rgba(0,0,0,.12),0 16px 48px rgba(0,0,0,.08)}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -654,7 +657,7 @@ tbody tr:hover td{background:#fafbff}
 }
 .td{
   font-family:'JetBrains Mono',monospace;
-  font-size:14px;font-weight:700;color:#1f2937;
+  font-size:17px;font-weight:800;color:#1f2937;
   letter-spacing:.08em;padding:6px 14px;
   min-width:70px;text-align:center;
   display:flex;align-items:center;justify-content:center;
@@ -1088,7 +1091,7 @@ span.arab-inline{font-family:'Amiri',serif;font-size:1.15em;direction:rtl;unicod
   /* Timer mobile: tanpa border box, hanya angka bold */
   .timebox{border:none;background:transparent;box-shadow:none;gap:0;flex-shrink:0}
   .tl{display:none}
-  .td{font-size:16px;font-weight:800;padding:0;min-width:auto;letter-spacing:.02em;color:#1f2937;border:none}
+  .td{font-size:24px;font-weight:800;padding:0;min-width:auto;letter-spacing:.03em;color:#1f2937;border:none}
 
   /* Baris 2: font resizer kiri | tombol ikon kanan */
   .ex-ch-row2{padding:7px 0 9px}
@@ -1163,6 +1166,16 @@ span.arab-inline{font-family:'Amiri',serif;font-size:1.15em;direction:rtl;unicod
   /* Font resizer buttons on mobile - ensure clickable */
   .ex-fbtn{pointer-events:auto!important}
 }
+/* ── SweetAlert2 Emes CBT Theme ── */
+.swal-emes.swal2-popup{font-family:'Plus Jakarta Sans',sans-serif;border-radius:14px;padding:28px 28px 24px}
+.swal-emes .swal2-title{font-size:17px;font-weight:800;color:#0f172a}
+.swal-emes .swal2-html-container{font-size:13.5px;color:#374151;margin-top:6px}
+.swal-emes .swal2-icon{margin:0 auto 14px;width:52px;height:52px}
+.swal-emes .swal2-icon .swal2-icon-content{font-size:28px}
+.swal-emes .swal2-actions{gap:8px;margin-top:20px}
+.swal-emes .swal2-confirm,.swal-emes .swal2-cancel{font-family:'Plus Jakarta Sans',sans-serif;font-weight:700;font-size:13px;border-radius:8px;padding:9px 20px}
+.swal2-backdrop-show{background:rgba(15,23,42,.5)!important}
+
 /* ─── QUILL EDITOR CUSTOM STYLES ─── */
 .ql-editor-wrap{border:1.5px solid var(--br);border-radius:7px;overflow:hidden;background:#fff;transition:border-color .12s}
 .ql-editor-wrap:focus-within{border-color:var(--p);box-shadow:0 0 0 3px rgba(5,150,105,.1)}
@@ -1785,6 +1798,50 @@ const EX={soal:null,butirs:[],jaw:{},ragu:{},cur:1,timer:null,tsec:0,sid:null,as
 
 // ═══════════════════════════ OFFLINE/HYBRID MODE ═══════════════════════════
 let DB_INSTANCE=null;
+
+// ═══════ SWEETALERT2 HELPERS ═══════
+// Warna tema Emes CBT
+const SwalTheme = {
+  confirmButtonColor: '#059669',
+  cancelButtonColor : '#6b7280',
+  customClass: { popup:'swal-emes', confirmButton:'swal-btn-confirm', cancelButton:'swal-btn-cancel' }
+};
+
+// Pengganti confirm() — returns Promise<boolean>
+async function swalConfirm(title, text='', icon='question', confirmText='Ya', cancelText='Batal'){
+  const r = await Swal.fire({
+    title, text, icon,
+    showCancelButton: true,
+    confirmButtonText: confirmText,
+    cancelButtonText : cancelText,
+    reverseButtons: true,
+    focusCancel: true,
+    ...SwalTheme
+  });
+  return r.isConfirmed;
+}
+
+// Konfirmasi berbahaya (merah)
+async function swalDanger(title, text='', confirmText='Hapus'){
+  const r = await Swal.fire({
+    title, text, icon:'warning',
+    showCancelButton: true,
+    confirmButtonText: confirmText,
+    cancelButtonText : 'Batal',
+    confirmButtonColor: '#dc2626',
+    cancelButtonColor : '#6b7280',
+    reverseButtons: true, focusCancel: true,
+    customClass: { popup:'swal-emes' }
+  });
+  return r.isConfirmed;
+}
+
+// Info soal — dialog cantik
+function swalInfo(title, html){
+  Swal.fire({ title, html, icon:'info', confirmButtonText:'Tutup', ...SwalTheme });
+}
+// ═══════════════════════════════════
+
 const DB_NAME='EmesCBT',DB_VER=1;
 
 function initIndexedDB(){
@@ -2649,14 +2706,14 @@ document.addEventListener('click', function(e){
   if(wrap && !wrap.contains(e.target)) closeAdmDropdown();
 });
 
-function logoutAdmin(){
-  if(!confirm('Yakin ingin keluar?'))return;
+async function logoutAdmin(){
+  if(!await swalConfirm('Keluar','Yakin ingin keluar dari panel admin?','question','Ya, Keluar'))return;
   adm=null;
   // Kalau super admin sedang preview tenant, kembali ke super panel
   if(superAdminSess){ router('/super'); }
   else { router('/login'); switchLoginTab('admin'); }
 }
-function logoutSiswa(){if(!confirm('Yakin ingin keluar?'))return;sis=null;router('/login');switchLoginTab('siswa');}
+async function logoutSiswa(){if(!await swalConfirm('Keluar','Yakin ingin keluar?','question','Ya, Keluar'))return;sis=null;router('/login');switchLoginTab('siswa');}
 
 // ── Siswa Topbar Dropdown ──
 function toggleSisDropdown(){
@@ -2714,8 +2771,8 @@ document.addEventListener('click', function(e){
   }
 });
 
-function logoutSuperAdmin(){
-  if(!confirm('Yakin ingin keluar dari Super Admin?'))return;
+async function logoutSuperAdmin(){
+  if(!await swalConfirm('Keluar','Yakin ingin keluar dari Super Admin?','question','Ya, Keluar'))return;
   superAdminSess = null;
   router('/login');
 }
@@ -2892,7 +2949,7 @@ async function saveTenant(existingNpsn){
 
 async function toggleSaTenantStatus(npsn, current){
   const ns = current==='Aktif'?'Nonaktif':'Aktif';
-  if(!confirm('Ubah status sekolah NPSN '+npsn+' menjadi '+ns+'?'))return;
+  if(!await swalConfirm('Ubah Status','Ubah status sekolah NPSN '+npsn+' menjadi '+ns+'?'))return;
   if(!SB){toast('Tidak ada koneksi','er');return;}
   try{
     await SB.from('tenants').update({status:ns}).eq('npsn',npsn);
@@ -2903,8 +2960,8 @@ async function toggleSaTenantStatus(npsn, current){
 }
 
 async function deleteSaTenant(npsn, nama){
-  if(!confirm('Hapus sekolah "'+nama+'" (NPSN: '+npsn+')?\n\nSEMUA DATA (siswa, soal, nilai, dll) akan terhapus permanen!'))return;
-  if(!confirm('Konfirmasi sekali lagi: hapus semua data NPSN '+npsn+'?'))return;
+  if(!await swalDanger('Hapus Sekolah?','Hapus "'+nama+'" (NPSN: '+npsn+')? SEMUA DATA siswa, soal, nilai akan terhapus permanen!','Hapus Permanen'))return;
+  if(!await swalDanger('Konfirmasi Akhir','Tindakan ini tidak bisa dibatalkan. Lanjutkan?','Ya, Hapus Sekarang'))return;
   if(!SB){toast('Tidak ada koneksi','er');return;}
   try{
     await SB.from('tenants').delete().eq('npsn',npsn);
@@ -3327,7 +3384,7 @@ async function svSoal(id){
 }
 
 async function dupSoal(id){
-  if(!confirm('Duplikat paket soal ini beserta semua butir soalnya?'))return;
+  if(!await swalConfirm('Duplikat Paket Soal?','Paket soal beserta semua butirnya akan diduplikat.','question','Ya, Duplikat'))return;
   if(demoMode){toast('Mode demo: tidak bisa menduplikat','in');return;}
   try{
     const{data:orig}=await SB.from('soal').select('*').eq('id_soal',id).single();
@@ -3392,7 +3449,7 @@ function renderPilihanPreview(b){
 }
 
 async function delSoal(id){
-  if(!confirm('Hapus paket soal ini? Semua butir soal dan nilai terkait akan ikut terhapus!'))return;
+  if(!await swalDanger('Hapus Paket Soal?','Semua butir soal dan nilai terkait akan ikut terhapus!'))return;
   if(demoMode){toast('Mode demo','in');return;}
   const{data:s}=await SB.from('soal').select('kode_soal').eq('id_soal',id).single();
   if(s){await SB.from('butir_soal').delete().eq('kode_soal',s.kode_soal);await SB.from('nilai').delete().eq('kode_soal',s.kode_soal);}
@@ -4216,7 +4273,7 @@ async function svButir(id){
 }
 
 async function delButir(id){
-  if(!confirm('Hapus butir soal ini?'))return;
+  if(!await swalDanger('Hapus Butir Soal?','Butir soal ini akan dihapus permanen.'))return;
   if(demoMode){toast('Mode demo','in');return;}
   await SB.from('butir_soal').delete().eq('id_soal',id);
   toast('Soal dihapus!','ok');loadButir();
@@ -4475,7 +4532,7 @@ async function simpanKoreksi(idNilai,nArr,maxPerS){
 }
 
 async function delHasil(id){
-  if(!confirm('Hapus hasil ujian ini?'))return;
+  if(!await swalDanger('Hapus Hasil Ujian?','Data nilai dan jawaban siswa ini akan dihapus.'))return;
   if(demoMode){toast('Mode demo','in');return;}
   await SB.from('nilai').delete().eq('id_nilai',id);toast('Dihapus!','ok');loadHasil();
 }
@@ -4859,14 +4916,14 @@ async function printKartu(){
 }
 
 async function resetLogin(id){
-  if(!confirm('Reset session login siswa ini? Siswa harus login ulang.'))return;
+  if(!await swalConfirm('Reset Session?','Siswa harus login ulang setelah reset.','warning','Ya, Reset'))return;
   if(demoMode){toast('Mode demo','in');return;}
   await SB.from('siswa').update({session_token:'',force_logout:false,page_url:''}).eq('id_siswa',id);
   toast('Session login direset!','ok');
 }
 
 async function delSiswa(id){
-  if(!confirm('Hapus siswa ini? Semua nilai dan jawaban terkait juga akan dihapus!'))return;
+  if(!await swalDanger('Hapus Siswa?','Semua nilai dan jawaban terkait juga akan dihapus!'))return;
   if(demoMode){toast('Mode demo','in');return;}
   await SB.from('nilai').delete().eq('id_siswa',id);
   await SB.from('jawaban_siswa').delete().eq('id_siswa',id);
@@ -5189,12 +5246,12 @@ async function loadMonitor(){
 }
 
 async function pakuLogout(id){
-  if(!confirm('Paksa siswa ini selesai ujian?'))return;
+  if(!await swalConfirm('Paksa Selesai?','Siswa ini akan dipaksa menyelesaikan ujian sekarang.','warning','Ya, Paksa'))return;
   await SB.from('jawaban_siswa').update({status_ujian:'Selesai'}).eq('id_jawaban',id);
   toast('Siswa dipaksa selesai','ok');loadMonitor();
 }
 async function pakuAll(){
-  if(!confirm('Paksa SEMUA siswa yang sedang ujian untuk selesai?'))return;
+  if(!await swalDanger('Paksa Semua Selesai?','SEMUA siswa yang sedang ujian akan dipaksa selesai!','Ya, Paksa Semua'))return;
   if(demoMode)return;
   await SB.from('jawaban_siswa').update({status_ujian:'Selesai'}).eq('status_ujian','Aktif');
   toast('Semua siswa dipaksa selesai','ok');loadMonitor();
@@ -5790,7 +5847,7 @@ async function sendAdmChat(){
 }
 
 async function delAllChat(){
-  if(!confirm('Hapus semua pesan chat?'))return;
+  if(!await swalDanger('Hapus Semua Chat?','Semua pesan chat akan dihapus permanen.'))return;
   if(demoMode){DEMO.chat=[];loadChat();return;}
   await SB.from('chat').delete().neq('id',0);
   toast('Semua chat dihapus!','ok');loadChat();
@@ -5848,7 +5905,7 @@ async function svUser(id){
 }
 
 async function delUser(id){
-  if(!confirm('Hapus user admin ini?'))return;
+  if(!await swalDanger('Hapus User Admin?','User admin ini akan dihapus dari sistem.'))return;
   if(demoMode){toast('Mode demo','in');return;}
   await SB.from('admins').delete().eq('id',id);toast('User dihapus!','ok');nav('users');
 }
@@ -5897,7 +5954,7 @@ async function svFaq(id){
 }
 
 async function delFaq(id){
-  if(!confirm('Hapus FAQ ini?'))return;
+  if(!await swalDanger('Hapus FAQ?','Entri FAQ ini akan dihapus permanen.'))return;
   if(demoMode){toast('Mode demo','in');return;}
   await SB.from('faq').delete().eq('id',id);toast('Dihapus!','ok');nav('faq');
 }
@@ -6163,8 +6220,8 @@ async function svSet(){
 }
 
 async function resetDataUjian(){
-  if(!confirm('PERINGATAN: Hapus semua data jawaban dan nilai ujian? Tindakan ini tidak bisa dibatalkan!'))return;
-  if(!confirm('Yakin benar-benar ingin menghapus semua data ujian?'))return;
+  if(!await swalDanger('Hapus Semua Data Ujian?','PERINGATAN: Semua jawaban dan nilai ujian akan dihapus permanen. Tindakan ini tidak dapat dibatalkan!','Hapus Semua'))return;
+  if(!await swalDanger('Konfirmasi Akhir','Yakin benar-benar ingin menghapus semua data ujian?','Ya, Hapus Sekarang'))return;
   if(demoMode){toast('Mode demo','in');return;}
   await SB.from('jawaban_siswa').delete().neq('id_jawaban',0);
   await SB.from('nilai').delete().neq('id_nilai',0);
@@ -6782,7 +6839,28 @@ function showInfoSoal(){
   const dijawab=Object.values(EX.jaw).filter(v=>v!==undefined&&v!=='').length;
   const ragu=Object.values(EX.ragu).filter(Boolean).length;
   const belum=total-dijawab;
-  alert(`ℹ️ Informasi Soal\n\n📋 Paket: ${s.nama_soal}\n📚 Mapel: ${s.mapel}\n⏱ Durasi: ${s.waktu_ujian} menit\n\n✅ Dijawab: ${dijawab} soal\n⚠️ Ragu-ragu: ${ragu} soal\n⬜ Belum dijawab: ${belum} soal`);
+  swalInfo('Informasi Soal',`
+    <div style="text-align:left;font-size:14px;line-height:1.8">
+      <div style="padding:10px 14px;background:#f8fafc;border-radius:8px;margin-bottom:12px;border-left:3px solid #059669">
+        <div style="font-size:12px;color:#6b7280;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px">Paket Ujian</div>
+        <div style="font-weight:700;color:#0f172a">${s.nama_soal}</div>
+        <div style="font-size:13px;color:#374151;margin-top:2px">${s.mapel} &bull; ${s.waktu_ujian} menit &bull; ${total} soal</div>
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px">
+        <div style="text-align:center;padding:12px 8px;background:#ecfdf5;border-radius:8px">
+          <div style="font-size:22px;font-weight:800;color:#059669">${dijawab}</div>
+          <div style="font-size:11px;color:#059669;font-weight:600">Dijawab</div>
+        </div>
+        <div style="text-align:center;padding:12px 8px;background:#fffbeb;border-radius:8px">
+          <div style="font-size:22px;font-weight:800;color:#d97706">${ragu}</div>
+          <div style="font-size:11px;color:#d97706;font-weight:600">Ragu-ragu</div>
+        </div>
+        <div style="text-align:center;padding:12px 8px;background:#f8fafc;border-radius:8px">
+          <div style="font-size:22px;font-weight:800;color:#64748b">${belum}</div>
+          <div style="font-size:11px;color:#64748b;font-weight:600">Belum</div>
+        </div>
+      </div>
+    </div>`);
 }
 
 // ── Daftar Soal Modal (ANBK style) ──
@@ -6870,8 +6948,8 @@ async function autoSubmit(){clearInterval(EX.autoSaveInt);await saveJawaban(true
 
 async function selesaiUjian(){
   const belum=EX.butirs.filter((_,i)=>!EX.jaw[i+1]||EX.jaw[i+1]==='').length;
-  if(belum>0){if(!confirm(`Masih ada ${belum} soal yang belum dijawab. Yakin ingin mengakhiri ujian?`))return;}
-  else{if(!confirm('Yakin ingin mengakhiri ujian?'))return;}
+  if(belum>0){if(!await swalConfirm('Akhiri Ujian?',`Masih ada ${belum} soal yang belum dijawab. Yakin ingin mengakhiri?`,'warning','Ya, Akhiri'))return;}
+  else{if(!await swalConfirm('Akhiri Ujian?','Semua soal sudah dijawab. Yakin ingin mengakhiri ujian?','question','Ya, Akhiri'))return;}
   clearInterval(EX.timer);clearInterval(EX.autoSaveInt);
   document.removeEventListener('keydown',examKeyNav);
   await saveJawaban(true);hitungNilai();
