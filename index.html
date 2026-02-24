@@ -667,11 +667,50 @@ span.arab-inline{
 /* CHAT */
 .chatw{display:flex;flex-direction:column;height:400px}
 .chatms{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:7px;background:var(--bg);border-radius:9px;margin-bottom:9px}
-.cm{max-width:68%;padding:8px 12px;border-radius:11px;font-size:13px;line-height:1.5}
+.cm{max-width:72%;padding:8px 12px;border-radius:11px;font-size:13px;line-height:1.5;position:relative;word-break:break-word}
 .cm.me{background:var(--p);color:#fff;align-self:flex-end;border-bottom-right-radius:3px}
 .cm.other{background:#fff;border:1px solid var(--br);align-self:flex-start;border-bottom-left-radius:3px}
-.cmmeta{font-size:10.5px;color:var(--mu);margin-bottom:2px}
+.cmmeta{font-size:10.5px;color:var(--mu);margin-bottom:2px;display:flex;align-items:center;gap:6px}
 .chatin{display:flex;gap:7px}.chatin .fc{flex:1}
+/* Reply preview bar */
+.cm-reply-bar{
+  background:rgba(0,0,0,.07);border-left:3px solid rgba(0,0,0,.25);
+  border-radius:6px;padding:5px 9px;margin-bottom:7px;
+  font-size:11.5px;line-height:1.4;cursor:pointer;
+}
+.cm.me .cm-reply-bar{background:rgba(255,255,255,.15);border-left-color:rgba(255,255,255,.5)}
+.cm-reply-bar-name{font-weight:700;margin-bottom:2px;opacity:.85}
+.cm-reply-bar-text{opacity:.75;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}
+/* Reply input preview */
+.chat-reply-preview{
+  display:none;
+  background:#f0faf6;border-left:3px solid var(--p);
+  padding:7px 12px;border-radius:0 6px 6px 0;
+  margin-bottom:0;border-bottom:1px solid var(--br);
+  font-size:12px;position:relative;
+}
+.chat-reply-preview.show{display:flex;align-items:flex-start;gap:8px}
+.chat-reply-preview-txt{flex:1;min-width:0}
+.chat-reply-preview-name{font-weight:700;color:var(--p);font-size:11.5px;margin-bottom:2px}
+.chat-reply-preview-msg{color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.chat-reply-cancel{
+  background:none;border:none;cursor:pointer;color:var(--mu);font-size:16px;padding:0 2px;
+  flex-shrink:0;line-height:1;
+}
+.chat-reply-cancel:hover{color:var(--er)}
+/* Hover to show reply button */
+.cm-wrap{position:relative;display:flex;flex-direction:column;}
+.cm-wrap:hover .cm-reply-btn,.cm-wrap:focus-within .cm-reply-btn{opacity:1}
+.cm-reply-btn{
+  opacity:0;transition:opacity .15s;
+  position:absolute;bottom:4px;
+  background:#fff;border:1px solid var(--br);
+  border-radius:5px;padding:2px 8px;font-size:11px;font-weight:600;
+  color:var(--p);cursor:pointer;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.1);
+}
+.cm-wrap.is-me .cm-reply-btn{right:calc(100% + 6px)}
+.cm-wrap.is-other .cm-reply-btn{left:calc(100% + 6px)}
+.cm-reply-btn:hover{background:var(--pl)}
 /* GAME */
 .gamecard{border-radius:13px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;border:2px solid var(--br);background:#fff}
 .gamecard:hover{transform:translateY(-4px);box-shadow:var(--sh2);border-color:var(--p)}
@@ -1759,10 +1798,17 @@ create table if not exists chat (
   nama_pengirim text,
   role          text default 'siswa',
   pesan         text,
+  id_reply      bigint references chat(id) on delete set null,
+  reply_nama    text,
+  reply_pesan   text,
   waktu         timestamptz default now()
 );
 alter table chat enable row level security;
 create policy "allow all chat" on chat for all using (true) with check (true);
+-- Migration: tambah kolom reply jika belum ada
+alter table chat add column if not exists id_reply bigint references chat(id) on delete set null;
+alter table chat add column if not exists reply_nama text;
+alter table chat add column if not exists reply_pesan text;
 
 -- ── 9. SKOR GAME ──
 create table if not exists skor_game (
@@ -5169,42 +5215,146 @@ async function cetakBeritaAcara(){
 
 
 // ─── CHAT SISWA ───
+// State untuk reply
+let _chatReply={id:null,nama:'',pesan:''};
+
 async function rChat(el){
-  el.innerHTML=`<div class="card"><div class="ch"><div class="ct"><i class=\"fa-solid fa-comments\" style=\"color:var(--p)\"></i> Chat Siswa</div>
-    <div style="display:flex;gap:7px"><button class="btn bsm bo" onclick="loadChat()">Refresh</button>
-    <button class="btn bsm bd" onclick="delAllChat()">Hapus Semua</button></div></div>
-    <div class="mbb" style="height:420px;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:7px;background:var(--bg)" id="chatMsgs"></div>
-    <div style="padding:13px;border-top:1px solid var(--br);display:flex;gap:8px">
-      <input id="admChatIn" class="fc" placeholder="Tulis pesan sebagai admin..." style="flex:1" onkeydown="if(event.key==='Enter')sendAdmChat()">
-      <button class="btn bp" onclick="sendAdmChat()">Kirim</button>
+  el.innerHTML=`
+  <div class="card" style="overflow:hidden">
+    <div class="ch">
+      <div class="ct"><i class="fa-solid fa-comments" style="color:var(--p)"></i> Chat Siswa</div>
+      <div style="display:flex;gap:7px">
+        <button class="btn bsm bo" onclick="loadChat()"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+        <button class="btn bsm bd" onclick="delAllChat()"><i class="fa-solid fa-trash"></i> Hapus Semua</button>
+      </div>
+    </div>
+    <!-- Area pesan -->
+    <div id="chatMsgs"
+      style="height:460px;overflow-y:auto;padding:14px 16px;display:flex;flex-direction:column;gap:10px;background:var(--bg)">
+    </div>
+    <!-- Reply preview bar -->
+    <div class="chat-reply-preview" id="chatReplyPreview">
+      <div class="chat-reply-preview-txt">
+        <div class="chat-reply-preview-name" id="chatReplyName"></div>
+        <div class="chat-reply-preview-msg" id="chatReplyMsg"></div>
+      </div>
+      <button class="chat-reply-cancel" onclick="cancelReply()" title="Batalkan reply">×</button>
+    </div>
+    <!-- Input -->
+    <div style="padding:10px 14px;border-top:1px solid var(--br);display:flex;gap:8px;align-items:center;background:#fff">
+      <input id="admChatIn" class="fc" placeholder="Tulis pesan sebagai admin..."
+        style="flex:1" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendAdmChat()}">
+      <button class="btn bp" style="height:38px;padding:0 18px" onclick="sendAdmChat()">
+        <i class="fa-solid fa-paper-plane"></i> Kirim
+      </button>
     </div>
   </div>`;
+  _chatReply={id:null,nama:'',pesan:''};
   loadChat();
-  $('admChatInterval')||Object.assign(document.createElement('span'),{id:'admChatInterval'}).remove();
+  // Auto-refresh setiap 15 detik
+  clearInterval(window._chatRefreshInt);
+  window._chatRefreshInt=setInterval(()=>{if($('chatMsgs'))loadChat();else clearInterval(window._chatRefreshInt);},15000);
 }
 
 async function loadChat(){
   const el=$('chatMsgs');if(!el)return;
-  let d=demoMode?DEMO.chat:((await SB.from('chat').select('*').order('waktu').limit(100)).data||[]);
-  if(!d.length){el.innerHTML='<div style="text-align:center;color:var(--mu);padding:30px">Belum ada pesan chat</div>';return;}
-  el.innerHTML=d.map(m=>`<div style="${m.role==='admin'?'align-self:flex-end':'align-self:flex-start'}">
-    <div class="cmmeta" style="text-align:${m.role==='admin'?'right':'left'}">${m.nama_pengirim} · ${fdt(m.waktu)}</div>
-    <div class="cm ${m.role==='admin'?'me':'other'}">${m.pesan}</div>
-  </div>`).join('');
+  let d=demoMode
+    ?DEMO.chat
+    :((await SB.from('chat').select('*').order('waktu').limit(200)).data||[]);
+  if(!d.length){
+    el.innerHTML='<div style="text-align:center;color:var(--mu);padding:40px;font-size:13px"><i class="fa-regular fa-comment-dots" style="font-size:28px;display:block;margin-bottom:8px"></i>Belum ada pesan chat</div>';
+    return;
+  }
+  // Map id→pesan untuk lookup reply
+  const msgMap={};d.forEach(m=>{msgMap[m.id]=m;});
+  const isMe=m=>m.role==='admin';
+
+  el.innerHTML=d.map(m=>{
+    const me=isMe(m);
+    // Reply bar jika ada
+    let replyBar='';
+    if(m.id_reply&&(m.reply_nama||m.reply_pesan)){
+      replyBar=`<div class="cm-reply-bar" onclick="scrollToMsg(${m.id_reply})">
+        <div class="cm-reply-bar-name">${escHtml(m.reply_nama||'')}</div>
+        <div class="cm-reply-bar-text">${escHtml((m.reply_pesan||'').substring(0,80))}${(m.reply_pesan||'').length>80?'…':''}</div>
+      </div>`;
+    }
+    return`<div class="cm-wrap ${me?'is-me':'is-other'}" id="cmsg-${m.id}"
+        style="align-self:${me?'flex-end':'flex-start'};display:flex;flex-direction:column;max-width:72%">
+      <div class="cmmeta" style="justify-content:${me?'flex-end':'flex-start'}">
+        ${me?`<span style="font-size:9.5px;color:var(--p);font-weight:700">Admin</span>`:`<i class="fa-solid fa-user-graduate" style="font-size:9px;color:var(--mu)"></i>`}
+        <span>${escHtml(m.nama_pengirim)}</span>
+        <span>·</span><span>${fdt(m.waktu)}</span>
+      </div>
+      <div class="cm ${me?'me':'other'}">
+        ${replyBar}
+        ${escHtml(m.pesan)}
+      </div>
+      <button class="cm-reply-btn" onclick="setReply(${m.id},'${escAttr(m.nama_pengirim)}','${escAttr(m.pesan)}')">
+        <i class="fa-solid fa-reply" style="font-size:10px"></i> Balas
+      </button>
+    </div>`;
+  }).join('');
   el.scrollTop=el.scrollHeight;
 }
 
+function setReply(id,nama,pesan){
+  _chatReply={id,nama,pesan};
+  const prev=$('chatReplyPreview');
+  if(prev){
+    prev.classList.add('show');
+    $('chatReplyName').textContent=nama;
+    $('chatReplyMsg').textContent=pesan.substring(0,80)+(pesan.length>80?'…':'');
+  }
+  $('admChatIn')?.focus();
+}
+
+function cancelReply(){
+  _chatReply={id:null,nama:'',pesan:''};
+  const prev=$('chatReplyPreview');
+  if(prev)prev.classList.remove('show');
+}
+
+function scrollToMsg(id){
+  const el=document.getElementById(`cmsg-${id}`);
+  if(!el)return;
+  el.scrollIntoView({behavior:'smooth',block:'center'});
+  // Highlight sebentar
+  el.style.transition='background .2s';
+  el.style.background='rgba(5,150,105,.12)';
+  el.style.borderRadius='10px';
+  setTimeout(()=>{el.style.background='';},1500);
+}
+
+// Helper escape
+function escHtml(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function escAttr(s){return String(s||'').replace(/'/g,"\\'").replace(/\n/g,' ').substring(0,120)}
+
 async function sendAdmChat(){
-  const msg=$('admChatIn')?.value.trim();if(!msg)return;
-  if(demoMode){DEMO.chat.push({id:Date.now(),id_siswa:0,nama_pengirim:adm.nama_admin,role:'admin',pesan:msg,waktu:new Date().toISOString()});loadChat();$('admChatIn').value='';return;}
-  await SB.from('chat').insert({id_siswa:0,nama_pengirim:adm.nama_admin,role:'admin',pesan:msg});
-  $('admChatIn').value='';loadChat();
+  const inp=$('admChatIn');
+  const msg=inp?.value.trim();if(!msg)return;
+  const row={
+    id_siswa:0,
+    nama_pengirim:adm.nama_admin,
+    role:'admin',
+    pesan:msg,
+    ..._chatReply.id?{id_reply:_chatReply.id,reply_nama:_chatReply.nama,reply_pesan:_chatReply.pesan}:{}
+  };
+  if(demoMode){
+    DEMO.chat.push({...row,id:Date.now(),waktu:new Date().toISOString()});
+  }else{
+    await SB.from('chat').insert(row);
+  }
+  inp.value='';
+  cancelReply();
+  loadChat();
 }
 
 async function delAllChat(){
   if(!confirm('Hapus semua pesan chat?'))return;
   if(demoMode){DEMO.chat=[];loadChat();return;}
-  await SB.from('chat').delete().neq('id',0);toast('Semua chat dihapus!','ok');loadChat();
+  await SB.from('chat').delete().neq('id',0);
+  toast('Semua chat dihapus!','ok');loadChat();
 }
 
 // ─── MANAJEMEN USER ───
@@ -6324,34 +6474,114 @@ async function rSNilai(el){
 }
 
 // ─── SISWA: CHAT ───
+// State reply untuk siswa
+let _sChatReply={id:null,nama:'',pesan:''};
+
 async function rSChat(el){
   let pg=demoMode?DEMO.pengaturan:((await SB.from('pengaturan').select('chat').single()).data)||{};
-  if(pg.chat==='blokir'){el.innerHTML='<div class="empty"><div class="ei"><i class="fa-solid fa-comment-slash" style="font-size:40px;color:var(--mu)"></i></div><h3>Chat Dinonaktifkan</h3><p>Fitur chat saat ini diblokir oleh admin.</p></div>';return;}
-  el.innerHTML=`<div class="card"><div class="ch"><div class="ct"><i class="fa-solid fa-comments" style="color:var(--p)"></i> Chat dengan Guru/Admin</div><button class="btn bsm bo" onclick="loadSChat()"><i class="fa-solid fa-rotate-right"></i></button></div>
-    <div style="height:420px;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:6px;background:var(--bg)" id="sChatMs"></div>
-    <div style="padding:12px;border-top:1px solid var(--br);display:flex;gap:7px">
-      <input id="sChatIn" class="fc" placeholder="Ketik pesan..." style="flex:1" onkeydown="if(event.key==='Enter')sendSChat()">
-      <button class="btn bp" onclick="sendSChat()">Kirim</button>
-    </div></div>`;
+  if(pg.chat==='blokir'){
+    el.innerHTML='<div class="empty"><div class="ei"><i class="fa-solid fa-comment-slash" style="font-size:40px;color:var(--mu)"></i></div><h3>Chat Dinonaktifkan</h3><p>Fitur chat saat ini diblokir oleh admin.</p></div>';
+    return;
+  }
+  el.innerHTML=`
+  <div class="card" style="overflow:hidden">
+    <div class="ch">
+      <div class="ct"><i class="fa-solid fa-comments" style="color:var(--p)"></i> Chat dengan Guru/Admin</div>
+      <button class="btn bsm bo" onclick="loadSChat()"><i class="fa-solid fa-rotate-right"></i></button>
+    </div>
+    <div style="height:420px;overflow-y:auto;padding:13px;display:flex;flex-direction:column;gap:8px;background:var(--bg)" id="sChatMs"></div>
+    <!-- Reply preview bar siswa -->
+    <div class="chat-reply-preview" id="sChatReplyPreview">
+      <div class="chat-reply-preview-txt">
+        <div class="chat-reply-preview-name" id="sChatReplyName"></div>
+        <div class="chat-reply-preview-msg" id="sChatReplyMsg"></div>
+      </div>
+      <button class="chat-reply-cancel" onclick="cancelSReply()">×</button>
+    </div>
+    <div style="padding:10px 12px;border-top:1px solid var(--br);display:flex;gap:7px;align-items:center;background:#fff">
+      <input id="sChatIn" class="fc" placeholder="Ketik pesan..." style="flex:1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendSChat()}">
+      <button class="btn bp" style="height:38px;padding:0 16px" onclick="sendSChat()">
+        <i class="fa-solid fa-paper-plane"></i> Kirim
+      </button>
+    </div>
+  </div>`;
+  _sChatReply={id:null,nama:'',pesan:''};
   loadSChat();
+  // Auto-refresh
+  clearInterval(window._sChatRefreshInt);
+  window._sChatRefreshInt=setInterval(()=>{if($('sChatMs'))loadSChat();else clearInterval(window._sChatRefreshInt);},15000);
 }
 
 async function loadSChat(){
   const el=$('sChatMs');if(!el)return;
-  let d=demoMode?DEMO.chat:((await SB.from('chat').select('*').order('waktu').limit(100)).data||[]);
-  if(!d.length){el.innerHTML='<div style="text-align:center;color:var(--mu);padding:30px;font-size:13px">Belum ada pesan. Kirim pesan pertama Anda!</div>';return;}
-  el.innerHTML=d.map(m=>`<div style="${m.id_siswa===sis.id_siswa||m.role==='siswa'?'align-self:flex-end':'align-self:flex-start'}">
-    <div style="font-size:10.5px;color:var(--mu);text-align:${m.id_siswa===sis.id_siswa?'right':'left'};margin-bottom:2px">${m.nama_pengirim} · ${fdt(m.waktu)}</div>
-    <div class="cm ${m.id_siswa===sis.id_siswa||m.role==='siswa'?'me':'other'}">${m.pesan}</div>
-  </div>`).join('');
+  let d=demoMode?DEMO.chat:((await SB.from('chat').select('*').order('waktu').limit(200)).data||[]);
+  if(!d.length){
+    el.innerHTML='<div style="text-align:center;color:var(--mu);padding:30px;font-size:13px"><i class="fa-regular fa-comment-dots" style="font-size:28px;display:block;margin-bottom:8px"></i>Belum ada pesan. Kirim pesan pertama Anda!</div>';
+    return;
+  }
+  el.innerHTML=d.map(m=>{
+    const me=m.id_siswa===sis.id_siswa||m.role==='siswa';
+    let replyBar='';
+    if(m.id_reply&&(m.reply_nama||m.reply_pesan)){
+      replyBar=`<div class="cm-reply-bar" onclick="scrollToMsg(${m.id_reply})">
+        <div class="cm-reply-bar-name">${escHtml(m.reply_nama||'')}</div>
+        <div class="cm-reply-bar-text">${escHtml((m.reply_pesan||'').substring(0,80))}${(m.reply_pesan||'').length>80?'…':''}</div>
+      </div>`;
+    }
+    return`<div class="cm-wrap ${me?'is-me':'is-other'}" id="cmsg-${m.id}"
+        style="align-self:${me?'flex-end':'flex-start'};display:flex;flex-direction:column;max-width:72%">
+      <div class="cmmeta" style="justify-content:${me?'flex-end':'flex-start'}">
+        ${!me?`<i class="fa-solid fa-chalkboard-teacher" style="font-size:9px;color:var(--p)"></i>`:''}
+        <span>${escHtml(m.nama_pengirim)}</span><span>·</span><span>${fdt(m.waktu)}</span>
+      </div>
+      <div class="cm ${me?'me':'other'}">
+        ${replyBar}
+        ${escHtml(m.pesan)}
+      </div>
+      <button class="cm-reply-btn" onclick="setSReply(${m.id},'${escAttr(m.nama_pengirim)}','${escAttr(m.pesan)}')">
+        <i class="fa-solid fa-reply" style="font-size:10px"></i> Balas
+      </button>
+    </div>`;
+  }).join('');
   el.scrollTop=el.scrollHeight;
 }
 
+function setSReply(id,nama,pesan){
+  _sChatReply={id,nama,pesan};
+  const prev=$('sChatReplyPreview');
+  if(prev){
+    prev.classList.add('show');
+    $('sChatReplyName').textContent=nama;
+    $('sChatReplyMsg').textContent=pesan.substring(0,80)+(pesan.length>80?'…':'');
+  }
+  $('sChatIn')?.focus();
+}
+
+function cancelSReply(){
+  _sChatReply={id:null,nama:'',pesan:''};
+  const prev=$('sChatReplyPreview');
+  if(prev)prev.classList.remove('show');
+}
+
 async function sendSChat(){
-  const msg=$('sChatIn')?.value.trim();if(!msg)return;
-  if(demoMode){DEMO.chat.push({id:Date.now(),id_siswa:sis.id_siswa,nama_pengirim:sis.nama_siswa,role:'siswa',pesan:msg,waktu:new Date().toISOString()});loadSChat();$('sChatIn').value='';return;}
-  await SB.from('chat').insert({id_siswa:sis.id_siswa,nama_pengirim:sis.nama_siswa,role:'siswa',pesan:msg});
-  $('sChatIn').value='';loadSChat();
+  const inp=$('sChatIn');
+  const msg=inp?.value.trim();if(!msg)return;
+  const row={
+    id_siswa:sis.id_siswa,
+    nama_pengirim:sis.nama_siswa,
+    role:'siswa',
+    pesan:msg,
+    ..._sChatReply.id?{id_reply:_sChatReply.id,reply_nama:_sChatReply.nama,reply_pesan:_sChatReply.pesan}:{}
+  };
+  if(demoMode){
+    DEMO.chat.push({...row,id:Date.now(),waktu:new Date().toISOString()});
+  }else{
+    await SB.from('chat').insert(row);
+  }
+  inp.value='';
+  cancelSReply();
+  loadSChat();
 }
 
 // ─── MINI GAME ───
