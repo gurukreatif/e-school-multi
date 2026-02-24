@@ -231,62 +231,110 @@ tbody tr:hover td{background:#fafbff}
 .cfg{min-height:100vh;background:linear-gradient(135deg,#0f172a,#064e3b);display:flex;align-items:center;justify-content:center;padding:20px}
 .cfgcard{background:#fff;border-radius:18px;padding:34px;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25)}
 /* EXAM */
-.exl{display:flex;height:100vh;overflow:hidden}
-.exsb{width:256px;background:#fff;border-right:1px solid var(--br);display:flex;flex-direction:column;flex-shrink:0}
-.exhd{background:var(--p);color:#fff;padding:13px 16px}
-.exhd h2{font-size:13.5px;font-weight:700;margin-bottom:2px}
-.exhd p{font-size:11px;color:rgba(255,255,255,.65)}
-.timebox{margin:12px;padding:10px;background:#fff;border-radius:8px;border:1px solid var(--br);text-align:center}
-.tl{font-size:10px;color:var(--mu);text-transform:uppercase;letter-spacing:.05em}
-.td{font-family:'JetBrains Mono',monospace;font-size:26px;font-weight:700;color:var(--p);line-height:1.1}
-.td.warn{color:var(--wa)}.td.dang{color:var(--er);animation:pulse 1s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
-.ngw{padding:0 12px;flex:1;overflow-y:auto}
-.ng{display:grid;grid-template-columns:repeat(5,1fr);gap:4px;margin-bottom:9px}
-.ng-group{margin-bottom:10px}
-.ng-group-label{font-size:9px;font-weight:700;color:rgba(0,0,0,.35);text-transform:uppercase;letter-spacing:.08em;padding:2px 0 4px;border-bottom:1px solid var(--br);margin-bottom:5px}
-.num{aspect-ratio:1;border:1.5px solid var(--br);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;cursor:pointer;transition:all .12s;color:var(--mu);background:#fff}
-.num:hover{border-color:var(--p);color:var(--p)}
-.num.cur{background:var(--p);border-color:var(--p);color:#fff}
-.num.ans{background:var(--ok);border-color:var(--ok);color:#fff}
-.num.ragu{background:var(--wa);border-color:var(--wa);color:#fff}
-.leg{padding:0 12px 12px;display:flex;flex-direction:column;gap:3px;font-size:11px;color:var(--mu)}
-.legi{display:flex;align-items:center;gap:5px}
-.legd{width:9px;height:9px;border-radius:2px;flex-shrink:0}
-.exmain{flex:1;overflow-y:auto;padding:20px;background:var(--bg)}
-.soalcard{background:#fff;border:1px solid var(--br);border-radius:13px;padding:20px;max-width:720px;margin:0 auto;box-shadow:var(--sh)}
-.snl{font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
-.stipe{display:inline-block;font-size:10.5px;background:var(--pl);color:var(--pd);font-weight:600;padding:2px 8px;border-radius:100px;margin-bottom:9px}
-.stxt{font-size:14px;line-height:1.7;margin-bottom:16px}
-.stxt img{max-width:100%;border-radius:8px;margin:5px 0}
-.opsi{display:flex;flex-direction:column;gap:7px}
-.op{display:flex;align-items:flex-start;gap:10px;padding:10px 12px;border:1.5px solid var(--br);border-radius:8px;cursor:pointer;transition:all .12s;background:#fff}
-.op:hover{border-color:var(--p);background:var(--pl)}
-.op.sel{border-color:var(--p);background:var(--pl)}
-.op.correct{border-color:var(--ok);background:#f0fdf4}
-.op.wrong{border-color:var(--er);background:#fff1f2}
-.opradio{width:16px;height:16px;border:1.5px solid var(--br);border-radius:50%;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .12s}
-.op.sel .opradio,.op.correct .opradio{border-color:var(--p);background:var(--p)}
-.op.sel .opradio::after,.op.correct .opradio::after{content:'';width:5px;height:5px;background:#fff;border-radius:50%}
-.opk{font-size:11px;font-weight:700;color:var(--mu);width:18px;text-align:center;flex-shrink:0;line-height:1.8}
-.opt{font-size:13px;line-height:1.6;flex:1}
-.pgk{display:flex;flex-direction:column;gap:6px}
-.pk{display:flex;align-items:flex-start;gap:9px;padding:9px 11px;border:1.5px solid var(--br);border-radius:7px;cursor:pointer;transition:all .12s;background:#fff}
-.pk:hover{border-color:var(--p);background:var(--pl)}.pk.sel{border-color:var(--p);background:var(--pl)}
-.pkcb{width:15px;height:15px;border:1.5px solid var(--br);border-radius:3px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .12s}
-.pk.sel .pkcb{border-color:var(--p);background:var(--p)}
-.pk.sel .pkcb::after{content:'✓';color:#fff;font-size:10px;font-weight:900}
-.bsrow{display:flex;align-items:center;justify-content:space-between;padding:10px 13px;border:1.5px solid var(--br);border-radius:8px;margin-bottom:6px;background:#fff;transition:all .12s;gap:11px}
-.bst{font-size:13px;flex:1;line-height:1.5}
-.bstog{display:flex;gap:5px}
-.bsb{padding:4px 12px;border-radius:5px;font-size:11.5px;font-weight:700;border:1.5px solid var(--br);background:#fff;cursor:pointer;transition:all .12s}
-.bsb.b{border-color:var(--ok);background:#dcfce7;color:#15803d}
-.bsb.s{border-color:var(--er);background:#fee2e2;color:#b91c1c}
-.jrow{display:flex;align-items:center;gap:9px;margin-bottom:6px}
-.jleft{flex:1;padding:8px 11px;background:var(--bg);border:1px solid var(--br);border-radius:7px;font-size:13px}
-.jarr{color:var(--mu);font-weight:700;flex-shrink:0}
-.jsel{flex:1}
-.exnav{display:flex;gap:9px;justify-content:space-between;align-items:center;margin-top:16px;max-width:720px;margin-left:auto;margin-right:auto}
+/* ═══════════ EXAM SCREEN — EMERALD CBT STYLE ═══════════ */
+:root{
+  --em:#059669;--em-d:#047857;--em-dd:#065f46;
+  --em-l:#d1fae5;--em-ll:#ecfdf5;--em-bg:#f0faf6;
+  --wa2:#f59e0b;--er2:#ef4444;
+}
+.exl{display:flex;height:100vh;overflow:hidden;background:var(--em-bg);font-family:'Plus Jakarta Sans',sans-serif}
+
+/* ── SIDEBAR DESKTOP ── */
+.exsb{width:260px;flex-shrink:0;background:var(--em-dd);display:flex;flex-direction:column;overflow:hidden;box-shadow:3px 0 20px rgba(0,0,0,.15);z-index:10}
+.exhd{background:var(--em-d);color:#fff;padding:16px 18px 14px;border-bottom:1px solid rgba(255,255,255,.1);flex-shrink:0}
+.exhd h2{font-size:14px;font-weight:800;margin-bottom:3px;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exhd p{font-size:11px;color:rgba(255,255,255,.55);font-weight:500}
+.timebox{margin:12px 14px 0;padding:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;text-align:center;flex-shrink:0}
+.tl{font-size:9px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.14em;margin-bottom:4px}
+.td{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;color:#fff;line-height:1;letter-spacing:.05em}
+.td.warn{color:#fbbf24}.td.dang{color:#f87171;animation:pulse 1s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.ngw{padding:12px 14px;flex:1;overflow-y:auto}
+.ngw::-webkit-scrollbar{width:3px}
+.ngw::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:3px}
+.ng-nav-title{font-size:9px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.14em;margin-bottom:9px;margin-top:2px}
+.ng{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:10px}
+.ng-group{margin-bottom:12px}
+.ng-group-label{font-size:8.5px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.1em;padding:2px 0 5px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:6px}
+.num{aspect-ratio:1;border:1.5px solid rgba(255,255,255,.15);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;cursor:pointer;transition:all .12s;color:rgba(255,255,255,.45);background:rgba(255,255,255,.05);user-select:none}
+.num:hover{border-color:rgba(255,255,255,.5);color:#fff;background:rgba(255,255,255,.1)}
+.num.cur{background:#fff;border-color:#fff;color:var(--em-dd);font-weight:800}
+.num.ans{background:#34d399;border-color:#34d399;color:#fff}
+.num.ragu{background:var(--wa2);border-color:var(--wa2);color:#fff}
+.leg{padding:10px 14px 12px;display:grid;grid-template-columns:1fr 1fr;gap:5px 8px;font-size:10px;color:rgba(255,255,255,.5);border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
+.legi{display:flex;align-items:center;gap:5px;white-space:nowrap}
+.legd{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.exsb-finish{padding:0 14px 14px;flex-shrink:0}
+.exsb-finish .btn{width:100%;background:var(--er2);border:none;color:#fff;font-weight:700;border-radius:8px;padding:10px 14px;font-size:13px;cursor:pointer;transition:background .15s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px}
+.exsb-finish .btn:hover{background:#dc2626}
+
+/* ── MAIN AREA ── */
+.exmain{flex:1;overflow-y:auto;padding:28px 32px;background:var(--em-bg)}
+.exmain::-webkit-scrollbar{width:5px}
+.exmain::-webkit-scrollbar-thumb{background:#a7f3d0;border-radius:5px}
+.soalcard-wrapper{max-width:800px;width:100%;margin:0 auto;display:flex;flex-direction:column}
+
+/* ── SOAL CARD ── */
+.soalcard{background:#fff;border:none;border-radius:12px 12px 0 0;padding:0;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.06)}
+.soalcard-hd{background:var(--em);padding:12px 22px;display:flex;align-items:center;justify-content:space-between}
+.snl{font-size:11.5px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.09em;margin-bottom:0}
+.stipe{display:inline-flex;align-items:center;font-size:10.5px;font-weight:700;background:rgba(255,255,255,.2);color:#fff;padding:3px 11px;border-radius:100px;border:1px solid rgba(255,255,255,.3);margin-bottom:0}
+.soalcard-body{padding:24px 26px 20px}
+.stxt{font-size:15px;line-height:1.8;margin-bottom:22px;color:#1e293b;font-weight:500}
+.stxt img{max-width:100%;border-radius:8px;margin:8px 0;border:1px solid #e2e8f0}
+
+/* ── OPSI ── */
+.opsi{display:flex;flex-direction:column;gap:8px}
+.op{display:flex;align-items:stretch;gap:0;border:1.5px solid #e2e8f0;border-radius:8px;cursor:pointer;transition:all .13s;background:#fff;overflow:hidden}
+.op:hover{border-color:var(--em);background:var(--em-ll)}.op:hover .opk{background:var(--em-l);color:var(--em-d)}
+.op.sel{border-color:var(--em);background:var(--em-ll)}.op.sel .opk{background:var(--em);color:#fff;border-right-color:var(--em)}
+.op.correct{border-color:#16a34a;background:#f0fdf4}.op.correct .opk{background:#16a34a;color:#fff;border-right-color:#16a34a}
+.op.wrong{border-color:var(--er2);background:#fff1f2}.op.wrong .opk{background:var(--er2);color:#fff;border-right-color:var(--er2)}
+.opradio{display:none}
+.opk{width:46px;min-width:46px;display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:800;color:#94a3b8;background:#f8fafc;border-right:1.5px solid #e2e8f0;flex-shrink:0;transition:all .13s;font-family:'JetBrains Mono',monospace;align-self:stretch}
+.opt{font-size:14px;line-height:1.6;flex:1;padding:12px 16px;color:#334155;align-self:center}
+
+/* ── PGK ── */
+.pgk{display:flex;flex-direction:column;gap:8px}
+.pk{display:flex;align-items:stretch;gap:0;border:1.5px solid #e2e8f0;border-radius:8px;cursor:pointer;transition:all .13s;background:#fff;overflow:hidden}
+.pk:hover{border-color:var(--em);background:var(--em-ll)}.pk:hover .opk{background:var(--em-l);color:var(--em-d)}
+.pk.sel{border-color:var(--em);background:var(--em-ll)}.pk.sel .opk{background:var(--em);color:#fff;border-right-color:var(--em)}
+.pkcb{display:none}
+
+/* ── BENAR/SALAH ── */
+.bsrow{display:flex;align-items:stretch;border:1.5px solid #e2e8f0;border-radius:8px;margin-bottom:8px;background:#fff;overflow:hidden;transition:border-color .12s}
+.bst{font-size:14px;flex:1;padding:13px 16px;line-height:1.55;color:#334155;border-right:1.5px solid #e2e8f0}
+.bstog{display:flex;flex-shrink:0}
+.bsb{padding:0 20px;min-width:72px;font-size:12.5px;font-weight:700;border:none;border-left:1px solid #e2e8f0;background:#f8fafc;cursor:pointer;transition:all .12s;color:#64748b;font-family:inherit}
+.bsb:first-child{border-left:none}
+.bsb:hover{background:var(--em-l);color:var(--em-d)}
+.bsb.b{background:#dcfce7;color:#15803d;border-left-color:#86efac;font-weight:800}
+.bsb.s{background:#fee2e2;color:#b91c1c;border-left-color:#fca5a5;font-weight:800}
+
+/* ── MENJODOHKAN ── */
+.jrow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.jleft{flex:1;padding:11px 14px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;color:#334155;font-weight:500}
+.jarr{color:#94a3b8;font-weight:700;font-size:18px;flex-shrink:0}
+.jsel{flex:1;border-radius:8px!important;border-color:#e2e8f0!important}
+
+/* ── NAV BAWAH ── */
+.exnav{display:flex;gap:10px;justify-content:space-between;align-items:center;padding:14px 22px;border-top:1.5px solid #e9f5ef;background:#fff;border-radius:0 0 12px 12px;box-shadow:0 4px 16px rgba(0,0,0,.06)}
+.exnav-right{display:flex;gap:8px;align-items:center}
+.exnav .btn-prev{display:flex;align-items:center;gap:6px;padding:9px 18px;border:1.5px solid #e2e8f0;border-radius:8px;background:#fff;font-size:13px;font-weight:600;color:#64748b;cursor:pointer;transition:all .13s;font-family:inherit}
+.exnav .btn-prev:hover{border-color:#94a3b8;background:#f8fafc;color:#334155}
+.exnav .btn-prev:disabled{opacity:.35;cursor:not-allowed}
+.exnav .btn-ragu{display:flex;align-items:center;gap:6px;padding:9px 16px;border:1.5px solid #e2e8f0;border-radius:8px;background:#fff;font-size:13px;font-weight:600;color:#64748b;cursor:pointer;transition:all .13s;font-family:inherit}
+.exnav .btn-ragu.active{border-color:var(--wa2);background:#fef9c3;color:#92400e}
+.exnav .btn-ragu:hover{border-color:var(--wa2);background:#fef9c3;color:#92400e}
+.exnav .btn-next{display:flex;align-items:center;gap:6px;padding:9px 22px;border:none;border-radius:8px;background:var(--em);font-size:13px;font-weight:700;color:#fff;cursor:pointer;transition:background .13s;font-family:inherit}
+.exnav .btn-next:hover{background:var(--em-d)}
+.exnav .btn-finish{display:flex;align-items:center;gap:6px;padding:9px 22px;border:none;border-radius:8px;background:var(--er2);font-size:13px;font-weight:700;color:#fff;cursor:pointer;transition:background .13s;font-family:inherit}
+.exnav .btn-finish:hover{background:#dc2626}
+
+/* ── MOBILE HIDDEN by default ── */
+.ex-mob-top{display:none}
+
+
 /* RESULT */
 .reshero{background:linear-gradient(135deg,#064e3b,#059669);color:#fff;border-radius:13px;padding:28px 22px;text-align:center;margin-bottom:18px}
 .resscore{font-size:68px;font-weight:900;line-height:1}
@@ -348,50 +396,127 @@ tbody tr:hover td{background:#fafbff}
   .resgrid{grid-template-columns:1fr 1fr 1fr}
   .tbunm,.tburl,.tbusr-div{display:none}
   #mbtn,#mbtnDiv{display:flex!important}
-  
-  /* Mobile Exam Screen */
-  .exl{flex-direction:column}
-  .exsb{width:100%;height:auto;position:fixed;bottom:0;left:0;right:0;z-index:200;flex-direction:row;border-right:none;border-top:2px solid var(--br);max-height:50vh;overflow-y:auto}
-  .exhd{padding:10px 12px}
-  .exhd h2{font-size:12px}.exhd p{font-size:10px}
-  .timebox{margin:8px;padding:8px}
-  .td{font-size:20px}
-  .ngw{padding:0 10px;max-height:35vh;overflow-y:auto}
-  .ng{grid-template-columns:repeat(6,1fr);gap:3px}
-  .num{font-size:10px;min-height:32px;min-width:32px}
-  .leg{font-size:10px;padding:0 10px 10px}
-  .exmain{padding:12px 12px 50vh 12px}
-  .soalcard{padding:14px;margin-bottom:20px}
-  .stxt{font-size:13px}
-  .op{padding:8px 10px}
-  .opt{font-size:12px}
-  .exnav{flex-wrap:wrap}
-  .exnav .btn{flex:1;min-width:100px}
-  
-  /* Touch-friendly buttons */
-  .btn{min-height:44px;padding:10px 16px}
-  .bsm{min-height:38px;padding:7px 12px}
-  .op,.pk,.bsb{min-height:44px}
-  
-  /* Mobile tables - horizontal scroll */
-  .tw{overflow-x:auto;-webkit-overflow-scrolling:touch}
-  table{min-width:600px}
-  
-  /* Mobile forms */
-  .fc{font-size:16px;padding:10px 12px} /* Prevent zoom on iOS */
-  
-  /* Collapsible sidebar toggle */
-  .exsb.collapsed{height:50px;overflow:hidden}
-  .exsb.collapsed .ngw,.exsb.collapsed .leg,.exsb.collapsed .timebox{display:none}
+
+  /* ══ MOBILE EXAM — Layout ulang total ══ */
+  .exl{flex-direction:column;height:100dvh;background:#fff;overflow:hidden}
+
+  /* Sidebar jadi drawer dari bawah */
+  .exsb{
+    position:fixed;bottom:0;left:0;right:0;width:100%;
+    max-height:0;overflow:hidden;
+    transition:max-height .35s cubic-bezier(.4,0,.2,1);
+    z-index:400;
+    flex-direction:column;
+    border-radius:18px 18px 0 0;
+    box-shadow:0 -8px 40px rgba(0,0,0,.28);
+    background:var(--em-dd);
+  }
+  .exsb.mob-open{max-height:80dvh;overflow-y:auto}
+
+  /* Sembunyikan header & tombol selesai di dalam drawer */
+  .exhd{display:none}
+  .exsb-finish{display:none}
+
+  /* Drawer handle */
+  .exsb::before{
+    content:'';display:block;
+    width:36px;height:4px;
+    background:rgba(255,255,255,.3);
+    border-radius:2px;
+    margin:10px auto 4px;
+    flex-shrink:0;
+  }
+
+  .timebox{margin:6px 16px 0;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-radius:10px}
+  .timebox .tl{margin-bottom:0;font-size:9px}
+  .td{font-size:26px}
+  .ngw{padding:10px 16px;max-height:none}
+  .ng{grid-template-columns:repeat(8,1fr);gap:5px}
+  .ng-nav-title{font-size:9px;margin-bottom:7px}
+  .leg{padding:8px 16px 14px;grid-template-columns:repeat(4,1fr);font-size:10px}
+
+  /* ── TOP BAR MOBILE ── */
+  .ex-mob-top{
+    display:flex!important;
+    align-items:center;justify-content:space-between;
+    padding:0 14px;
+    height:54px;min-height:54px;
+    background:var(--em);
+    color:#fff;
+    flex-shrink:0;gap:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,.15);
+  }
+  .ex-mob-top-info{display:flex;flex-direction:column;flex:1;min-width:0}
+  .ex-mob-top-title{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ex-mob-top-sub{font-size:10px;color:rgba(255,255,255,.65);margin-top:1px}
+  .ex-mob-timer{
+    font-family:'JetBrains Mono',monospace;
+    font-size:22px;font-weight:700;color:#fff;
+    flex-shrink:0;letter-spacing:.04em;line-height:1;
+    min-width:70px;text-align:right;
+  }
+  .ex-mob-timer.warn{color:#fbbf24}
+  .ex-mob-timer.dang{color:#f87171;animation:pulse 1s infinite}
+  .ex-mob-nav-btn{
+    background:rgba(255,255,255,.18);
+    border:1.5px solid rgba(255,255,255,.3);
+    color:#fff;border-radius:8px;
+    padding:6px 12px;font-size:12px;font-weight:700;
+    cursor:pointer;transition:background .13s;
+    font-family:inherit;white-space:nowrap;flex-shrink:0;
+  }
+  .ex-mob-nav-btn:hover{background:rgba(255,255,255,.28)}
+
+  /* ── Overlay behind drawer ── */
+  .exsb-overlay{
+    display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:399;
+  }
+  .exsb-overlay.show{display:block}
+
+  /* ── MAIN scroll ── */
+  .exmain{
+    flex:1;overflow-y:auto;
+    padding:12px 12px 76px;
+    background:#f0faf6;
+  }
+
+  .soalcard-wrapper{max-width:100%}
+  .soalcard{border-radius:10px 10px 0 0}
+  .soalcard-hd{padding:10px 16px}
+  .snl{font-size:11px}
+  .soalcard-body{padding:16px 16px 14px}
+  .stxt{font-size:14px;line-height:1.7;margin-bottom:16px}
+
+  .op{border-radius:7px}
+  .opk{width:42px;min-width:42px;font-size:13px}
+  .opt{font-size:13.5px;padding:11px 13px}
+  .bsb{padding:0 16px;min-width:64px;font-size:12px}
+  .bst{font-size:13.5px;padding:11px 13px}
+
+  /* ── NAV BAR bawah FIXED ── */
+  .exnav{
+    position:fixed;bottom:0;left:0;right:0;z-index:100;
+    border-radius:0;padding:10px 14px;
+    border-top:1.5px solid #d1fae5;
+    box-shadow:0 -3px 20px rgba(0,0,0,.1);
+    max-width:100%;
+  }
+  .exnav .btn-prev{padding:9px 14px;font-size:12.5px}
+  .exnav .btn-ragu{padding:9px 12px;font-size:12.5px}
+  .exnav .btn-next{padding:9px 18px;font-size:12.5px}
+  .exnav .btn-finish{padding:9px 16px;font-size:12.5px}
 }
+
 @media(max-width:480px){
   .g4{grid-template-columns:1fr 1fr}.g3,.g2{grid-template-columns:1fr}
-  .exmain{padding:10px 10px 50vh 10px}
-  .soalcard{padding:12px}
-  .ng{grid-template-columns:repeat(5,1fr)}
   .resgrid{grid-template-columns:1fr}
   .sbar{flex-direction:column}
   .siw{min-width:100%;flex:none}
+  .ng{grid-template-columns:repeat(7,1fr)}
+  /* Kecilkan teks tombol nav agar muat */
+  .exnav .btn-prev-txt,.exnav .btn-ragu-text{display:none}
+  .exnav .btn-prev{padding:9px 11px}
+  .exnav .btn-ragu{padding:9px 11px}
 }
 /* ─── QUILL EDITOR CUSTOM STYLES ─── */
 .ql-editor-wrap{border:1.5px solid var(--br);border-radius:7px;overflow:hidden;background:#fff;transition:border-color .12s}
@@ -5402,30 +5527,53 @@ function renderExam(){
   const b=EX.butirs;const s=EX.soal;
   scr.innerHTML=`
     <div class="exl">
-      <div class="exsb">
-        <div class="exhd"><h2>${s.nama_soal}</h2><p>${s.mapel} · ${s.waktu_ujian} menit</p></div>
-        <div id="offlineInd" style="display:none;align-items:center;gap:5px;padding:6px 10px;margin:10px 12px 0;border-radius:6px;font-size:11px;font-weight:600"></div>
-        <div class="timebox"><div class="tl">Sisa Waktu</div><div class="td" id="examTD">${secToTime(EX.tsec)}</div></div>
+      <!-- MOBILE TOP BAR -->
+      <div class="ex-mob-top" style="display:none" id="exMobTop">
+        <div class="ex-mob-top-info">
+          <div class="ex-mob-top-title">${s.nama_soal}</div>
+          <div class="ex-mob-top-sub">${s.mapel} · ${b.length} soal</div>
+        </div>
+        <div class="ex-mob-timer" id="examTDMob">${secToTime(EX.tsec)}</div>
+        <button class="ex-mob-nav-btn" onclick="toggleMobDrawer()">
+          <i class="fa-solid fa-table-cells-large"></i> Soal
+        </button>
+      </div>
+      <!-- OVERLAY drawer -->
+      <div class="exsb-overlay" id="exsbOverlay" onclick="closeMobDrawer()"></div>
+      <!-- SIDEBAR / DRAWER -->
+      <div class="exsb" id="exSidebar">
+        <div class="exhd">
+          <h2>${s.nama_soal}</h2>
+          <p>${s.mapel} &nbsp;·&nbsp; ${s.waktu_ujian} menit &nbsp;·&nbsp; ${b.length} soal</p>
+        </div>
+        <div id="offlineInd" style="display:none;align-items:center;gap:5px;padding:6px 10px;margin:8px 14px 0;border-radius:6px;font-size:11px;font-weight:600"></div>
+        <div class="timebox">
+          <div class="tl">Sisa Waktu</div>
+          <div class="td" id="examTD">${secToTime(EX.tsec)}</div>
+        </div>
         <div class="ngw">
-          <div style="font-size:11px;font-weight:700;color:var(--mu);margin-bottom:6px">NAVIGASI SOAL</div>
+          <div class="ng-nav-title" style="margin-top:10px">Navigasi Soal</div>
           <div class="ng" id="numGrid"></div>
         </div>
         <div class="leg">
-          <div class="legi"><div class="legd" style="background:var(--p)"></div>Sedang</div>
-          <div class="legi"><div class="legd" style="background:var(--ok)"></div>Dijawab</div>
-          <div class="legi"><div class="legd" style="background:var(--wa)"></div>Ragu-ragu</div>
-          <div class="legi"><div class="legd" style="background:#e2e8f0"></div>Belum</div>
+          <div class="legi"><div class="legd" style="background:#fff;border:1.5px solid rgba(255,255,255,.4)"></div>Sedang</div>
+          <div class="legi"><div class="legd" style="background:#34d399"></div>Dijawab</div>
+          <div class="legi"><div class="legd" style="background:var(--wa2)"></div>Ragu-ragu</div>
+          <div class="legi"><div class="legd" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2)"></div>Belum</div>
         </div>
-        ${s.tampil_tombol_selesai?`<div style="padding:0 12px 12px"><button class="btn bp" style="width:100%" onclick="selesaiUjian()"><i class="fa-solid fa-flag-checkered"></i> Selesai Ujian</button></div>`:''}
+        ${s.tampil_tombol_selesai?`<div class="exsb-finish"><button class="btn" onclick="selesaiUjian()"><i class="fa-solid fa-flag-checkered"></i> Selesai Ujian</button></div>`:''}
       </div>
       <div class="exmain" id="exMain"></div>
     </div>`;
   updateNumGrid();renderSoal(EX.cur);startTimer();startAutoSave();
   updateOfflineIndicator();
   document.addEventListener('keydown',examKeyNav);
-  handleSwipe(); // Enable swipe navigation for mobile
+  handleSwipe();
+  // Tampilkan mobile top bar jika layar kecil
+  if(window.innerWidth<=768){
+    const mob=$('exMobTop');if(mob)mob.style.display='flex';
+  }
 }
-
 function updateNumGrid(){
   const el=$('numGrid');if(!el)return;
   const groups={};
@@ -5444,7 +5592,7 @@ function updateNumGrid(){
     </div>`).join('');
 }
 
-function goSoal(n){EX.cur=n;renderSoal(n);updateNumGrid();}
+function goSoal(n){EX.cur=n;renderSoal(n);updateNumGrid();if(window.innerWidth<=768)closeMobDrawer();}
 function renderSoal(n){
   const b=EX.butirs[n-1];if(!b)return;
   const el=$('exMain');if(!el)return;
@@ -5488,16 +5636,30 @@ function renderSoal(n){
         </select>
       </div>`).join('')}</div>`;
   }
-  el.innerHTML=`<div class="soalcard">
-    <div class="snl">SOAL ${n} DARI ${EX.butirs.length}</div>
-    <span class="stipe">${b.tipe_soal}</span>
-    <div class="stxt">${b.pertanyaan}</div>
-    ${pilihanHtml}
+  const isRagu=!!EX.ragu[n];
+  el.innerHTML=`<div class="soalcard-wrapper">
+    <div class="soalcard">
+      <div class="soalcard-hd">
+        <span class="snl">Soal ${n} dari ${EX.butirs.length}</span>
+        <span class="stipe">${b.tipe_soal}</span>
+      </div>
+      <div class="soalcard-body">
+        <div class="stxt">${b.pertanyaan}</div>
+        ${pilihanHtml}
+      </div>
+    </div>
     <div class="exnav">
-      <button class="btn bo bsm" onclick="goSoal(${Math.max(1,n-1)})" ${n<=1?'disabled':''}>← Sebelumnya</button>
-      <div style="display:flex;gap:8px">
-        <button class="btn bw bsm" onclick="toggleRagu(${n})">${EX.ragu[n]?'<i class="fa-solid fa-star" style="color:var(--wa)"></i> Ragu':'<i class="fa-regular fa-star"></i> Ragu'}</button>
-        ${n<EX.butirs.length?`<button class="btn bp bsm" onclick="goSoal(${n+1})">Selanjutnya →</button>`:`<button class="btn bs bsm" onclick="selesaiUjian()"><i class="fa-solid fa-flag-checkered"></i> Selesai</button>`}
+      <button class="btn-prev" onclick="goSoal(${Math.max(1,n-1)})" ${n<=1?'disabled':''}>
+        <i class="fa-solid fa-chevron-left" style="font-size:11px"></i> Sebelumnya
+      </button>
+      <div class="exnav-right">
+        <button class="btn-ragu ${isRagu?'active':''}" onclick="toggleRagu(${n})">
+          <i class="fa-${isRagu?'solid':'regular'} fa-star"></i>
+          ${isRagu?'Ragu-ragu':'Tandai Ragu'}
+        </button>
+        ${n<EX.butirs.length
+          ?`<button class="btn-next" onclick="goSoal(${n+1})">Selanjutnya <i class="fa-solid fa-chevron-right" style="font-size:11px"></i></button>`
+          :`<button class="btn-finish" onclick="selesaiUjian()"><i class="fa-solid fa-flag-checkered"></i> Selesai Ujian</button>`}
       </div>
     </div>
   </div>`;
@@ -5560,13 +5722,30 @@ function startTimer(){
   clearInterval(EX.timer);
   EX.timer=setInterval(()=>{
     EX.tsec--;
-    const el=$('examTD');if(el){
-      el.textContent=secToTime(EX.tsec);
-      el.className='td'+(EX.tsec<=300?' warn':'')+(EX.tsec<=60?' dang':'');
-    }
+    const t=secToTime(EX.tsec);
+    const cls='td'+(EX.tsec<=300?' warn':'')+(EX.tsec<=60?' dang':'');
+    const mobCls='ex-mob-timer'+(EX.tsec<=300?' warn':'')+(EX.tsec<=60?' dang':'');
+    const el=$('examTD');if(el){el.textContent=t;el.className=cls;}
+    const mob=$('examTDMob');if(mob){mob.textContent=t;mob.className=mobCls;}
     if(EX.tsec<=0){clearInterval(EX.timer);autoSubmit();}
   },1000);
 }
+
+// ── Mobile drawer toggle ──
+function toggleMobDrawer(){
+  const sb=$('exSidebar');const ov=$('exsbOverlay');
+  if(!sb)return;
+  const isOpen=sb.classList.contains('mob-open');
+  if(isOpen){closeMobDrawer();}else{sb.classList.add('mob-open');if(ov)ov.classList.add('show');document.body.style.overflow='hidden';}
+}
+function closeMobDrawer(){
+  const sb=$('exSidebar');const ov=$('exsbOverlay');
+  if(sb)sb.classList.remove('mob-open');
+  if(ov)ov.classList.remove('show');
+  document.body.style.overflow='';
+}
+// Saat klik nomor soal di mobile, tutup drawer (handled in goSoal)
+
 
 function startAutoSave(){
   clearInterval(EX.autoSaveInt);
