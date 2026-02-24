@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="appTitle">Emes CBT System</title>
 <link rel="icon" type="image/png" href="https://i.imgur.com/bT70O4C.png">
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;600&family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
@@ -358,6 +358,29 @@ tbody tr:hover td{background:#fafbff}
 }
 .stxt img{max-width:100%;border-radius:8px;margin:8px 0;border:1px solid #e2e8f0}
 
+/* ══ ARABIC TEXT ══ */
+.arab{
+  font-family:'Amiri',serif;
+  font-size:1.25em;
+  line-height:2;
+  direction:rtl;
+  text-align:right;
+  display:block;
+  unicode-bidi:plaintext;
+}
+/* Inline Arab dalam teks campuran */
+span.arab-inline{
+  font-family:'Amiri',serif;
+  font-size:1.15em;
+  direction:rtl;
+  unicode-bidi:embed;
+  display:inline;
+}
+/* Quill editor Arab */
+.ql-editor .arab, .ql-editor p:has(span.arab-inline){
+  font-family:'Amiri',serif;
+}
+
 /* ══ OPSI — ANBK radio style ══ */
 .opsi{display:flex;flex-direction:column;gap:6px}
 .op{
@@ -458,6 +481,11 @@ tbody tr:hover td{background:#fafbff}
 /* ══ MENJODOHKAN ══ */
 .jrow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
 .jleft{flex:1;padding:11px 14px;background:#f8fafc;border:1.5px solid #e9ecef;border-radius:8px;font-size:14px;color:#334155;font-weight:500}
+/* Arab dalam berbagai konteks soal */
+.stxt .arab{font-size:1.2em;line-height:2.1;margin:4px 0}
+.opt .arab,.opt .arab-inline{font-size:1.1em;line-height:1.9}
+.bst .arab,.bst .arab-inline{font-size:1.1em;line-height:1.9}
+.jleft .arab,.jleft .arab-inline{font-size:1.05em}
 .jarr{color:#94a3b8;font-weight:700;font-size:18px;flex-shrink:0}
 .jsel{flex:1;border-radius:8px!important;border-color:#e9ecef!important}
 
@@ -693,6 +721,7 @@ tbody tr:hover td{background:#fafbff}
   /* Card */
   .soalcard{padding:18px 16px 16px;border-radius:8px}
   .stxt{font-size:14px;line-height:1.7;margin-bottom:18px}
+  .arab{font-size:1.2em}
   .stipe{font-size:10px;margin-bottom:10px}
 
   /* Opsi */
@@ -752,6 +781,19 @@ tbody tr:hover td{background:#fafbff}
 .ql-editor-wrap .ql-toolbar .ql-active{background:var(--pl)!important;color:var(--p)!important}
 /* KaTeX formula display */
 .ql-editor .katex{font-size:1em}
+
+/* Amiri untuk teks Arab di Quill editor */
+.ql-editor .arab, .ql-editor .arab-inline{
+  font-family:'Amiri',serif;
+}
+/* Jika ada paragraph mengandung Arab dominan di Quill */
+.ql-editor p:has(.arab){
+  font-family:'Amiri',serif;
+  direction:rtl;
+  text-align:right;
+  font-size:1.1em;
+  line-height:2;
+}
 .ql-formula{background:#ecfdf5;border-radius:4px;padding:1px 6px;border:1px solid #6ee7b7}
 /* Quill resize image */
 .ql-editor-wrap .img-drag-handle{display:none}
@@ -813,6 +855,7 @@ tbody tr:hover td{background:#fafbff}
   @page{size:A4 portrait;margin:18mm 15mm 18mm 15mm}
   *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;box-sizing:border-box}
   body{background:#fff!important;font-size:10pt;font-family:'Plus Jakarta Sans',Arial,sans-serif;color:#000!important;line-height:1.5;margin:0}
+  .arab,.arab-inline{font-family:'Amiri',serif!important;font-size:1.1em}
   /* ─ Sembunyikan elemen UI ─ */
   .sidebar,.topbar,.no-print,.sbar,.reshero,.resgrid,
   .chartbox,canvas,.tabs,.tab,.g.g2,.g.g3,.g.g4,
@@ -1494,6 +1537,47 @@ function fdt(dt){if(!dt)return'—';try{return new Date(dt).toLocaleString('id-I
 function strip(h){return h?h.replace(/<[^>]*>/g,''):''}
 function escH(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;');}
 function bst(s){return s==='Aktif'?'<span class="badge bok">● Aktif</span>':'<span class="badge bno">● Nonaktif</span>'}
+
+// ─── ARABIC TEXT PROCESSING ───────────────────────────────
+// Deteksi karakter Arab Unicode (termasuk harakat, hamzah, dll)
+const ARAB_RE = /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/;
+const ARAB_DOMINANT_RE = /^[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF\s\d\p{P}!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]*$/u;
+
+function hasArabic(str){ return ARAB_RE.test(str); }
+
+// Hitung % karakter Arab dari total karakter non-spasi
+function arabRatio(str){
+  const plain = str.replace(/<[^>]+>/g,'').replace(/\s+/g,'');
+  if(!plain.length) return 0;
+  const arabCount = (plain.match(/[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/g)||[]).length;
+  return arabCount / plain.length;
+}
+
+// Wrap run-run teks Arab dalam teks campuran dengan <span class="arab-inline">
+function wrapArabRuns(html){
+  // Hanya proses text node, bukan tag HTML
+  return html.replace(/(?<=>|^)([^<]+)(?=<|$)/g, (match) => {
+    if(!hasArabic(match)) return match;
+    // Bagi ke token: Arab-run vs non-Arab-run
+    return match.replace(/([\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF][\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF\u064B-\u065F\s]*)+/g,
+      (arabRun) => `<span class="arab-inline">${arabRun.trimEnd()}</span>`
+    );
+  });
+}
+
+// Fungsi utama: proses satu teks HTML konten soal/opsi
+// Kembalikan HTML yang sudah diberi Amiri + direction
+function applyArabic(html){
+  if(!html || !hasArabic(html)) return html;
+  const ratio = arabRatio(html);
+  if(ratio >= 0.5){
+    // Dominan Arab → seluruh blok RTL dengan font Amiri
+    return `<span class="arab">${html}</span>`;
+  } else {
+    // Campuran → LTR, tapi run Arab pakai Amiri inline
+    return wrapArabRuns(html);
+  }
+}
 function tpw(id,btn){const i=$(id);i.type=i.type==='password'?'text':'password';btn.innerHTML=i.type==='password'?'<i class="fa-solid fa-eye"></i>':'<i class="fa-solid fa-eye-slash"></i>'}
 function setBtn(id,html){const b=$(id);if(b)b.innerHTML=html}
 function showErr(el,msg){el.innerHTML='<i class="fa-solid fa-triangle-exclamation" style="color:var(--er)"></i> '+msg;el.classList.remove('hidden')}
@@ -2827,7 +2911,7 @@ async function previewSoal(id){
       ${butirs.map(b=>`<div class="card" style="margin-bottom:10px"><div class="cb">
         <div class="snl" style="margin-bottom:5px">SOAL ${b.nomer_soal}</div>
         <span class="stipe">${b.tipe_soal}</span>
-        <div style="font-size:13.5px;margin:8px 0">${b.pertanyaan}</div>
+        <div style="font-size:13.5px;margin:8px 0">${applyArabic(b.pertanyaan)}</div>
         ${renderPilihanPreview(b)}
         <div style="font-size:11.5px;color:var(--mu);margin-top:8px;border-top:1px solid var(--br);padding-top:7px">Kunci: <strong>${normKunci(b.jawaban_benar)}</strong></div>
       </div></div>`).join('')}
@@ -2845,7 +2929,7 @@ function renderPilihanPreview(b){
     return['pilihan_1','pilihan_2','pilihan_3','pilihan_4','pilihan_5'].filter((_,i)=>b['pilihan_'+(i+1)]).map((_,i)=>{
       const lbl=labels[i];
       const isKunci=kunciArr.includes(lbl);
-      return`<div style="padding:6px 10px;border-radius:6px;border:1px solid var(--br);margin-bottom:4px;font-size:13px;background:${isKunci?'#f0fdf4':'#fff'}"><strong>${lbl}.</strong> ${b['pilihan_'+(i+1)]}</div>`;
+      return`<div style="padding:6px 10px;border-radius:6px;border:1px solid var(--br);margin-bottom:4px;font-size:13px;background:${isKunci?'#f0fdf4':'#fff'}"><strong>${lbl}.</strong> ${applyArabic(b['pilihan_'+(i+1)])}</div>`;
     }).join('');
   }if(b.tipe_soal==='Benar/Salah'){
     const ps=[b.pilihan_1,b.pilihan_2,b.pilihan_3,b.pilihan_4].filter(Boolean);
@@ -3915,7 +3999,7 @@ async function koreksiUraian(idNilai){
       ${(butirs||[]).map(b=>`
         <div class="card" style="margin-bottom:12px"><div class="cb">
           <div style="font-size:11px;font-weight:700;color:var(--mu);margin-bottom:6px">SOAL NOMOR ${b.nomer_soal}</div>
-          <div style="font-size:13.5px;margin-bottom:9px">${b.pertanyaan}</div>
+          <div style="font-size:13.5px;margin-bottom:9px">${applyArabic(b.pertanyaan)}</div>
           <div style="background:var(--bg);border-radius:8px;padding:9px;margin-bottom:8px;font-size:13px"><strong>Jawaban Siswa:</strong><br>${jaws[b.nomer_soal]||'<em style="color:var(--mu)">Tidak menjawab</em>'}</div>
           <div style="background:#f0fdf4;border-radius:8px;padding:9px;margin-bottom:10px;font-size:13px"><strong>Kunci Referensi:</strong><br>${b.jawaban_benar||'—'}</div>
           <div class="fg" style="margin:0"><label class="fl">Nilai (0 – ${maxPerS})</label>
@@ -5906,17 +5990,17 @@ function renderSoal(n){
   if(tipe==='Pilihan Ganda'){
     const labels=['A','B','C','D','E'];
     const opts=b._shuffledOpts||['pilihan_1','pilihan_2','pilihan_3','pilihan_4','pilihan_5'].filter(k=>b[k]&&b[k].trim()!=='');
-    pilihanHtml=`<div class="opsi">${opts.map((k,i)=>{const lbl=labels[i];return`<div class="op ${jawaban===lbl?'sel':''}" onclick="pilihPG(${n},'${lbl}')"><div class="opradio"></div><div class="opk">${lbl}</div><div class="opt">${b[k]}</div></div>`}).join('')}</div>`;
+    pilihanHtml=`<div class="opsi">${opts.map((k,i)=>{const lbl=labels[i];return`<div class="op ${jawaban===lbl?'sel':''}" onclick="pilihPG(${n},'${lbl}')"><div class="opradio"></div><div class="opk">${lbl}</div><div class="opt">${applyArabic(b[k])}</div></div>`}).join('')}</div>`;
   }else if(tipe==='Pilihan Ganda Kompleks'){
     const labels=['A','B','C','D','E'];
     const opts=b._shuffledOpts||['pilihan_1','pilihan_2','pilihan_3','pilihan_4','pilihan_5'].filter(k=>b[k]&&b[k].trim()!=='');
     const selArr=(jawaban||'').split(',').filter(Boolean);
     pilihanHtml=`<div class="al alin" style="padding:8px 12px;font-size:12px;margin-bottom:10px"><i class=\"fa-solid fa-circle-info\" style=\"color:var(--p)\"></i><div>Pilih SEMUA jawaban yang benar (bisa lebih dari satu)</div></div>
-      <div class="pgk">${opts.map((k,i)=>{const lbl=labels[i];return`<div class="pk ${selArr.includes(lbl)?'sel':''}" onclick="pilihPGK(${n},'${lbl}')"><div class="pkcb"></div><div class="opk">${lbl}</div><div class="opt">${b[k]}</div></div>`}).join('')}</div>`;
+      <div class="pgk">${opts.map((k,i)=>{const lbl=labels[i];return`<div class="pk ${selArr.includes(lbl)?'sel':''}" onclick="pilihPGK(${n},'${lbl}')"><div class="pkcb"></div><div class="opk">${lbl}</div><div class="opt">${applyArabic(b[k])}</div></div>`}).join('')}</div>`;
   }else if(tipe==='Benar/Salah'){
     const stmts=[b.pilihan_1,b.pilihan_2,b.pilihan_3,b.pilihan_4,b.pilihan_5].filter(Boolean);
     const jawArr=(jawaban||'').split('|');
-    pilihanHtml=stmts.map((s,i)=>`<div class="bsrow"><div class="bst">${i+1}. ${s}</div>
+    pilihanHtml=stmts.map((s,i)=>`<div class="bsrow"><div class="bst">${i+1}. ${applyArabic(s)}</div>
       <div class="bstog">
         <button class="bsb ${jawArr[i]==='Benar'?'b':''}" onclick="pilihBS(${n},${i},'Benar')">Benar</button>
         <button class="bsb ${jawArr[i]==='Salah'?'s':''}" onclick="pilihBS(${n},${i},'Salah')">Salah</button>
@@ -5933,10 +6017,10 @@ function renderSoal(n){
     const jawMap={};jawArr.forEach(j=>{const[l,r]=j.split(':');jawMap[l]=r;});
     pilihanHtml=`<div style="font-size:12.5px;color:var(--mu);margin-bottom:10px">Pasangkan kolom kiri dengan kolom kanan yang sesuai:</div>
       <div id="jodohWrap">${lefts.map((l,i)=>`<div class="jrow">
-        <div class="jleft">${l}</div><div class="jarr">→</div>
+        <div class="jleft">${applyArabic(l)}</div><div class="jarr">→</div>
         <select class="fc jsel" id="jodoh_${n}_${i}" onchange="pilihJodoh(${n})">
           <option value="">— Pilih —</option>
-          ${shuffledRights.map(r=>`<option value="${r}" ${jawMap[l]===r?'selected':''}>${r}</option>`).join('')}
+          ${shuffledRights.map(r=>`<option value="${r}" ${jawMap[l]===r?'selected':''}>${applyArabic(r)}</option>`).join('')}
         </select>
       </div>`).join('')}</div>`;
   }
@@ -5953,7 +6037,7 @@ function renderSoal(n){
     <div class="soalcard-wrapper">
       <div class="soalcard">
         <span class="stipe">${b.tipe_soal}</span>
-        <div class="stxt">${b.pertanyaan}</div>
+        <div class="stxt">${applyArabic(b.pertanyaan)}</div>
         ${pilihanHtml}
       </div>
     </div>
