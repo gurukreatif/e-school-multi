@@ -231,107 +231,378 @@ tbody tr:hover td{background:#fafbff}
 .cfg{min-height:100vh;background:linear-gradient(135deg,#0f172a,#064e3b);display:flex;align-items:center;justify-content:center;padding:20px}
 .cfgcard{background:#fff;border-radius:18px;padding:34px;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25)}
 /* EXAM */
-/* ═══════════ EXAM SCREEN — EMERALD CBT STYLE ═══════════ */
+/* ═══════════ EXAM SCREEN — ANBK LAYOUT · EMERALD THEME ═══════════ */
 :root{
   --em:#059669;--em-d:#047857;--em-dd:#065f46;
-  --em-l:#d1fae5;--em-ll:#ecfdf5;--em-bg:#f0faf6;
+  --em-l:#d1fae5;--em-ll:#ecfdf5;--em-bg:#f4f6f8;
   --wa2:#f59e0b;--er2:#ef4444;
 }
-.exl{display:flex;height:100vh;overflow:hidden;background:var(--em-bg);font-family:'Plus Jakarta Sans',sans-serif}
 
-/* ── SIDEBAR DESKTOP ── */
-.exsb{width:260px;flex-shrink:0;background:var(--em-dd);display:flex;flex-direction:column;overflow:hidden;box-shadow:3px 0 20px rgba(0,0,0,.15);z-index:10}
-.exhd{background:var(--em-d);color:#fff;padding:16px 18px 14px;border-bottom:1px solid rgba(255,255,255,.1);flex-shrink:0}
-.exhd h2{font-size:14px;font-weight:800;margin-bottom:3px;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.exhd p{font-size:11px;color:rgba(255,255,255,.55);font-weight:500}
-.timebox{margin:12px 14px 0;padding:12px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);border-radius:10px;text-align:center;flex-shrink:0}
-.tl{font-size:9px;font-weight:700;color:rgba(255,255,255,.45);text-transform:uppercase;letter-spacing:.14em;margin-bottom:4px}
-.td{font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;color:#fff;line-height:1;letter-spacing:.05em}
+/* ══ OUTER WRAPPER ══ */
+.exl{
+  display:flex;flex-direction:column;
+  height:100vh;min-height:100vh;
+  overflow:hidden;
+  background:var(--em-bg);
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+
+/* ══ TOP HEADER BAR — full width like ANBK ══ */
+.exhd{
+  background:var(--em-dd);
+  color:#fff;
+  height:52px;min-height:52px;
+  padding:0 24px;
+  display:flex;align-items:center;justify-content:space-between;
+  gap:16px;flex-shrink:0;
+  box-shadow:0 2px 8px rgba(0,0,0,.18);
+  z-index:20;
+}
+.exhd-left{display:flex;align-items:center;gap:14px;min-width:0;flex:1}
+.exhd-logo{
+  width:32px;height:32px;border-radius:8px;
+  background:rgba(255,255,255,.18);
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;font-size:16px;
+}
+.exhd-title{min-width:0}
+.exhd-title h2{font-size:13.5px;font-weight:800;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
+.exhd-title p{font-size:10.5px;color:rgba(255,255,255,.55);margin:0;font-weight:500}
+.exhd-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+
+/* Timer pill */
+.timebox{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(255,255,255,.1);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:8px;
+  padding:5px 12px 5px 10px;
+  margin:0;
+}
+.tl{font-size:9.5px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap}
+.td{
+  font-family:'JetBrains Mono',monospace;
+  font-size:18px;font-weight:700;color:#fff;
+  letter-spacing:.06em;line-height:1;min-width:52px;text-align:right;
+}
 .td.warn{color:#fbbf24}.td.dang{color:#f87171;animation:pulse 1s infinite}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.ngw{padding:12px 14px;flex:1;overflow-y:auto}
-.ngw::-webkit-scrollbar{width:3px}
-.ngw::-webkit-scrollbar-thumb{background:rgba(255,255,255,.18);border-radius:3px}
-.ng-nav-title{font-size:9px;font-weight:700;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.14em;margin-bottom:9px;margin-top:2px}
-.ng{display:grid;grid-template-columns:repeat(5,1fr);gap:5px;margin-bottom:10px}
-.ng-group{margin-bottom:12px}
-.ng-group-label{font-size:8.5px;font-weight:700;color:rgba(255,255,255,.3);text-transform:uppercase;letter-spacing:.1em;padding:2px 0 5px;border-bottom:1px solid rgba(255,255,255,.08);margin-bottom:6px}
-.num{aspect-ratio:1;border:1.5px solid rgba(255,255,255,.15);border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;cursor:pointer;transition:all .12s;color:rgba(255,255,255,.45);background:rgba(255,255,255,.05);user-select:none}
-.num:hover{border-color:rgba(255,255,255,.5);color:#fff;background:rgba(255,255,255,.1)}
-.num.cur{background:#fff;border-color:#fff;color:var(--em-dd);font-weight:800}
-.num.ans{background:#34d399;border-color:#34d399;color:#fff}
-.num.ragu{background:var(--wa2);border-color:var(--wa2);color:#fff}
-.leg{padding:10px 14px 12px;display:grid;grid-template-columns:1fr 1fr;gap:5px 8px;font-size:10px;color:rgba(255,255,255,.5);border-top:1px solid rgba(255,255,255,.08);flex-shrink:0}
-.legi{display:flex;align-items:center;gap:5px;white-space:nowrap}
-.legd{width:10px;height:10px;border-radius:3px;flex-shrink:0}
-.exsb-finish{padding:0 14px 14px;flex-shrink:0}
-.exsb-finish .btn{width:100%;background:var(--er2);border:none;color:#fff;font-weight:700;border-radius:8px;padding:10px 14px;font-size:13px;cursor:pointer;transition:background .15s;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px}
-.exsb-finish .btn:hover{background:#dc2626}
 
-/* ── MAIN AREA ── */
-.exmain{flex:1;overflow-y:auto;padding:28px 32px;background:var(--em-bg)}
+/* Header action buttons */
+.exhd-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:6px 13px;
+  border-radius:7px;
+  font-size:12px;font-weight:700;
+  cursor:pointer;transition:all .13s;
+  font-family:inherit;border:1.5px solid rgba(255,255,255,.25);
+  background:rgba(255,255,255,.1);color:#fff;
+  white-space:nowrap;
+}
+.exhd-btn:hover{background:rgba(255,255,255,.2)}
+.exhd-btn.primary{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.4)}
+.exhd-btn.danger{background:var(--er2);border-color:var(--er2)}
+.exhd-btn.danger:hover{background:#dc2626}
+
+/* ══ SOAL NUMBER HEADER (below top bar, above card) ══ */
+.exsoal-meta{
+  padding:18px 32px 0;
+  max-width:900px;width:100%;margin:0 auto;
+}
+.exsoal-nomor{
+  font-size:22px;font-weight:800;color:#1e293b;
+  margin-bottom:2px;line-height:1.2;
+}
+.exsoal-mapel{font-size:12.5px;color:#64748b;font-weight:500;margin-bottom:0}
+.exsoal-divider{
+  height:1px;background:#e2e8f0;
+  max-width:900px;width:calc(100% - 64px);
+  margin:10px auto 0;
+}
+
+/* ══ MAIN SCROLL AREA ══ */
+.exmain{
+  flex:1;overflow-y:auto;
+  padding:16px 32px 100px;
+  background:var(--em-bg);
+}
 .exmain::-webkit-scrollbar{width:5px}
 .exmain::-webkit-scrollbar-thumb{background:#a7f3d0;border-radius:5px}
-.soalcard-wrapper{max-width:800px;width:100%;margin:0 auto;display:flex;flex-direction:column}
 
-/* ── SOAL CARD ── */
-.soalcard{background:#fff;border:none;border-radius:12px 12px 0 0;padding:0;overflow:hidden;box-shadow:0 2px 16px rgba(0,0,0,.06)}
-.soalcard-hd{background:var(--em);padding:12px 22px;display:flex;align-items:center;justify-content:space-between}
-.snl{font-size:11.5px;font-weight:800;color:#fff;text-transform:uppercase;letter-spacing:.09em;margin-bottom:0}
-.stipe{display:inline-flex;align-items:center;font-size:10.5px;font-weight:700;background:rgba(255,255,255,.2);color:#fff;padding:3px 11px;border-radius:100px;border:1px solid rgba(255,255,255,.3);margin-bottom:0}
-.soalcard-body{padding:24px 26px 20px}
-.stxt{font-size:15px;line-height:1.8;margin-bottom:22px;color:#1e293b;font-weight:500}
+/* ══ SOAL CARD ══ */
+.soalcard-wrapper{
+  max-width:900px;width:100%;
+  margin:0 auto;
+  display:flex;flex-direction:column;
+}
+.soalcard{
+  background:#fff;
+  border:1px solid #e2e8f0;
+  border-radius:10px;
+  padding:28px 32px 24px;
+  box-shadow:0 1px 8px rgba(0,0,0,.05);
+}
+/* Remove old header bar from card — ANBK puts it outside */
+.soalcard-hd{display:none}
+.snl{display:none}
+.stipe{
+  display:inline-flex;align-items:center;
+  font-size:10.5px;font-weight:700;
+  background:var(--em-l);color:var(--em-dd);
+  padding:3px 10px;border-radius:100px;
+  margin-bottom:14px;
+}
+.stxt{
+  font-size:15px;line-height:1.8;
+  margin-bottom:24px;color:#1e293b;font-weight:500;
+}
 .stxt img{max-width:100%;border-radius:8px;margin:8px 0;border:1px solid #e2e8f0}
 
-/* ── OPSI ── */
-.opsi{display:flex;flex-direction:column;gap:8px}
-.op{display:flex;align-items:stretch;gap:0;border:1.5px solid #e2e8f0;border-radius:8px;cursor:pointer;transition:all .13s;background:#fff;overflow:hidden}
-.op:hover{border-color:var(--em);background:var(--em-ll)}.op:hover .opk{background:var(--em-l);color:var(--em-d)}
-.op.sel{border-color:var(--em);background:var(--em-ll)}.op.sel .opk{background:var(--em);color:#fff;border-right-color:var(--em)}
-.op.correct{border-color:#16a34a;background:#f0fdf4}.op.correct .opk{background:#16a34a;color:#fff;border-right-color:#16a34a}
-.op.wrong{border-color:var(--er2);background:#fff1f2}.op.wrong .opk{background:var(--er2);color:#fff;border-right-color:var(--er2)}
-.opradio{display:none}
-.opk{width:46px;min-width:46px;display:flex;align-items:center;justify-content:center;font-size:13.5px;font-weight:800;color:#94a3b8;background:#f8fafc;border-right:1.5px solid #e2e8f0;flex-shrink:0;transition:all .13s;font-family:'JetBrains Mono',monospace;align-self:stretch}
-.opt{font-size:14px;line-height:1.6;flex:1;padding:12px 16px;color:#334155;align-self:center}
+/* ══ OPSI — ANBK radio style ══ */
+.opsi{display:flex;flex-direction:column;gap:6px}
+.op{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 16px;
+  border:1.5px solid #e9ecef;
+  border-radius:8px;
+  cursor:pointer;transition:all .13s;
+  background:#fff;
+}
+.op:hover{border-color:var(--em);background:var(--em-ll)}
+.op.sel{border-color:var(--em);background:var(--em-ll)}
+.op.correct{border-color:#16a34a;background:#f0fdf4}
+.op.wrong{border-color:var(--er2);background:#fff1f2}
 
-/* ── PGK ── */
-.pgk{display:flex;flex-direction:column;gap:8px}
-.pk{display:flex;align-items:stretch;gap:0;border:1.5px solid #e2e8f0;border-radius:8px;cursor:pointer;transition:all .13s;background:#fff;overflow:hidden}
-.pk:hover{border-color:var(--em);background:var(--em-ll)}.pk:hover .opk{background:var(--em-l);color:var(--em-d)}
-.pk.sel{border-color:var(--em);background:var(--em-ll)}.pk.sel .opk{background:var(--em);color:#fff;border-right-color:var(--em)}
-.pkcb{display:none}
+/* Radio circle — ANBK style */
+.opradio{
+  display:flex!important;
+  width:18px;height:18px;min-width:18px;
+  border:2px solid #cbd5e1;
+  border-radius:50%;
+  align-items:center;justify-content:center;
+  transition:all .13s;flex-shrink:0;
+}
+.op:hover .opradio{border-color:var(--em)}
+.op.sel .opradio{border-color:var(--em);background:var(--em)}
+.op.sel .opradio::after{content:'';width:6px;height:6px;background:#fff;border-radius:50%;display:block}
+.op.correct .opradio{border-color:#16a34a;background:#16a34a}
+.op.correct .opradio::after{content:'';width:6px;height:6px;background:#fff;border-radius:50%;display:block}
+.op.wrong .opradio{border-color:var(--er2);background:var(--er2)}
+.op.wrong .opradio::after{content:'';width:6px;height:6px;background:#fff;border-radius:50%;display:block}
 
-/* ── BENAR/SALAH ── */
-.bsrow{display:flex;align-items:stretch;border:1.5px solid #e2e8f0;border-radius:8px;margin-bottom:8px;background:#fff;overflow:hidden;transition:border-color .12s}
-.bst{font-size:14px;flex:1;padding:13px 16px;line-height:1.55;color:#334155;border-right:1.5px solid #e2e8f0}
+/* Label huruf */
+.opk{
+  width:24px;min-width:24px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;
+  color:#64748b;flex-shrink:0;
+  transition:color .13s;
+  /* Remove box style from previous version */
+  background:none;border:none;border-radius:0;height:auto;
+  font-family:'Plus Jakarta Sans',sans-serif;
+}
+.op.sel .opk{color:var(--em-dd)}
+.opt{
+  font-size:14px;line-height:1.6;
+  flex:1;color:#334155;
+  /* Remove padding from previous version */
+  padding:0;
+  align-self:auto;
+}
+
+/* ══ PGK ══ */
+.pgk{display:flex;flex-direction:column;gap:6px}
+.pk{
+  display:flex;align-items:center;gap:12px;
+  padding:11px 16px;
+  border:1.5px solid #e9ecef;border-radius:8px;
+  cursor:pointer;transition:all .13s;background:#fff;
+}
+.pk:hover{border-color:var(--em);background:var(--em-ll)}
+.pk.sel{border-color:var(--em);background:var(--em-ll)}
+/* Checkbox ANBK-style */
+.pkcb{
+  display:flex!important;
+  width:18px;height:18px;min-width:18px;
+  border:2px solid #cbd5e1;
+  border-radius:4px;
+  align-items:center;justify-content:center;
+  transition:all .13s;flex-shrink:0;
+}
+.pk:hover .pkcb{border-color:var(--em)}
+.pk.sel .pkcb{border-color:var(--em);background:var(--em)}
+.pk.sel .pkcb::after{content:'✓';color:#fff;font-size:11px;font-weight:900;line-height:1}
+.pk .opk{color:#64748b;background:none;border:none}
+.pk.sel .opk{color:var(--em-dd)}
+
+/* ══ BENAR/SALAH ══ */
+.bsrow{
+  display:flex;align-items:stretch;
+  border:1.5px solid #e9ecef;border-radius:8px;
+  margin-bottom:7px;background:#fff;overflow:hidden;
+  transition:border-color .12s;
+}
+.bst{font-size:14px;flex:1;padding:13px 16px;line-height:1.55;color:#334155;border-right:1.5px solid #e9ecef}
 .bstog{display:flex;flex-shrink:0}
-.bsb{padding:0 20px;min-width:72px;font-size:12.5px;font-weight:700;border:none;border-left:1px solid #e2e8f0;background:#f8fafc;cursor:pointer;transition:all .12s;color:#64748b;font-family:inherit}
+.bsb{
+  padding:0 20px;min-width:72px;
+  font-size:12.5px;font-weight:700;
+  border:none;border-left:1px solid #e9ecef;
+  background:#f8fafc;cursor:pointer;transition:all .12s;color:#64748b;font-family:inherit;
+}
 .bsb:first-child{border-left:none}
 .bsb:hover{background:var(--em-l);color:var(--em-d)}
 .bsb.b{background:#dcfce7;color:#15803d;border-left-color:#86efac;font-weight:800}
 .bsb.s{background:#fee2e2;color:#b91c1c;border-left-color:#fca5a5;font-weight:800}
 
-/* ── MENJODOHKAN ── */
+/* ══ MENJODOHKAN ══ */
 .jrow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.jleft{flex:1;padding:11px 14px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;font-size:14px;color:#334155;font-weight:500}
+.jleft{flex:1;padding:11px 14px;background:#f8fafc;border:1.5px solid #e9ecef;border-radius:8px;font-size:14px;color:#334155;font-weight:500}
 .jarr{color:#94a3b8;font-weight:700;font-size:18px;flex-shrink:0}
-.jsel{flex:1;border-radius:8px!important;border-color:#e2e8f0!important}
+.jsel{flex:1;border-radius:8px!important;border-color:#e9ecef!important}
 
-/* ── NAV BAWAH ── */
-.exnav{display:flex;gap:10px;justify-content:space-between;align-items:center;padding:14px 22px;border-top:1.5px solid #e9f5ef;background:#fff;border-radius:0 0 12px 12px;box-shadow:0 4px 16px rgba(0,0,0,.06)}
-.exnav-right{display:flex;gap:8px;align-items:center}
-.exnav .btn-prev{display:flex;align-items:center;gap:6px;padding:9px 18px;border:1.5px solid #e2e8f0;border-radius:8px;background:#fff;font-size:13px;font-weight:600;color:#64748b;cursor:pointer;transition:all .13s;font-family:inherit}
-.exnav .btn-prev:hover{border-color:#94a3b8;background:#f8fafc;color:#334155}
-.exnav .btn-prev:disabled{opacity:.35;cursor:not-allowed}
-.exnav .btn-ragu{display:flex;align-items:center;gap:6px;padding:9px 16px;border:1.5px solid #e2e8f0;border-radius:8px;background:#fff;font-size:13px;font-weight:600;color:#64748b;cursor:pointer;transition:all .13s;font-family:inherit}
-.exnav .btn-ragu.active{border-color:var(--wa2);background:#fef9c3;color:#92400e}
-.exnav .btn-ragu:hover{border-color:var(--wa2);background:#fef9c3;color:#92400e}
-.exnav .btn-next{display:flex;align-items:center;gap:6px;padding:9px 22px;border:none;border-radius:8px;background:var(--em);font-size:13px;font-weight:700;color:#fff;cursor:pointer;transition:background .13s;font-family:inherit}
-.exnav .btn-next:hover{background:var(--em-d)}
-.exnav .btn-finish{display:flex;align-items:center;gap:6px;padding:9px 22px;border:none;border-radius:8px;background:var(--er2);font-size:13px;font-weight:700;color:#fff;cursor:pointer;transition:background .13s;font-family:inherit}
+/* ══ NAV BAR BAWAH — ANBK style, 4 tombol berwarna ══ */
+.exnav{
+  position:fixed;bottom:0;left:0;right:0;
+  z-index:50;
+  display:flex;align-items:center;justify-content:center;
+  gap:10px;padding:12px 24px;
+  background:#fff;
+  border-top:1px solid #e2e8f0;
+  box-shadow:0 -2px 16px rgba(0,0,0,.07);
+}
+.exnav-right{display:flex;gap:10px;align-items:center}/* kept for compat */
+
+.exnav .btn-prev{
+  display:flex;align-items:center;gap:6px;
+  padding:10px 20px;border:none;border-radius:8px;
+  background:#e9ecef;font-size:13px;font-weight:700;color:#495057;
+  cursor:pointer;transition:all .13s;font-family:inherit;
+}
+.exnav .btn-prev:hover{background:#dee2e6;color:#212529}
+.exnav .btn-prev:disabled{opacity:.4;cursor:not-allowed}
+
+.exnav .btn-ragu{
+  display:flex;align-items:center;gap:6px;
+  padding:10px 20px;border:none;border-radius:8px;
+  background:#f59e0b;font-size:13px;font-weight:700;color:#fff;
+  cursor:pointer;transition:all .13s;font-family:inherit;
+}
+.exnav .btn-ragu:hover{background:#d97706}
+.exnav .btn-ragu.active{background:#92400e}
+
+.exnav .btn-save{
+  display:flex;align-items:center;gap:6px;
+  padding:10px 20px;border:none;border-radius:8px;
+  background:var(--em);font-size:13px;font-weight:700;color:#fff;
+  cursor:pointer;transition:all .13s;font-family:inherit;
+}
+.exnav .btn-save:hover{background:var(--em-d)}
+
+.exnav .btn-next{
+  display:flex;align-items:center;gap:6px;
+  padding:10px 20px;border:none;border-radius:8px;
+  background:#3b82f6;font-size:13px;font-weight:700;color:#fff;
+  cursor:pointer;transition:all .13s;font-family:inherit;
+}
+.exnav .btn-next:hover{background:#2563eb}
+
+.exnav .btn-finish{
+  display:flex;align-items:center;gap:6px;
+  padding:10px 20px;border:none;border-radius:8px;
+  background:var(--er2);font-size:13px;font-weight:700;color:#fff;
+  cursor:pointer;transition:all .13s;font-family:inherit;
+}
 .exnav .btn-finish:hover{background:#dc2626}
 
-/* ── MOBILE HIDDEN by default ── */
+/* ══ MODAL DAFTAR SOAL ══ */
+.exsb{
+  position:fixed;inset:0;z-index:500;
+  display:none;align-items:flex-start;justify-content:flex-end;
+  padding:60px 0 0;
+  pointer-events:none;
+}
+.exsb.open{display:flex;pointer-events:all}
+
+/* Overlay behind modal */
+.exsb-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.45);
+  z-index:499;display:none;
+}
+.exsb-overlay.show{display:block}
+
+/* Modal panel */
+.exsb-panel{
+  width:340px;max-width:92vw;
+  height:calc(100vh - 60px);
+  background:#fff;
+  display:flex;flex-direction:column;
+  box-shadow:-8px 0 40px rgba(0,0,0,.15);
+  pointer-events:all;
+  overflow:hidden;
+}
+.exsb-panel-hd{
+  background:var(--em-dd);
+  color:#fff;
+  padding:16px 20px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.exsb-panel-hd h3{font-size:14px;font-weight:800;margin:0}
+.exsb-close{
+  background:rgba(255,255,255,.15);border:none;color:#fff;
+  width:28px;height:28px;border-radius:6px;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;font-size:14px;
+  transition:background .12s;
+}
+.exsb-close:hover{background:rgba(255,255,255,.3)}
+.exsb-panel-body{flex:1;overflow-y:auto;padding:16px 20px}
+.exsb-panel-body::-webkit-scrollbar{width:4px}
+.exsb-panel-body::-webkit-scrollbar-thumb{background:#a7f3d0;border-radius:4px}
+
+/* Number grid inside modal */
+.ng{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:10px}
+.ng-group{margin-bottom:16px}
+.ng-group-label{
+  font-size:9.5px;font-weight:700;color:#64748b;
+  text-transform:uppercase;letter-spacing:.1em;
+  padding:2px 0 6px;border-bottom:1px solid #e2e8f0;margin-bottom:8px;
+}
+.ng-nav-title{display:none}
+.num{
+  aspect-ratio:1;border:1.5px solid #e2e8f0;
+  border-radius:7px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:600;
+  cursor:pointer;transition:all .12s;
+  color:#475569;background:#f8fafc;user-select:none;
+}
+.num:hover{border-color:var(--em);color:var(--em);background:var(--em-ll)}
+.num.cur{background:var(--em);border-color:var(--em);color:#fff;font-weight:800}
+.num.ans{background:#34d399;border-color:#34d399;color:#fff}
+.num.ragu{background:var(--wa2);border-color:var(--wa2);color:#fff}
+
+/* Legend inside modal */
+.leg{
+  display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;
+  font-size:11px;color:#64748b;
+  padding:12px 0 4px;
+  border-top:1px solid #e2e8f0;margin-top:4px;
+}
+.legi{display:flex;align-items:center;gap:6px}
+.legd{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+
+/* timebox not visible in modal context */
+.timebox-modal{display:none}
+
+/* ══ HIDDEN ELEMENTS (sidebar was for desktop, now modal-only) ══ */
+.exhd-as-sidebar{display:none}
+.exsb-finish{display:none}/* finish via header btn */
+
+/* ══ OFFLINE indicator ══ */
+#offlineInd{margin:0!important}
+
+/* ══ MOBILE — ANBK mobile style ══ */
 .ex-mob-top{display:none}
 
 
@@ -397,114 +668,62 @@ tbody tr:hover td{background:#fafbff}
   .tbunm,.tburl,.tbusr-div{display:none}
   #mbtn,#mbtnDiv{display:flex!important}
 
-  /* ══ MOBILE EXAM — Layout ulang total ══ */
-  .exl{flex-direction:column;height:100dvh;background:#fff;overflow:hidden}
+  /* ══ MOBILE EXAM — ANBK mobile layout ══ */
+  .exl{height:100dvh;overflow:hidden}
 
-  /* Sidebar jadi drawer dari bawah */
-  .exsb{
-    position:fixed;bottom:0;left:0;right:0;width:100%;
-    max-height:0;overflow:hidden;
-    transition:max-height .35s cubic-bezier(.4,0,.2,1);
-    z-index:400;
-    flex-direction:column;
-    border-radius:18px 18px 0 0;
-    box-shadow:0 -8px 40px rgba(0,0,0,.28);
-    background:var(--em-dd);
-  }
-  .exsb.mob-open{max-height:80dvh;overflow-y:auto}
+  /* Header compact */
+  .exhd{height:48px;min-height:48px;padding:0 14px}
+  .exhd-title h2{font-size:12px}
+  .exhd-title p{display:none}
+  .td{font-size:15px;min-width:44px}
+  .timebox{padding:4px 8px 4px 7px;gap:5px}
+  .tl{display:none}
+  .exhd-btn span{display:none}/* show only icon */
+  .exhd-btn{padding:5px 9px}
+  .exhd-logo{width:26px;height:26px;font-size:13px}
 
-  /* Sembunyikan header & tombol selesai di dalam drawer */
-  .exhd{display:none}
-  .exsb-finish{display:none}
+  /* Soal meta */
+  .exsoal-meta{padding:12px 14px 0}
+  .exsoal-nomor{font-size:17px}
+  .exsoal-divider{width:calc(100% - 28px);margin:8px auto 0}
 
-  /* Drawer handle */
-  .exsb::before{
-    content:'';display:block;
-    width:36px;height:4px;
-    background:rgba(255,255,255,.3);
-    border-radius:2px;
-    margin:10px auto 4px;
-    flex-shrink:0;
-  }
+  /* Main scroll */
+  .exmain{padding:12px 14px 90px}
 
-  .timebox{margin:6px 16px 0;padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-radius:10px}
-  .timebox .tl{margin-bottom:0;font-size:9px}
-  .td{font-size:26px}
-  .ngw{padding:10px 16px;max-height:none}
-  .ng{grid-template-columns:repeat(8,1fr);gap:5px}
-  .ng-nav-title{font-size:9px;margin-bottom:7px}
-  .leg{padding:8px 16px 14px;grid-template-columns:repeat(4,1fr);font-size:10px}
+  /* Card */
+  .soalcard{padding:18px 16px 16px;border-radius:8px}
+  .stxt{font-size:14px;line-height:1.7;margin-bottom:18px}
+  .stipe{font-size:10px;margin-bottom:10px}
 
-  /* ── TOP BAR MOBILE ── */
-  .ex-mob-top{
-    display:flex!important;
-    align-items:center;justify-content:space-between;
-    padding:0 14px;
-    height:54px;min-height:54px;
-    background:var(--em);
-    color:#fff;
-    flex-shrink:0;gap:10px;
-    box-shadow:0 2px 8px rgba(0,0,0,.15);
-  }
-  .ex-mob-top-info{display:flex;flex-direction:column;flex:1;min-width:0}
-  .ex-mob-top-title{font-size:13px;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  .ex-mob-top-sub{font-size:10px;color:rgba(255,255,255,.65);margin-top:1px}
-  .ex-mob-timer{
-    font-family:'JetBrains Mono',monospace;
-    font-size:22px;font-weight:700;color:#fff;
-    flex-shrink:0;letter-spacing:.04em;line-height:1;
-    min-width:70px;text-align:right;
-  }
-  .ex-mob-timer.warn{color:#fbbf24}
-  .ex-mob-timer.dang{color:#f87171;animation:pulse 1s infinite}
-  .ex-mob-nav-btn{
-    background:rgba(255,255,255,.18);
-    border:1.5px solid rgba(255,255,255,.3);
-    color:#fff;border-radius:8px;
-    padding:6px 12px;font-size:12px;font-weight:700;
-    cursor:pointer;transition:background .13s;
-    font-family:inherit;white-space:nowrap;flex-shrink:0;
-  }
-  .ex-mob-nav-btn:hover{background:rgba(255,255,255,.28)}
+  /* Opsi */
+  .op{padding:9px 13px;gap:10px}
+  .opradio{width:16px;height:16px;min-width:16px}
+  .opradio::after,.op.sel .opradio::after,.op.correct .opradio::after,.op.wrong .opradio::after{width:5px!important;height:5px!important}
+  .opk{width:20px;min-width:20px;font-size:12px}
+  .opt{font-size:13.5px}
+  .pk{padding:9px 13px;gap:10px}
+  .pkcb{width:16px;height:16px;min-width:16px}
 
-  /* ── Overlay behind drawer ── */
-  .exsb-overlay{
-    display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:399;
-  }
-  .exsb-overlay.show{display:block}
-
-  /* ── MAIN scroll ── */
-  .exmain{
-    flex:1;overflow-y:auto;
-    padding:12px 12px 76px;
-    background:#f0faf6;
-  }
-
-  .soalcard-wrapper{max-width:100%}
-  .soalcard{border-radius:10px 10px 0 0}
-  .soalcard-hd{padding:10px 16px}
-  .snl{font-size:11px}
-  .soalcard-body{padding:16px 16px 14px}
-  .stxt{font-size:14px;line-height:1.7;margin-bottom:16px}
-
-  .op{border-radius:7px}
-  .opk{width:42px;min-width:42px;font-size:13px}
-  .opt{font-size:13.5px;padding:11px 13px}
-  .bsb{padding:0 16px;min-width:64px;font-size:12px}
+  /* BS */
+  .bsb{padding:0 13px;min-width:58px;font-size:12px}
   .bst{font-size:13.5px;padding:11px 13px}
 
-  /* ── NAV BAR bawah FIXED ── */
+  /* Nav bar bawah */
   .exnav{
-    position:fixed;bottom:0;left:0;right:0;z-index:100;
-    border-radius:0;padding:10px 14px;
-    border-top:1.5px solid #d1fae5;
-    box-shadow:0 -3px 20px rgba(0,0,0,.1);
-    max-width:100%;
+    padding:8px 10px;gap:6px;
+    justify-content:stretch;
   }
-  .exnav .btn-prev{padding:9px 14px;font-size:12.5px}
-  .exnav .btn-ragu{padding:9px 12px;font-size:12.5px}
-  .exnav .btn-next{padding:9px 18px;font-size:12.5px}
-  .exnav .btn-finish{padding:9px 16px;font-size:12.5px}
+  .exnav .btn-prev,.exnav .btn-ragu,.exnav .btn-save,.exnav .btn-next,.exnav .btn-finish{
+    flex:1;padding:10px 6px;font-size:11.5px;justify-content:center;
+  }
+
+  /* Modal daftar soal */
+  .exsb-panel{width:100%;height:auto;max-height:75dvh}
+  .exsb{padding:0;align-items:flex-end}
+  .exsb-panel{border-radius:18px 18px 0 0}
+  .ng{grid-template-columns:repeat(7,1fr);gap:5px}
+  .num{font-size:11px}
+  .exsb-overlay.show{display:block}
 }
 
 @media(max-width:480px){
@@ -512,11 +731,10 @@ tbody tr:hover td{background:#fafbff}
   .resgrid{grid-template-columns:1fr}
   .sbar{flex-direction:column}
   .siw{min-width:100%;flex:none}
-  .ng{grid-template-columns:repeat(7,1fr)}
-  /* Kecilkan teks tombol nav agar muat */
-  .exnav .btn-prev-txt,.exnav .btn-ragu-text{display:none}
-  .exnav .btn-prev{padding:9px 11px}
-  .exnav .btn-ragu{padding:9px 11px}
+  .ng{grid-template-columns:repeat(6,1fr)}
+  .exnav .btn-prev i,.exnav .btn-ragu i,.exnav .btn-save i,.exnav .btn-next i{margin:0}
+  .exnav .btn-prev .btn-prev-txt,
+  .exnav .btn-ragu .btn-ragu-text{display:none}
 }
 /* ─── QUILL EDITOR CUSTOM STYLES ─── */
 .ql-editor-wrap{border:1.5px solid var(--br);border-radius:7px;overflow:hidden;background:#fff;transition:border-color .12s}
@@ -5527,52 +5745,63 @@ function renderExam(){
   const b=EX.butirs;const s=EX.soal;
   scr.innerHTML=`
     <div class="exl">
-      <!-- MOBILE TOP BAR -->
-      <div class="ex-mob-top" style="display:none" id="exMobTop">
-        <div class="ex-mob-top-info">
-          <div class="ex-mob-top-title">${s.nama_soal}</div>
-          <div class="ex-mob-top-sub">${s.mapel} · ${b.length} soal</div>
+      <!-- TOP HEADER BAR -->
+      <div class="exhd">
+        <div class="exhd-left">
+          <div class="exhd-logo"><i class="fa-solid fa-book-open"></i></div>
+          <div class="exhd-title">
+            <h2>${s.nama_soal}</h2>
+            <p>${s.mapel} &nbsp;·&nbsp; ${s.waktu_ujian} menit &nbsp;·&nbsp; ${b.length} soal</p>
+          </div>
         </div>
-        <div class="ex-mob-timer" id="examTDMob">${secToTime(EX.tsec)}</div>
-        <button class="ex-mob-nav-btn" onclick="toggleMobDrawer()">
-          <i class="fa-solid fa-table-cells-large"></i> Soal
-        </button>
+        <div class="exhd-right">
+          <div id="offlineInd" style="display:none;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid rgba(255,255,255,.3)"></div>
+          <div class="timebox">
+            <div class="tl">Waktu</div>
+            <div class="td" id="examTD">${secToTime(EX.tsec)}</div>
+          </div>
+          <button class="exhd-btn primary" onclick="toggleDaftarSoal()">
+            <i class="fa-solid fa-table-cells-large"></i>
+            <span>Daftar Soal</span>
+          </button>
+          ${s.tampil_tombol_selesai?`<button class="exhd-btn danger" onclick="selesaiUjian()">
+            <i class="fa-solid fa-flag-checkered"></i>
+            <span>Selesai</span>
+          </button>`:''}
+        </div>
       </div>
-      <!-- OVERLAY drawer -->
-      <div class="exsb-overlay" id="exsbOverlay" onclick="closeMobDrawer()"></div>
-      <!-- SIDEBAR / DRAWER -->
+
+      <!-- OVERLAY daftar soal -->
+      <div class="exsb-overlay" id="exsbOverlay" onclick="closeDaftarSoal()"></div>
+
+      <!-- MODAL DAFTAR SOAL -->
       <div class="exsb" id="exSidebar">
-        <div class="exhd">
-          <h2>${s.nama_soal}</h2>
-          <p>${s.mapel} &nbsp;·&nbsp; ${s.waktu_ujian} menit &nbsp;·&nbsp; ${b.length} soal</p>
+        <div class="exsb-panel">
+          <div class="exsb-panel-hd">
+            <h3><i class="fa-solid fa-table-cells-large" style="margin-right:6px"></i>Daftar Soal</h3>
+            <button class="exsb-close" onclick="closeDaftarSoal()">
+              <i class="fa-solid fa-xmark"></i>
+            </button>
+          </div>
+          <div class="exsb-panel-body">
+            <div class="ng" id="numGrid"></div>
+            <div class="leg">
+              <div class="legi"><div class="legd" style="background:var(--em);border:none"></div>Sedang</div>
+              <div class="legi"><div class="legd" style="background:#34d399"></div>Dijawab</div>
+              <div class="legi"><div class="legd" style="background:var(--wa2)"></div>Ragu-ragu</div>
+              <div class="legi"><div class="legd" style="background:#e2e8f0;border:1px solid #cbd5e1"></div>Belum</div>
+            </div>
+          </div>
         </div>
-        <div id="offlineInd" style="display:none;align-items:center;gap:5px;padding:6px 10px;margin:8px 14px 0;border-radius:6px;font-size:11px;font-weight:600"></div>
-        <div class="timebox">
-          <div class="tl">Sisa Waktu</div>
-          <div class="td" id="examTD">${secToTime(EX.tsec)}</div>
-        </div>
-        <div class="ngw">
-          <div class="ng-nav-title" style="margin-top:10px">Navigasi Soal</div>
-          <div class="ng" id="numGrid"></div>
-        </div>
-        <div class="leg">
-          <div class="legi"><div class="legd" style="background:#fff;border:1.5px solid rgba(255,255,255,.4)"></div>Sedang</div>
-          <div class="legi"><div class="legd" style="background:#34d399"></div>Dijawab</div>
-          <div class="legi"><div class="legd" style="background:var(--wa2)"></div>Ragu-ragu</div>
-          <div class="legi"><div class="legd" style="background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2)"></div>Belum</div>
-        </div>
-        ${s.tampil_tombol_selesai?`<div class="exsb-finish"><button class="btn" onclick="selesaiUjian()"><i class="fa-solid fa-flag-checkered"></i> Selesai Ujian</button></div>`:''}
       </div>
+
+      <!-- MAIN CONTENT -->
       <div class="exmain" id="exMain"></div>
     </div>`;
   updateNumGrid();renderSoal(EX.cur);startTimer();startAutoSave();
   updateOfflineIndicator();
   document.addEventListener('keydown',examKeyNav);
   handleSwipe();
-  // Tampilkan mobile top bar jika layar kecil
-  if(window.innerWidth<=768){
-    const mob=$('exMobTop');if(mob)mob.style.display='flex';
-  }
 }
 function updateNumGrid(){
   const el=$('numGrid');if(!el)return;
@@ -5592,7 +5821,7 @@ function updateNumGrid(){
     </div>`).join('');
 }
 
-function goSoal(n){EX.cur=n;renderSoal(n);updateNumGrid();if(window.innerWidth<=768)closeMobDrawer();}
+function goSoal(n){EX.cur=n;renderSoal(n);updateNumGrid();closeDaftarSoal();}
 function renderSoal(n){
   const b=EX.butirs[n-1];if(!b)return;
   const el=$('exMain');if(!el)return;
@@ -5637,32 +5866,48 @@ function renderSoal(n){
       </div>`).join('')}</div>`;
   }
   const isRagu=!!EX.ragu[n];
-  el.innerHTML=`<div class="soalcard-wrapper">
-    <div class="soalcard">
-      <div class="soalcard-hd">
-        <span class="snl">Soal ${n} dari ${EX.butirs.length}</span>
+  const isSaved=EX.jaw[n]!==undefined&&EX.jaw[n]!=='';
+  el.innerHTML=`
+    <!-- Soal nomor + mapel (di luar card, seperti ANBK) -->
+    <div class="exsoal-meta">
+      <div class="exsoal-nomor">Soal nomor ${n}</div>
+      <div class="exsoal-mapel">${EX.soal.mapel}</div>
+    </div>
+    <div class="exsoal-divider"></div>
+
+    <div class="soalcard-wrapper">
+      <div class="soalcard">
         <span class="stipe">${b.tipe_soal}</span>
-      </div>
-      <div class="soalcard-body">
         <div class="stxt">${b.pertanyaan}</div>
         ${pilihanHtml}
       </div>
     </div>
+
+    <!-- Nav bar 4 tombol ANBK style -->
     <div class="exnav">
       <button class="btn-prev" onclick="goSoal(${Math.max(1,n-1)})" ${n<=1?'disabled':''}>
-        <i class="fa-solid fa-chevron-left" style="font-size:11px"></i> Sebelumnya
+        <i class="fa-solid fa-chevron-left"></i>
+        <span class="btn-prev-txt">Soal Sebelumnya</span>
       </button>
-      <div class="exnav-right">
-        <button class="btn-ragu ${isRagu?'active':''}" onclick="toggleRagu(${n})">
-          <i class="fa-${isRagu?'solid':'regular'} fa-star"></i>
-          ${isRagu?'Ragu-ragu':'Tandai Ragu'}
-        </button>
-        ${n<EX.butirs.length
-          ?`<button class="btn-next" onclick="goSoal(${n+1})">Selanjutnya <i class="fa-solid fa-chevron-right" style="font-size:11px"></i></button>`
-          :`<button class="btn-finish" onclick="selesaiUjian()"><i class="fa-solid fa-flag-checkered"></i> Selesai Ujian</button>`}
-      </div>
+      <button class="btn-ragu ${isRagu?'active':''}" onclick="toggleRagu(${n})">
+        <i class="fa-${isRagu?'solid':'regular'} fa-flag"></i>
+        <span class="btn-ragu-text">${isRagu?'Batal Ragu':'Ragu - Ragu'}</span>
+      </button>
+      <button class="btn-save" onclick="simpanJawaban(${n})">
+        <i class="fa-solid fa-floppy-disk"></i>
+        <span>Simpan Jawaban</span>
+      </button>
+      ${n<EX.butirs.length
+        ?`<button class="btn-next" onclick="goSoal(${n+1})">
+            <span>Soal Berikutnya</span>
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>`
+        :`<button class="btn-finish" onclick="selesaiUjian()">
+            <i class="fa-solid fa-flag-checkered"></i>
+            <span>Selesai Ujian</span>
+          </button>`}
     </div>
-  </div>`;
+  `;
 }
 
 function pilihPG(n,val){EX.jaw[n]=val;updateNumGrid();renderSoal(n);}
@@ -5724,27 +5969,42 @@ function startTimer(){
     EX.tsec--;
     const t=secToTime(EX.tsec);
     const cls='td'+(EX.tsec<=300?' warn':'')+(EX.tsec<=60?' dang':'');
-    const mobCls='ex-mob-timer'+(EX.tsec<=300?' warn':'')+(EX.tsec<=60?' dang':'');
     const el=$('examTD');if(el){el.textContent=t;el.className=cls;}
-    const mob=$('examTDMob');if(mob){mob.textContent=t;mob.className=mobCls;}
     if(EX.tsec<=0){clearInterval(EX.timer);autoSubmit();}
   },1000);
 }
 
-// ── Mobile drawer toggle ──
-function toggleMobDrawer(){
+// ── Daftar Soal Modal (ANBK style) ──
+function toggleDaftarSoal(){
   const sb=$('exSidebar');const ov=$('exsbOverlay');
   if(!sb)return;
-  const isOpen=sb.classList.contains('mob-open');
-  if(isOpen){closeMobDrawer();}else{sb.classList.add('mob-open');if(ov)ov.classList.add('show');document.body.style.overflow='hidden';}
+  const isOpen=sb.classList.contains('open');
+  if(isOpen){closeDaftarSoal();}
+  else{sb.classList.add('open');if(ov)ov.classList.add('show');document.body.style.overflow='hidden';}
 }
-function closeMobDrawer(){
+function closeDaftarSoal(){
   const sb=$('exSidebar');const ov=$('exsbOverlay');
-  if(sb)sb.classList.remove('mob-open');
+  if(sb)sb.classList.remove('open');
   if(ov)ov.classList.remove('show');
   document.body.style.overflow='';
 }
-// Saat klik nomor soal di mobile, tutup drawer (handled in goSoal)
+// Alias untuk kompatibilitas kode lama
+function toggleMobDrawer(){toggleDaftarSoal();}
+function closeMobDrawer(){closeDaftarSoal();}
+
+// Simpan jawaban (tombol ke-3 ANBK)
+function simpanJawaban(n){
+  // jawaban sudah otomatis tersimpan di EX.jaw, cukup feedback visual
+  const btn=document.querySelector('.exnav .btn-save');
+  if(btn){
+    const orig=btn.innerHTML;
+    btn.innerHTML='<i class="fa-solid fa-check"></i> <span>Tersimpan!</span>';
+    btn.style.background='#16a34a';
+    setTimeout(()=>{btn.innerHTML=orig;btn.style.background='';},1200);
+  }
+  updateNumGrid();
+}
+
 
 
 function startAutoSave(){
