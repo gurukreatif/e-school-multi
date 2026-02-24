@@ -6463,7 +6463,7 @@ function renderSoal(n){
     const selArr=(jawaban||'').split(',').filter(Boolean);
     pilihanHtml=`<div class="al alin" style="padding:8px 12px;font-size:12px;margin-bottom:10px"><i class=\"fa-solid fa-circle-info\" style=\"color:var(--p)\"></i><div>Pilih SEMUA jawaban yang benar (bisa lebih dari satu)</div></div>
       <div class="pgk">${opts.map((k,i)=>{const lbl=labels[i];return`<div class="pk ${selArr.includes(lbl)?'sel':''}" onclick="pilihPGK(${n},'${lbl}')"><div class="opk">${lbl}</div><div class="opt">${applyArabic(b[k])}</div></div>`}).join('')}</div>`;
-  }els  }else if(tipe==='Benar/Salah'){
+  }else if(tipe==='Benar/Salah'){
     const stmts=[b.pilihan_1,b.pilihan_2,b.pilihan_3,b.pilihan_4,b.pilihan_5].filter(Boolean);
     // Type guard — jawaban bisa jadi non-string dari load JSON
     const jawStr=typeof jawaban==='string'?jawaban:(jawaban==null?'':String(jawaban));
