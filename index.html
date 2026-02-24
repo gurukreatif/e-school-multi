@@ -5249,7 +5249,8 @@ async function loadChat(){
   // Render HTML skeleton — isi teks diset via textContent setelah render
   el.innerHTML=d.map(m=>{
     const me=isAdmin(m);
-    const hasReply=m.id_reply&&(m.reply_nama||m.reply_pesan);
+    // Gunakan String() untuk perbandingan aman — id_reply dari Supabase bisa berupa number/string
+    const hasReply=m.id_reply!=null&&m.id_reply!==''&&(m.reply_nama||m.reply_pesan);
     return`<div class="cm-wrap ${me?'is-me':'is-other'}" id="cmsg-${m.id}" style="align-self:${me?'flex-end':'flex-start'}">
       <div class="cmmeta" style="justify-content:${me?'flex-end':'flex-start'}">
         ${me?`<span style="font-size:9.5px;color:var(--p);font-weight:700">Admin</span>`
@@ -5278,7 +5279,8 @@ async function loadChat(){
     const pesanEl=wrap.querySelector('.cm-pesan');
     if(nameEl)nameEl.textContent=m.nama_pengirim||'';
     if(pesanEl)pesanEl.textContent=m.pesan||'';
-    if(m.id_reply&&(m.reply_nama||m.reply_pesan)){
+    // Tampilkan reply bubble jika kolom reply tersedia dan terisi
+    if(m.id_reply!=null&&m.id_reply!==''&&(m.reply_nama||m.reply_pesan)){
       const rname=wrap.querySelector('.cm-rname');
       const rtext=wrap.querySelector('.cm-rtext');
       if(rname)rname.textContent=m.reply_nama||'';
@@ -5293,13 +5295,14 @@ async function loadChat(){
   el.onclick=e=>{
     const btn=e.target.closest('.cm-reply-btn');
     if(btn){
-      const id=+btn.dataset.id;
-      const msg=d.find(m=>m.id===id);
+      // Pakai String comparison — bigint dari Supabase bisa melebihi Number.MAX_SAFE_INTEGER
+      const id=String(btn.dataset.id);
+      const msg=d.find(m=>String(m.id)===id);
       if(msg)setReply(msg.id,msg.nama_pengirim,msg.pesan);
       return;
     }
     const rb=e.target.closest('.cm-reply-bar');
-    if(rb)scrollToMsg(+rb.dataset.target);
+    if(rb)scrollToMsg(rb.dataset.target);
   };
   el.scrollTop=el.scrollHeight;
 }
@@ -6582,7 +6585,7 @@ async function loadSChat(){
   const isMe=m=>(m.id_siswa===sis.id_siswa&&m.role!=='admin')||m.role==='siswa';
   el.innerHTML=d.map(m=>{
     const me=isMe(m);
-    const hasReply=m.id_reply&&(m.reply_nama||m.reply_pesan);
+    const hasReply=m.id_reply!=null&&m.id_reply!==''&&(m.reply_nama||m.reply_pesan);
     return`<div class="cm-wrap ${me?'is-me':'is-other'}" id="cmsg-${m.id}" style="align-self:${me?'flex-end':'flex-start'}">
       <div class="cmmeta" style="justify-content:${me?'flex-end':'flex-start'}">
         ${!me?`<i class="fa-solid fa-chalkboard-teacher" style="font-size:9px;color:var(--p)"></i>`:''}
@@ -6608,7 +6611,8 @@ async function loadSChat(){
     const pesanEl=wrap.querySelector('.cm-pesan');
     if(nameEl)nameEl.textContent=m.nama_pengirim||'';
     if(pesanEl)pesanEl.textContent=m.pesan||'';
-    if(m.id_reply&&(m.reply_nama||m.reply_pesan)){
+    // Tampilkan reply bubble jika kolom reply tersedia dan terisi
+    if(m.id_reply!=null&&m.id_reply!==''&&(m.reply_nama||m.reply_pesan)){
       const rname=wrap.querySelector('.cm-rname');
       const rtext=wrap.querySelector('.cm-rtext');
       if(rname)rname.textContent=m.reply_nama||'';
@@ -6623,13 +6627,14 @@ async function loadSChat(){
   el.onclick=e=>{
     const btn=e.target.closest('.cm-reply-btn');
     if(btn){
-      const id=+btn.dataset.id;
-      const msg=d.find(m=>m.id===id);
+      // Pakai String comparison — bigint dari Supabase bisa melebihi Number.MAX_SAFE_INTEGER
+      const id=String(btn.dataset.id);
+      const msg=d.find(m=>String(m.id)===id);
       if(msg)setSReply(msg.id,msg.nama_pengirim,msg.pesan);
       return;
     }
     const rb=e.target.closest('.cm-reply-bar');
-    if(rb)scrollToMsg(+rb.dataset.target);
+    if(rb)scrollToMsg(rb.dataset.target);
   };
   el.scrollTop=el.scrollHeight;
 }
