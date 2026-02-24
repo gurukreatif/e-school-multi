@@ -114,7 +114,7 @@ img{max-width:100%;height:auto}
   .lp-nav{padding:0 16px}
   .lp-hero{padding:48px 16px 36px}
 }
-.login-footer{font-size:11.5px;color:rgba(255,255,255,.45);text-align:center;margin-top:auto;padding-top:20px}
+.login-footer{font-size:12px;color:rgba(255,255,255,.5);text-align:center;margin-top:auto;padding-top:24px;border-top:1px solid rgba(255,255,255,.1)}
 .lp-footer{font-size:11px;color:#94a3b8;text-align:center;margin-top:18px;padding-top:10px}
 .sbfoot{padding:10px 12px;border-top:1px solid rgba(255,255,255,.08)}
 .main{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh}
@@ -212,21 +212,23 @@ tbody tr:hover td{background:#fafbff}
 @keyframes sp{to{transform:rotate(360deg)}}
 .ov{position:fixed;inset:0;background:#fff;z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px}
 /* LOGIN */
-.lw{min-height:100vh;display:flex}
-.la{flex:1;display:flex;align-items:center;justify-content:center;padding:40px;position:relative;overflow:hidden}
-.laart{position:relative;z-index:1;color:#fff;text-align:center;max-width:400px}
-.laart h1{font-size:36px;font-weight:800;line-height:1.2;margin-bottom:12px}
-.laart p{font-size:14.5px;color:rgba(255,255,255,.72);line-height:1.65}
-.chips{display:flex;flex-wrap:wrap;gap:7px;justify-content:center;margin-top:24px}
-.chip{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);border-radius:100px;padding:4px 12px;font-size:12px;color:#fff;backdrop-filter:blur(4px)}
-.lp{width:400px;background:#fff;display:flex;flex-direction:column;justify-content:center;padding:44px 38px;flex-shrink:0}
-.lp h2{font-size:21px;font-weight:800;margin-bottom:3px}
-.lp .ls{font-size:12.5px;color:var(--mu);margin-bottom:24px}
-.llogo{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:800;margin-bottom:5px}
-.lic{width:40px;height:40px;border-radius:0;display:flex;align-items:center;justify-content:center;background:none;flex-shrink:0;overflow:visible}
-.lic img{width:40px;height:40px;object-fit:contain;filter:none}
-.swl{text-align:center;margin-top:16px;font-size:12.5px;color:var(--mu)}
-.swl a{color:var(--p);font-weight:600;cursor:pointer}.swl a:hover{text-decoration:underline}
+.lw{min-height:100vh;display:flex;flex-direction:row}
+.la{flex:0 0 60%;display:flex;align-items:center;justify-content:center;padding:48px;position:relative;overflow:hidden;min-height:100vh}
+.laart{position:relative;z-index:1;color:#fff;text-align:center;max-width:500px;width:100%;display:flex;flex-direction:column;height:100%;justify-content:center}
+.laart h1{font-size:42px;font-weight:900;line-height:1.15;margin-bottom:16px;letter-spacing:-0.5px;text-shadow:0 2px 4px rgba(0,0,0,.15)}
+.laart p{font-size:15.5px;color:rgba(255,255,255,.8);line-height:1.7;margin-bottom:32px;max-width:480px;margin-left:auto;margin-right:auto}
+.chips{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin:0}
+.chip{background:rgba(255,255,255,.14);border:1px solid rgba(255,255,255,.25);border-radius:8px;padding:8px 14px;font-size:13px;color:#fff;backdrop-filter:blur(8px);font-weight:500;display:inline-flex;align-items:center;gap:6px;transition:all .2s}
+.chip i{font-size:13px;flex-shrink:0}
+.chip:hover{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.4);transform:translateY(-1px)}
+.lp{flex:0 0 40%;background:#fff;display:flex;flex-direction:column;justify-content:center;padding:48px 42px;flex-shrink:0;box-shadow:-2px 0 16px rgba(0,0,0,.08)}
+.lp h2{font-size:24px;font-weight:800;margin-bottom:6px;color:#0f172a}
+.lp .ls{font-size:13.5px;color:#64748b;margin-bottom:28px;font-weight:500}
+.llogo{display:flex;align-items:center;gap:11px;font-size:16px;font-weight:800;margin-bottom:6px;color:#0f172a}
+.lic{width:44px;height:44px;border-radius:8px;display:flex;align-items:center;justify-content:center;background:#f0fdf4;flex-shrink:0;overflow:visible}
+.lic img{width:36px;height:36px;object-fit:contain;filter:none}
+.swl{text-align:center;margin-top:20px;font-size:13px;color:#64748b}
+.swl a{color:var(--p);font-weight:600;cursor:pointer;transition:all .2s}.swl a:hover{color:#047857;text-decoration:none}
 /* CONFIG */
 .cfg{min-height:100vh;background:linear-gradient(135deg,#0f172a,#064e3b);display:flex;align-items:center;justify-content:center;padding:20px}
 .cfgcard{background:#fff;border-radius:18px;padding:34px;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25)}
@@ -741,7 +743,11 @@ span.arab-inline{font-family:'Amiri',serif;font-size:1.15em;direction:rtl;unicod
 @media(max-width:768px){
   .sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}
   .main{margin-left:0}.g4,.g3{grid-template-columns:1fr 1fr}.g2{grid-template-columns:1fr}
-  .fr,.fr3{grid-template-columns:1fr}.la{display:none}.lp{width:100%;padding:28px 20px}
+  .fr,.fr3{grid-template-columns:1fr}
+  .lw{flex-direction:column}.la{flex:0 0 auto;padding:36px 24px;min-height:auto;display:flex;align-items:center;justify-content:center}.lp{flex:0 0 auto;width:100%;padding:32px 24px;box-shadow:none;border-top:1px solid #e2e8f0}
+  .laart{max-width:100%}.laart h1{font-size:28px}.laart p{font-size:13.5px}
+  .chips{gap:8px}.chip{font-size:12px;padding:6px 12px}
+  .lp h2{font-size:20px}.llogo{font-size:14px}.lic{width:36px;height:36px}
   .resgrid{grid-template-columns:1fr 1fr 1fr}
   .tbunm,.tburl,.tbusr-div{display:none}
   #mbtn,#mbtnDiv{display:flex!important}
@@ -986,18 +992,18 @@ span.arab-inline{font-family:'Amiri',serif;font-size:1.15em;direction:rtl;unicod
           onerror="this.outerHTML='<i class=\'fa-solid fa-laptop-code\' style=\'font-size:64px;color:#fff;opacity:.9\'></i>'">
       </div>
       <h1 id="loginLeftTitle">Emes CBT System</h1>
-      <p id="loginLeftDesc">Sistem ujian berbasis komputer modern. 5 tipe soal, penilaian otomatis, monitor real-time, analisa per-butir, chat, dan leaderboard.</p>
+      <p id="loginLeftDesc">Platform ujian online terpadu dengan teknologi terkini untuk monitoring, penilaian, dan analisis yang akurat dan real-time.</p>
       <div class="chips">
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> Pilihan Ganda</span>
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> PG Kompleks</span>
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> Benar/Salah</span>
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> Uraian</span>
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> Menjodohkan</span>
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> Monitor Real-time</span>
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> Analisa Per-butir</span>
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> Chat Siswa</span>
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> Export Excel</span>
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> Import Siswa</span>
+        <span class="chip"><i class="fa-solid fa-gauge-high"></i> Monitoring Real-time</span>
+        <span class="chip"><i class="fa-solid fa-bolt"></i> Penilaian Otomatis</span>
+        <span class="chip"><i class="fa-solid fa-chart-line"></i> Analisa Per-butir</span>
+        <span class="chip"><i class="fa-solid fa-floppy-disk"></i> Auto-save Jawaban</span>
+        <span class="chip"><i class="fa-solid fa-message"></i> Chat & Notifikasi</span>
+        <span class="chip"><i class="fa-solid fa-download"></i> Export Hasil</span>
+        <span class="chip"><i class="fa-solid fa-mobile"></i> Multi-platform</span>
+        <span class="chip"><i class="fa-solid fa-shield-check"></i> Aman & Terpercaya</span>
+        <span class="chip"><i class="fa-solid fa-users"></i> Import Massal</span>
+        <span class="chip"><i class="fa-solid fa-gamepad"></i> Mini Game</span>
       </div>
       <div class="login-footer">&copy; 2026 Emes EduTech. All rights reserved.</div>
     </div>
@@ -1086,14 +1092,17 @@ span.arab-inline{font-family:'Amiri',serif;font-size:1.15em;direction:rtl;unicod
           style="width:80px;height:80px;object-fit:contain;filter:brightness(0) invert(1);opacity:.92"
           onerror="this.outerHTML='<i class=\'fa-solid fa-shield-halved\' style=\'font-size:64px;color:#fff;opacity:.9\'></i>'">
       </div>
-      <h1>Platform Management Console</h1>
-      <p>Kelola seluruh tenant (sekolah) dalam satu panel. Tambah, edit, dan monitor penggunaan sistem secara global.</p>
+      <h1>Emes CBT Platform</h1>
+      <p>Kelola seluruh ekosistem ujian online dengan dashboard admin terpusat, multi-tenant support, dan kontrol penuh atas semua sekolah.</p>
       <div class="chips">
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> Multi-tenant</span>
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> Kelola Sekolah</span>
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> Monitor Global</span>
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> NPSN-based ID</span>
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> Statistik Platform</span>
+        <span class="chip"><i class="fa-solid fa-tower-broadcast"></i> Multi-tenant</span>
+        <span class="chip"><i class="fa-solid fa-school"></i> Kelola Sekolah</span>
+        <span class="chip"><i class="fa-solid fa-chart-pie"></i> Statistik Global</span>
+        <span class="chip"><i class="fa-solid fa-users-gear"></i> Manajemen User</span>
+        <span class="chip"><i class="fa-solid fa-database"></i> Database Terpusat</span>
+        <span class="chip"><i class="fa-solid fa-lock"></i> Keamanan Enterprise</span>
+        <span class="chip"><i class="fa-solid fa-headset"></i> Support 24/7</span>
+        <span class="chip"><i class="fa-solid fa-server"></i> Infrastructure</span>
       </div>
       <div class="login-footer">&copy; 2026 Emes EduTech. All rights reserved.</div>
     </div>
@@ -1158,13 +1167,16 @@ span.arab-inline{font-family:'Amiri',serif;font-size:1.15em;direction:rtl;unicod
     <div class="laart">
       <div style="margin-bottom:20px"><img src="https://i.imgur.com/bT70O4C.png" alt="Emes CBT System" style="width:80px;height:80px;object-fit:contain;filter:brightness(0) invert(1);opacity:.92" onerror="this.outerHTML='<i class=\'fa-solid fa-laptop-code\' style=\'font-size:64px;color:#fff;opacity:.9\'></i>'"></div>
       <h1>Emes CBT System</h1>
-      <p>Sistem ujian berbasis komputer modern. 5 tipe soal, penilaian otomatis, monitor real-time, analisa per-butir, chat, dan leaderboard.</p>
+      <p>Dashboard manajemen lengkap untuk admin dan guru. Buat soal, kelola peserta, monitor ujian live, dan analisis hasil dengan mudah.</p>
       <div class="chips">
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> Pilihan Ganda</span><span class="chip"><i class="fa-solid fa-circle-check"></i> PG Kompleks</span>
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> Benar/Salah</span><span class="chip"><i class="fa-solid fa-circle-check"></i> Uraian</span>
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> Menjodohkan</span><span class="chip"><i class="fa-solid fa-circle-check"></i> Monitor Real-time</span>
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> Analisa Per-butir</span><span class="chip"><i class="fa-solid fa-circle-check"></i> Chat Siswa</span>
-        <span class="chip"><i class="fa-solid fa-circle-check"></i> Export Excel</span><span class="chip"><i class="fa-solid fa-circle-check"></i> Import Siswa</span>
+        <span class="chip"><i class="fa-solid fa-pen-to-square"></i> Editor Soal</span>
+        <span class="chip"><i class="fa-solid fa-users"></i> Kelola Peserta</span>
+        <span class="chip"><i class="fa-solid fa-eye"></i> Live Monitoring</span>
+        <span class="chip"><i class="fa-solid fa-chart-bar"></i> Analisa Nilai</span>
+        <span class="chip"><i class="fa-solid fa-clock"></i> Jadwal Otomatis</span>
+        <span class="chip"><i class="fa-solid fa-certificate"></i> Sertifikat Digital</span>
+        <span class="chip"><i class="fa-solid fa-file-export"></i> Laporan Lengkap</span>
+        <span class="chip"><i class="fa-solid fa-comments"></i> Komunikasi Siswa</span>
       </div>
       <div class="login-footer">&copy; 2026 Emes EduTech. All rights reserved.</div>
     </div>
@@ -1189,11 +1201,16 @@ span.arab-inline{font-family:'Amiri',serif;font-size:1.15em;direction:rtl;unicod
     <div class="laart">
       <div style="margin-bottom:20px"><img src="https://i.imgur.com/bT70O4C.png" alt="Emes CBT System" style="width:80px;height:80px;object-fit:contain;filter:brightness(0) invert(1);opacity:.92" onerror="this.outerHTML='<i class=\'fa-solid fa-graduation-cap\' style=\'font-size:64px;color:#fff;opacity:.9\'></i>'"></div>
       <h1>Portal Ujian Online</h1>
-      <p>Masuk untuk mengikuti ujian. Jawaban tersimpan otomatis setiap 30 detik. Tersedia mini game saat menunggu ujian dimulai.</p>
+      <p>Ujian mudah, aman, dan terpercaya. Akses kapan saja, jawaban tersimpan otomatis, dan hasil langsung setelah selesai.</p>
       <div class="chips">
-        <span class="chip"><i class="fa-solid fa-stopwatch"></i> Timer Otomatis</span><span class="chip"><i class="fa-solid fa-floppy-disk"></i> Auto-Save</span>
-        <span class="chip"><i class="fa-solid fa-chart-bar"></i> Nilai Langsung</span><span class="chip"><i class="fa-solid fa-gamepad"></i> Mini Game</span>
-        <span class="chip"><i class="fa-solid fa-comments"></i> Chat Guru</span>
+        <span class="chip"><i class="fa-solid fa-laptop"></i> Akses Mudah</span>
+        <span class="chip"><i class="fa-solid fa-floppy-disk"></i> Auto-save 30 Detik</span>
+        <span class="chip"><i class="fa-solid fa-clock"></i> Timer Otomatis</span>
+        <span class="chip"><i class="fa-solid fa-square-check"></i> Tandai Soal</span>
+        <span class="chip"><i class="fa-solid fa-chart-simple"></i> Nilai Instan</span>
+        <span class="chip"><i class="fa-solid fa-question"></i> Bantuan Guru</span>
+        <span class="chip"><i class="fa-solid fa-gamepad"></i> Mini Game</span>
+        <span class="chip"><i class="fa-solid fa-shield-halved"></i> Aman & Terenkripsi</span>
       </div>
       <div class="login-footer">&copy; 2026 Emes EduTech. All rights reserved.</div>
     </div>
