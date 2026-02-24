@@ -768,13 +768,20 @@ span.arab-inline{font-family:'Amiri',serif;font-size:1.15em;direction:rtl;unicod
   .exhd-btn.daftar-soal:hover{background:#0084bd;border-color:#0084bd}
   .exmain{padding:12px 12px 80px}
   .ex-card{border-radius:8px;margin:0;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-  .ex-card-head{padding:10px 12px 8px;gap:6px}
-  .ex-card-head-top{flex-direction:column;gap:8px}
-  .ex-card-head-r{width:100%;justify-content:flex-start;gap:8px;flex-wrap:nowrap;overflow-x:auto}
-  .exsoal-nomor{font-size:16px}.exsoal-mapel{font-size:11px}
-  .ex-fontctrl-inline{padding:10px 12px;justify-content:flex-end;gap:8px}
-  .ex-fontctrl-inline span{display:block;font-size:11px;width:100%;margin-right:0;margin-bottom:8px;text-align:right}
-  .ex-fbtn{width:36px;height:36px;padding:0;font-size:12px}
+  .ex-card-head{padding:10px 12px;display:flex;flex-direction:column;gap:8px}
+  .ex-card-head-top{display:flex;align-items:center;gap:6px;justify-content:space-between}
+  .ex-card-head-l{display:flex;flex-direction:column;gap:2px;flex:0 0 auto}
+  .exsoal-nomor{font-size:15px;font-weight:800;margin:0}
+  .exsoal-mapel{font-size:11px;margin:0;color:#6b7280}
+  .ex-card-head-r{display:flex;gap:6px;align-items:center;flex:0 0 auto}
+  .ex-fontctrl-inline{display:flex;gap:6px;align-items:center;padding:0;background:none;border:none;margin:0;width:auto;flex:0 0 auto;order:1}
+  .ex-fontctrl-inline span{display:none}
+  .ex-fbtn{width:32px;height:32px;padding:0;font-size:11px;border-radius:5px;flex-shrink:0;cursor:pointer;border:1.5px solid #d1d5db;background:#fff;font-weight:700;color:#4b5563;display:flex;align-items:center;justify-content:center;transition:all .15s ease}
+  .ex-fbtn:hover{color:#003d82;border-color:#00a8e8;background:#f0f9ff}
+  .ex-fbtn.active{color:#fff;background:#00a8e8;border-color:#00a8e8}
+  .timebox{border:none;background:transparent;box-shadow:none;gap:0;display:flex;align-items:center}
+  .tl{display:none}
+  .td{font-size:15px;font-weight:800;padding:0;min-width:auto;letter-spacing:normal}
   .ex-card-body{padding:16px 14px 14px}
   .stxt{font-size:14px;line-height:1.7;margin-bottom:16px}
   .op{padding:9px 12px 9px 10px}
@@ -824,6 +831,9 @@ span.arab-inline{font-family:'Amiri',serif;font-size:1.15em;direction:rtl;unicod
   .exnav .btn-save span:not(i),
   .exnav .btn-next span:not(i),
   .exnav .btn-finish span:not(i){display:none}
+  
+  /* Font resizer buttons on mobile - ensure clickable */
+  .ex-fbtn{pointer-events:auto!important}
 }
 /* ─── QUILL EDITOR CUSTOM STYLES ─── */
 .ql-editor-wrap{border:1.5px solid var(--br);border-radius:7px;overflow:hidden;background:#fff;transition:border-color .12s}
