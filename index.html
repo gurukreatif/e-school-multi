@@ -309,92 +309,134 @@ tbody tr:hover td{background:#fafbff}
 
 /* ── Sub-header di dalam card (nomor soal + mapel kiri | timer + tombol kanan) ── */
 .ex-card-head{
-  padding:14px 24px 10px;
+  padding:16px 24px 10px;
   display:flex;flex-direction:column;gap:0;
-  border-bottom:1px solid #e5e7eb;
+  border-bottom:2px solid #e5e7eb;
+  background:#ffffff;
 }
-.ex-card-head-top{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding-bottom:10px}
+.ex-card-head-top{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;padding-bottom:12px;
+}
 .ex-card-head-l{}
-.exsoal-nomor{font-size:18px;font-weight:800;color:#1f2937;margin:0 0 2px;line-height:1.2}
-.exsoal-mapel{font-size:12px;color:#6b7280;font-weight:500;margin:0}
-.ex-card-head-r{display:flex;align-items:center;gap:10px;flex-shrink:0;padding-top:2px}
+.exsoal-nomor{
+  font-size:20px;font-weight:800;color:#1f2937;margin:0 0 3px;line-height:1.2;
+}
+.exsoal-mapel{
+  font-size:12px;color:#6b7280;font-weight:600;margin:0;text-transform:uppercase;letter-spacing:.05em;
+}
+.ex-card-head-r{
+  display:flex;align-items:center;gap:12px;flex-shrink:0;
+}
+/* Font control inline — STYLING BARU YANG JELAS */
+.ex-fontctrl-inline{
+  display:flex;align-items:center;justify-content:flex-end;gap:8px;
+  font-size:12px;color:#6b7280;font-weight:600;
+  padding:8px 24px;
+  border-top:1px solid #e5e7eb;
+  background:#f9fafb;
+}
+.ex-fontctrl-inline span{font-size:12px;font-weight:600;color:#6b7280;margin-right:8px}
 
-/* Timer — kotak border ANBK style */
+/* Timer — kotak border yang JELAS */
 .timebox{
   display:flex;align-items:stretch;
-  border:1.5px solid #e5e7eb;border-radius:6px;
+  border:2px solid #d1d5db;border-radius:6px;
   overflow:hidden;margin:0;background:#ffffff;
-  box-shadow:0 1px 2px rgba(0,0,0,.05);
+  box-shadow:0 1px 3px rgba(0,0,0,.08);
 }
 .tl{
-  font-size:11px;font-weight:600;color:#6b7280;
-  background:#f9fafb;border-right:1.5px solid #e5e7eb;
-  padding:6px 10px;white-space:nowrap;display:flex;align-items:center;
-  letter-spacing:.01em;
+  font-size:11px;font-weight:700;color:#6b7280;
+  background:#f9fafb;border-right:2px solid #d1d5db;
+  padding:6px 11px;white-space:nowrap;display:flex;align-items:center;
+  letter-spacing:.05em;text-transform:uppercase;
 }
 .td{
   font-family:'JetBrains Mono',monospace;
-  font-size:14px;font-weight:700;color:#1f2937;
-  letter-spacing:.08em;padding:6px 12px;
-  min-width:60px;text-align:center;
+  font-size:15px;font-weight:800;color:#1f2937;
+  letter-spacing:.1em;padding:6px 13px;
+  min-width:70px;text-align:center;
   display:flex;align-items:center;justify-content:center;
 }
 .td.warn{color:#d97706}
 .td.dang{color:#dc2626;animation:blink 1s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
 
-/* Tombol di sub-header — ANBK Blue Theme */
+/* Tombol di header — STYLING ANBK YANG JELAS */
 .exhd-btn{
-  display:flex;align-items:center;gap:6px;
-  padding:7px 14px;border-radius:6px;
-  font-size:12.5px;font-weight:600;font-family:inherit;
-  cursor:pointer;transition:all .12s;white-space:nowrap;
-  border:1.5px solid #e5e7eb;
+  display:flex;align-items:center;gap:8px;
+  padding:8px 14px;border-radius:6px;
+  font-size:13px;font-weight:700;font-family:inherit;
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+  border:2px solid transparent;
 }
 .exhd-btn.info-soal{
-  background:#ffffff;border:1.5px solid #d1d5db;color:#374151;
+  background:#ffffff;border:2px solid #d1d5db;color:#374151;
 }
-.exhd-btn.info-soal:hover{border-color:#00a8e8;color:#003d82;background:#f0f9ff;box-shadow:0 2px 4px rgba(0,61,130,.08)}
+.exhd-btn.info-soal:hover{
+  border-color:#00a8e8;color:#003d82;background:#f0f9ff;
+  box-shadow:0 2px 6px rgba(0,168,232,.15);
+}
 .exhd-btn.daftar-soal{
-  background:#00a8e8;border:1.5px solid #00a8e8;color:#ffffff;
+  background:#00a8e8;border:2px solid #00a8e8;color:#ffffff;font-weight:700;
 }
-.exhd-btn.daftar-soal:hover{background:#0084bd;border-color:#0084bd;box-shadow:0 2px 6px rgba(0,61,130,.15)}
-.exhd-btn.danger{background:#dc2626;border:1.5px solid #dc2626;color:#fff}
-.exhd-btn.danger:hover{background:#b91c1c;border-color:#b91c1c}
-.exhd-btn.primary{background:#003d82;border:1.5px solid #003d82;color:#fff}
-.exhd-btn.primary:hover{background:#002d5f}
-
-/* Font control inline section */
-.ex-fontctrl-inline{
-  display:flex;align-items:center;gap:8px;
-  padding:8px 24px;
-  border-top:1px solid #e5e7eb;
-  background:#f9fafb;
-  justify-content:flex-end;
+.exhd-btn.daftar-soal:hover{
+  background:#0084bd;border-color:#0084bd;
+  box-shadow:0 2px 8px rgba(0,61,130,.2);
+}
+.exhd-btn.danger{
+  background:#dc2626;border:2px solid #dc2626;color:#ffffff;
+}
+.exhd-btn.danger:hover{
+  background:#b91c1c;border-color:#b91c1c;
+}
+.exhd-btn.primary{
+  background:#003d82;border:2px solid #003d82;color:#ffffff;
+}
+.exhd-btn.primary:hover{
+  background:#002d5f;border-color:#002d5f;
 }
 
-/* ── Ukuran font control (A A A) ── ANBK Style */
+/* ── Ukuran font control (A A A) ── PERUBAHAN SIGNIFIKAN */
 .ex-fontctrl{display:none}
-.ex-fontctrl span{font-size:12px;font-weight:600;color:#374151}
-.ex-fontctrl-inline{display:flex;align-items:center;gap:8px;padding:8px 12px;background:#f3f4f6;border-radius:8px;flex-wrap:wrap}
-.ex-fontctrl-inline span{font-size:12px;font-weight:600;color:#374151;white-space:nowrap}
+.ex-fontctrl-inline{
+  display:flex;align-items:center;justify-content:center;gap:12px;
+  padding:12px 16px;background:#f3f4f6;border-radius:8px;
+  margin:10px 0;border:1px solid #e5e7eb;
+}
+.ex-fontctrl-inline span{
+  font-size:12px;font-weight:600;color:#6b7280;margin-right:8px;
+  display:block;width:100%;text-align:left;margin-bottom:8px;
+}
 .ex-fbtn{
   background:#ffffff;border:2px solid #d1d5db;cursor:pointer;
-  font-weight:700;color:#4b5563;padding:6px 10px;
-  border-radius:6px;transition:all .15s ease;font-family:inherit;line-height:1.2;
-  font-size:13px;min-width:32px;text-align:center;
+  font-weight:700;color:#374151;padding:8px 12px;
+  border-radius:8px;transition:all .2s ease;font-family:inherit;line-height:1.2;
+  font-size:14px;min-width:36px;text-align:center;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 1px 2px rgba(0,0,0,.05);
 }
-.ex-fbtn:hover{color:#003d82;border-color:#00a8e8;background:#f0f9ff;box-shadow:0 2px 4px rgba(0,61,130,.1)}
-.ex-fbtn.active{color:#ffffff;background:#00a8e8;border-color:#00a8e8;box-shadow:0 2px 6px rgba(0,168,232,.2)}
-.ex-fbtn.sm{font-size:12px}
+.ex-fbtn:hover{
+  color:#0084bd;border-color:#00a8e8;background:#f0f9ff;
+  box-shadow:0 2px 6px rgba(0,168,232,.15);
+}
+.ex-fbtn.active{
+  color:#ffffff;background:#00a8e8;border-color:#00a8e8;
+  box-shadow:0 4px 12px rgba(0,168,232,.3);font-size:16px;padding:10px 14px;min-width:48px;
+}
+.ex-fbtn.sm{font-size:13px}
 .ex-fbtn.md{font-size:14px}
-.ex-fbtn.lg{font-size:16px}
+.ex-fbtn.lg{font-size:13px}
 
-/* Mobile responsive - Font control icon only */
-@media(max-width:640px){
-  .ex-fontctrl-inline{gap:6px;padding:6px 8px}
-  .ex-fontctrl-inline span{display:none}
-  .ex-fbtn{padding:5px 8px;min-width:28px;font-size:12px}
+/* Mobile: Font control FULL WIDTH dengan layout vertikal */
+@media(max-width:768px){
+  .ex-fontctrl-inline{
+    flex-direction:row;gap:8px;padding:10px 12px;margin:8px 0;
+    justify-content:center;width:100%;
+  }
+  .ex-fontctrl-inline span{display:none;margin:0}
+  .ex-fbtn{padding:7px 10px;min-width:32px;font-size:13px}
+  .ex-fbtn.active{font-size:15px;padding:8px 12px;min-width:40px}
+  .ex-fbtn.sm{font-size:12px}
+  .ex-fbtn.lg{font-size:12px}
 }
 
 /* ── Body soal ── */
@@ -752,22 +794,41 @@ span.arab-inline{font-family:'Amiri',serif;font-size:1.15em;direction:rtl;unicod
   .exhd-title h2{font-size:12px}.exhd-title p{display:none}
   .exhd-logo{width:28px;height:28px;font-size:13px}
   .exhd-peserta{display:none}
-  .timebox{flex:1;margin-right:auto} .tl{display:none} .td{font-size:12px;padding:6px 10px;min-width:54px;letter-spacing:.05em}
-  .exhd-btn span{display:none}.exhd-btn{padding:6px 10px;gap:4px;border-radius:5px;font-size:14px}
-  .exhd-btn i{font-size:16px}
-  .exhd-btn.info-soal{border-color:#d1d5db;color:#6b7280;background:#ffffff}
+  
+  /* Timer mobile: icon only dengan sizing bagus */
+  .timebox{
+    display:flex;align-items:center;justify-content:center;
+    border:2px solid #d1d5db;border-radius:6px;padding:8px 10px;
+    background:#ffffff;min-width:64px;height:40px;
+  }
+  .timebox .tl{display:none}
+  .timebox .td{
+    font-size:14px;padding:0;min-width:auto;letter-spacing:.08em;
+    font-weight:700;color:#1f2937;
+  }
+  
+  /* Header buttons: ICON ONLY - NO TEXT */
+  .exhd-btn span{display:none !important}
+  .exhd-btn{
+    padding:8px 10px;gap:0;border-radius:6px;height:40px;width:40px;
+    display:flex;align-items:center;justify-content:center;
+    border:2px solid #d1d5db;background:#ffffff;color:#6b7280;
+    font-size:18px;transition:all .15s;
+  }
+  .exhd-btn i{font-size:18px}
+  .exhd-btn.info-soal{flex:none;width:40px}
   .exhd-btn.info-soal:hover{border-color:#00a8e8;color:#003d82;background:#f0f9ff}
-  .exhd-btn.daftar-soal{background:#00a8e8;border-color:#00a8e8;color:#ffffff}
+  .exhd-btn.daftar-soal{flex:none;width:40px;background:#00a8e8;border-color:#00a8e8;color:#ffffff}
   .exhd-btn.daftar-soal:hover{background:#0084bd;border-color:#0084bd}
+  
   .exmain{padding:12px 12px 80px}
   .ex-card{border-radius:8px;margin:0;box-shadow:0 2px 8px rgba(0,0,0,.08)}
-  .ex-card-head{padding:10px 12px 8px;gap:6px}
-  .ex-card-head-top{flex-direction:column;gap:8px}
-  .ex-card-head-r{width:100%;justify-content:flex-start;gap:8px;flex-wrap:nowrap;overflow-x:auto}
-  .exsoal-nomor{font-size:16px}.exsoal-mapel{font-size:11px}
-  .ex-fontctrl-inline{padding:8px 12px;justify-content:space-between}
-  .ex-fontctrl-inline span{display:none}
-  .ex-fbtn{padding:5px 8px;min-width:28px;font-size:12px}
+  .ex-card-head{padding:12px 14px 8px;gap:8px;border-bottom:1px solid #e5e7eb}
+  .ex-card-head-top{flex-direction:row;gap:8px;align-items:center;flex-wrap:nowrap}
+  .ex-card-head-l{flex-shrink:0}
+  .ex-card-head-r{width:auto;justify-content:center;gap:8px;flex-wrap:nowrap;align-items:center}
+  .exsoal-nomor{font-size:16px;font-weight:800}.exsoal-mapel{font-size:11px;color:#6b7280}
+  .ex-fontctrl-inline{padding:10px 0;margin:0;background:transparent;border:none}
   .ex-card-body{padding:16px 14px 14px}
   .stxt{font-size:14px;line-height:1.7;margin-bottom:16px}
   .op{padding:9px 12px 9px 10px}
@@ -6278,9 +6339,9 @@ function renderSoal(n){
         </div>
         <div class="ex-fontctrl-inline">
           <span>Ukuran font soal:</span>
-          <button class="ex-fbtn sm ${EX.fontSize===13?'active':''}" onclick="setExFontSize(13)" title="Kecil">A−</button>
-          <button class="ex-fbtn md ${(!EX.fontSize||EX.fontSize===16)?'active':''}" onclick="setExFontSize(16)" title="Normal">A</button>
-          <button class="ex-fbtn lg ${EX.fontSize===19?'active':''}" onclick="setExFontSize(19)" title="Besar">A+</button>
+          <button class="ex-fbtn sm ${EX.fontSize===13?'active':''}" onclick="setExFontSize(13)" title="Ukuran Kecil">A−</button>
+          <button class="ex-fbtn md ${(!EX.fontSize||EX.fontSize===16)?'active':''}" onclick="setExFontSize(16)" title="Ukuran Normal">A</button>
+          <button class="ex-fbtn lg ${EX.fontSize===19?'active':''}" onclick="setExFontSize(19)" title="Ukuran Besar">A+</button>
         </div>
       </div>
 
