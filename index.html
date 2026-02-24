@@ -5557,7 +5557,7 @@ async function rSUjian(el){
   el.innerHTML=`<div class="g" style="gap:12px" id="ujianList"><div style="text-align:center;padding:30px;color:var(--mu)"><i class="fa-solid fa-spinner fa-spin"></i> Memuat...</div></div>`;
   const ul=$('ujianList');
 
-  // Fetch ujian aktif + nilai siswa ini (untuk cek sudah dikerjakan)
+  // Fetch ujian aktif + nilai siswa (cek sudah dikerjakan)
   let soalList=[], sudahDikerjakan={};
   if(demoMode){
     soalList=DEMO.soal;
@@ -5567,7 +5567,6 @@ async function rSUjian(el){
       SB.from('nilai').select('kode_soal,nilai,status_penilaian,tanggal_ujian').eq('id_siswa',sis.id_siswa)
     ]);
     soalList = soalRes.data||[];
-    // Buat map kode_soal → data nilai
     (nilaiRes.data||[]).forEach(n=>{ sudahDikerjakan[n.kode_soal]=n; });
   }
 
@@ -5577,54 +5576,65 @@ async function rSUjian(el){
   }
 
   ul.innerHTML=soalList.map(s=>{
-    const done = sudahDikerjakan[s.kode_soal];
-    const isDone = !!done;
-    const perluKoreksi = done?.status_penilaian==='perlu_dinilai';
-    const nilaiVal = done ? parseFloat(done.nilai||0).toFixed(0) : null;
+    const done          = sudahDikerjakan[s.kode_soal];
+    const isDone        = !!done;
+    const perluKoreksi  = done?.status_penilaian==='perlu_dinilai';
+    const nilaiVal      = done ? parseFloat(done.nilai||0).toFixed(0) : null;
 
-    // Badge status kanan atas
-    const statusBadge = isDone
+    // Warna & icon sesuai status
+    const cardStyle  = isDone ? 'border-color:#bbf7d0;background:#f0fdf4' : '';
+    const iconBg     = isDone ? '#d1fae5' : 'var(--pl)';
+    const iconClr    = isDone ? '#059669' : 'var(--p)';
+    const iconIco    = isDone ? 'fa-circle-check' : 'fa-pen-to-square';
+
+    // Chip status selesai/koreksi
+    const statusChip = isDone
       ? (perluKoreksi
-          ? `<span class="badge bwa"><i class="fa-solid fa-hourglass-half"></i> Dikoreksi guru</span>`
-          : `<span class="badge bok"><i class="fa-solid fa-circle-check"></i> Selesai · Nilai ${nilaiVal}</span>`)
-      : '';
+        ? '<span class="badge bwa" style="font-size:11px"><i class="fa-solid fa-hourglass-half"></i> Menunggu koreksi</span>'
+        : `<span class="badge bok" style="font-size:11px"><i class="fa-solid fa-circle-check"></i> Selesai</span>`)
+      : '<span class="badge" style="background:#e0f2fe;color:#0369a1;font-size:11px"><i class="fa-solid fa-pen-to-square"></i> Belum dikerjakan</span>';
 
-    // Icon & warna card
-    const iconBg  = isDone ? '#f0fdf4' : 'var(--pl)';
-    const iconClr = isDone ? '#059669'  : 'var(--p)';
-    const iconIco = isDone ? 'fa-circle-check' : 'fa-pen-to-square';
+    // Nilai besar jika sudah selesai
+    const nilaiBlock = (isDone && !perluKoreksi)
+      ? `<div style="display:flex;align-items:center;gap:6px;margin-top:6px">
+           <div class="nr ${parseInt(nilaiVal)>=60?'nrok':'nrno'}" style="width:40px;height:40px;font-size:13px;flex-shrink:0">${nilaiVal}</div>
+           <div style="font-size:11.5px;color:var(--mu)">Nilai Anda${done.tanggal_ujian?'<br><span style="font-size:10.5px">'+fd(done.tanggal_ujian)+'</span>':''}</div>
+         </div>`
+      : (done?.tanggal_ujian
+          ? `<div style="font-size:11px;color:var(--mu);margin-top:5px"><i class="fa-solid fa-calendar-check"></i> Dikerjakan ${fd(done.tanggal_ujian)}</div>`
+          : '');
 
-    // Tombol kerjakan
+    // Tombol — full width di mobile agar rapi
     const btn = isDone
-      ? `<button class="btn bo blg" disabled style="opacity:.5;cursor:not-allowed;min-width:130px">
+      ? `<button class="btn bo" disabled style="width:100%;margin-top:12px;opacity:.55;cursor:not-allowed;font-size:13px">
            <i class="fa-solid fa-lock"></i> Sudah Selesai
          </button>`
-      : `<button class="btn bp blg" onclick="konfirmUjian(${s.id_soal})" style="min-width:130px">
-           Kerjakan <i class="fa-solid fa-arrow-right"></i>
+      : `<button class="btn bp" onclick="konfirmUjian(${s.id_soal})" style="width:100%;margin-top:12px;font-size:13.5px;font-weight:700">
+           Kerjakan Sekarang <i class="fa-solid fa-arrow-right"></i>
          </button>`;
 
-    // Info tanggal dikerjakan jika sudah selesai
-    const tglInfo = done?.tanggal_ujian
-      ? `<span class="badge" style="background:#f1f5f9;color:#64748b"><i class="fa-solid fa-calendar-check"></i> Dikerjakan ${fd(done.tanggal_ujian)}</span>`
-      : '';
-
     return `
-    <div class="card" style="${isDone?'border-color:#bbf7d0;background:#f0fdf4':''}">
-      <div class="cb" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-        <div style="width:50px;height:50px;background:${iconBg};border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">
-          <i class="fa-solid ${iconIco}" style="color:${iconClr}"></i>
-        </div>
-        <div style="flex:1;min-width:0">
-          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:2px">
-            <div style="font-weight:700;font-size:15px">${s.nama_soal}</div>
-            ${statusBadge}
+    <div class="card" style="${cardStyle}">
+      <div class="cb" style="padding:16px">
+        <div style="display:flex;align-items:flex-start;gap:14px">
+          <!-- Icon -->
+          <div style="width:46px;height:46px;background:${iconBg};border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;margin-top:1px">
+            <i class="fa-solid ${iconIco}" style="color:${iconClr}"></i>
           </div>
-          <div style="font-size:12.5px;color:var(--mu);margin-top:2px">${s.kode_soal} · ${s.mapel} · Kelas ${s.kelas}</div>
-          <div style="display:flex;gap:8px;margin-top:7px;flex-wrap:wrap">
-            <span class="badge bgr"><i class="fa-solid fa-stopwatch"></i> ${s.waktu_ujian} menit</span>
-            ${s.token?'<span class="badge bwa"><i class="fa-solid fa-key"></i> Butuh Token</span>':'<span class="badge bok"><i class="fa-solid fa-circle-check"></i> Tanpa Token</span>'}
-            ${s.tanggal?`<span class="badge bgr"><i class="fa-solid fa-calendar-days"></i> ${fd(s.tanggal)}</span>`:''}
-            ${tglInfo}
+          <!-- Konten -->
+          <div style="flex:1;min-width:0">
+            <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+              <div style="font-weight:700;font-size:15px;line-height:1.3">${s.nama_soal}</div>
+              ${statusChip}
+            </div>
+            <div style="font-size:12px;color:var(--mu);margin-top:4px">${s.kode_soal} &middot; ${s.mapel} &middot; Kelas ${s.kelas}</div>
+            <!-- Badge info ujian -->
+            <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+              <span class="badge bgr" style="font-size:11px"><i class="fa-solid fa-stopwatch"></i> ${s.waktu_ujian} mnt</span>
+              ${s.token?'<span class="badge bwa" style="font-size:11px"><i class="fa-solid fa-key"></i> Perlu Token</span>':'<span class="badge bok" style="font-size:11px"><i class="fa-solid fa-unlock"></i> Tanpa Token</span>'}
+              ${s.tanggal?`<span class="badge bgr" style="font-size:11px"><i class="fa-solid fa-calendar"></i> ${fd(s.tanggal)}</span>`:''}
+            </div>
+            ${nilaiBlock}
           </div>
         </div>
         ${btn}
