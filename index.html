@@ -775,39 +775,25 @@ span.arab-inline{font-family:'Amiri',serif;font-size:1.15em;direction:rtl;unicod
 }
 .opsi-wrap .op:last-child{border-bottom:none}
 .op:hover{background:rgba(5,150,105,.05)}
-.op.sel{background:rgba(5,150,105,.07)}
+.op.sel{background:rgba(5,150,105,.08)}
 .op.correct{background:rgba(22,163,74,.07)}
 .op.wrong{background:rgba(229,57,53,.06)}
 
-/* Radio */
-.opradio{
-  display:flex!important;
-  width:17px;height:17px;min-width:17px;
-  border:2px solid #9ca3af;border-radius:50%;
-  align-items:center;justify-content:center;
-  transition:all .12s;flex-shrink:0;background:#fff;
-}
-.op:hover .opradio{border-color:var(--em)}
-.op.sel .opradio{border-color:var(--em);background:var(--em)}
-.op.sel .opradio::after,.op.correct .opradio::after,.op.wrong .opradio::after{
-  content:'';width:5px;height:5px;background:#fff;border-radius:50%;display:block;
-}
-.op.correct .opradio{border-color:#16a34a;background:#16a34a}
-.op.wrong .opradio{border-color:var(--er2);background:var(--er2)}
-
-/* Huruf dalam lingkaran kecil */
+/* Huruf dalam lingkaran — radio dihapus, opk jadi indikator pilihan */
+.opradio{display:none!important}
 .opk{
-  width:21px;height:21px;min-width:21px;
+  width:26px;height:26px;min-width:26px;
   display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:800;
+  font-size:11.5px;font-weight:800;
   border:1.5px solid #d1d5db;border-radius:50%;
   color:#6b7280;background:#fff;
-  flex-shrink:0;margin:0 10px;
-  transition:all .12s;font-family:'Plus Jakarta Sans',sans-serif;
+  flex-shrink:0;margin:0 12px 0 4px;
+  transition:all .15s;font-family:'Plus Jakarta Sans',sans-serif;
 }
-.op.sel .opk{border-color:var(--em);color:var(--em);background:var(--em-ll)}
-.op.correct .opk{border-color:#16a34a;color:#16a34a;background:#f0fdf4}
-.op.wrong .opk{border-color:var(--er2);color:var(--er2);background:#fff1f2}
+.op:hover .opk{border-color:var(--em);color:var(--em)}
+.op.sel .opk{border-color:var(--em);color:#fff;background:var(--em)}
+.op.correct .opk{border-color:#16a34a;color:#fff;background:#16a34a}
+.op.wrong .opk{border-color:var(--er2);color:#fff;background:var(--er2)}
 .opt{
   font-size:var(--exfont);line-height:1.7;flex:1;
   color:#111827;padding:0;align-self:center;font-weight:400;
@@ -824,17 +810,10 @@ span.arab-inline{font-family:'Amiri',serif;font-size:1.15em;direction:rtl;unicod
 .pk:last-child{border-bottom:none}
 .pk:hover{background:rgba(5,150,105,.05)}
 .pk.sel{background:rgba(5,150,105,.07)}
-.pkcb{
-  display:flex!important;width:17px;height:17px;min-width:17px;
-  border:2px solid #9ca3af;border-radius:4px;
-  align-items:center;justify-content:center;
-  transition:all .12s;flex-shrink:0;background:#fff;
-}
-.pk:hover .pkcb{border-color:var(--em)}
-.pk.sel .pkcb{border-color:var(--em);background:var(--em)}
-.pk.sel .pkcb::after{content:'✓';color:#fff;font-size:10px;font-weight:900;line-height:1}
-.pk .opk{margin:0 10px;border-color:#d1d5db;color:#6b7280;background:#fff}
-.pk.sel .opk{border-color:var(--em);color:var(--em);background:var(--em-ll)}
+.pkcb{display:none!important}
+.pk .opk{margin:0 12px 0 4px;border-color:#d1d5db;color:#6b7280;background:#fff}
+.pk:hover .opk{border-color:var(--em);color:var(--em)}
+.pk.sel .opk{border-color:var(--em);color:#fff;background:var(--em)}
 
 /* Benar/Salah */
 .bsrow{display:flex;align-items:stretch;border:1.5px solid #e2e8f0;border-radius:8px;margin-bottom:7px;background:#fff;overflow:hidden;transition:border-color .12s}
@@ -1121,10 +1100,8 @@ span.arab-inline{font-family:'Amiri',serif;font-size:1.15em;direction:rtl;unicod
   .stxt{font-size:14px;line-height:1.75;margin-bottom:14px}
   .op{padding:10px 12px 10px 10px}
   .opk{width:20px;height:20px;min-width:20px;font-size:10px;margin:0 9px}
-  .opradio{width:16px;height:16px;min-width:16px}
   .opt{font-size:13.5px}
   .pk{padding:10px 12px 10px 10px}
-  .pkcb{width:16px;height:16px;min-width:16px}
   .bsb{padding:0 13px;min-width:56px;font-size:12px}
   .bst{font-size:13.5px;padding:11px 12px}
 
@@ -6636,13 +6613,13 @@ function renderSoal(n){
   if(tipe==='Pilihan Ganda'){
     const labels=['A','B','C','D','E'];
     const opts=b._shuffledOpts||['pilihan_1','pilihan_2','pilihan_3','pilihan_4','pilihan_5'].filter(k=>b[k]&&b[k].trim()!=='');
-    pilihanHtml=`<div class="opsi">${opts.map((k,i)=>{const lbl=labels[i];return`<div class="op ${jawaban===lbl?'sel':''}" onclick="pilihPG(${n},'${lbl}')"><div class="opradio"></div><div class="opk">${lbl}</div><div class="opt">${applyArabic(b[k])}</div></div>`}).join('')}</div>`;
+    pilihanHtml=`<div class="opsi">${opts.map((k,i)=>{const lbl=labels[i];return`<div class="op ${jawaban===lbl?'sel':''}" onclick="pilihPG(${n},'${lbl}')"><div class="opk">${lbl}</div><div class="opt">${applyArabic(b[k])}</div></div>`}).join('')}</div>`;
   }else if(tipe==='Pilihan Ganda Kompleks'){
     const labels=['A','B','C','D','E'];
     const opts=b._shuffledOpts||['pilihan_1','pilihan_2','pilihan_3','pilihan_4','pilihan_5'].filter(k=>b[k]&&b[k].trim()!=='');
     const selArr=(jawaban||'').split(',').filter(Boolean);
     pilihanHtml=`<div class="al alin" style="padding:8px 12px;font-size:12px;margin-bottom:10px"><i class=\"fa-solid fa-circle-info\" style=\"color:var(--p)\"></i><div>Pilih SEMUA jawaban yang benar (bisa lebih dari satu)</div></div>
-      <div class="pgk">${opts.map((k,i)=>{const lbl=labels[i];return`<div class="pk ${selArr.includes(lbl)?'sel':''}" onclick="pilihPGK(${n},'${lbl}')"><div class="pkcb"></div><div class="opk">${lbl}</div><div class="opt">${applyArabic(b[k])}</div></div>`}).join('')}</div>`;
+      <div class="pgk">${opts.map((k,i)=>{const lbl=labels[i];return`<div class="pk ${selArr.includes(lbl)?'sel':''}" onclick="pilihPGK(${n},'${lbl}')"><div class="opk">${lbl}</div><div class="opt">${applyArabic(b[k])}</div></div>`}).join('')}</div>`;
   }else if(tipe==='Benar/Salah'){
     const stmts=[b.pilihan_1,b.pilihan_2,b.pilihan_3,b.pilihan_4,b.pilihan_5].filter(Boolean);
     const jawArr=(jawaban||'').split('|');
