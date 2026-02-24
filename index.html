@@ -6112,18 +6112,58 @@ async function delUser(id){
 async function rFaq(el){
   let faqs=demoMode?DEMO.faq:((await SB.from('faq').select('*').order('urutan')).data||[]);
   window._faq=faqs;
-  el.innerHTML=`<div class="card"><div class="ch"><div class="ct"><i class="fa-solid fa-circle-info" style="color:var(--p)"></i> Kelola FAQ</div><button class="btn bp bsm" onclick="mFaq()">+ Tambah FAQ</button></div>
-    <div class="tw"><table><thead><tr><th>No</th><th>Pertanyaan</th><th>Jawaban</th><th>Aksi</th></tr></thead><tbody>
-      ${faqs.length?faqs.map(f=>`<tr>
-        <td style="font-weight:700;color:var(--mu)">${f.urutan||f.id}</td>
-        <td style="font-weight:600;max-width:200px">${f.question}</td>
-        <td style="max-width:300px;font-size:12.5px;color:var(--mu)">${f.answer.substring(0,80)}${f.answer.length>80?'…':''}</td>
-        <td><div style="display:flex;gap:5px">
-          <button class="btn bsm bo" onclick="mFaq(${f.id})"><i class="fa-solid fa-pen"></i></button>
-          <button class="btn bsm bd" onclick="delFaq(${f.id})"><i class="fa-solid fa-trash"></i></button>
-        </div></td>
-      </tr>`).join(''):`<tr><td colspan="4"><div class="empty"><div class="ei"><i class="fa-solid fa-circle-info" style="font-size:40px;color:var(--mu)"></i></div><h3>Belum ada FAQ</h3></div></td></tr>`}
-    </tbody></table></div></div>`;
+  el.innerHTML=`
+  <style>
+    .faq-admin-wrap{display:flex;flex-direction:column;gap:14px}
+    .faq-accordion-item{background:#fff;border:1.5px solid var(--br);border-radius:var(--r);overflow:hidden;transition:border-color .15s,box-shadow .15s}
+    .faq-accordion-item:hover{border-color:#a7f3d0;box-shadow:0 2px 12px rgba(5,150,105,.07)}
+    .faq-accordion-hd{display:flex;align-items:center;gap:12px;padding:14px 16px;cursor:pointer;user-select:none;background:#fff}
+    .faq-accordion-num{min-width:28px;height:28px;border-radius:8px;background:var(--pl);color:var(--p);font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .faq-accordion-q{flex:1;font-weight:600;font-size:13.5px;color:var(--tx);line-height:1.4}
+    .faq-accordion-actions{display:flex;gap:6px;flex-shrink:0}
+    .faq-accordion-chevron{font-size:11px;color:var(--mu);transition:transform .22s;flex-shrink:0;margin-left:4px}
+    .faq-accordion-body{max-height:0;overflow:hidden;transition:max-height .28s ease}
+    .faq-accordion-body.open{max-height:600px}
+    .faq-accordion-content{padding:0 16px 16px 56px;font-size:13px;color:var(--mu);line-height:1.7;border-top:1px solid var(--br)}
+    .faq-accordion-item.open .faq-accordion-chevron{transform:rotate(180deg)}
+    .faq-accordion-item.open{border-color:#6ee7b7;box-shadow:0 2px 16px rgba(5,150,105,.10)}
+    .faq-accordion-item.open .faq-accordion-hd{background:linear-gradient(90deg,#f0fdf9 0%,#fff 100%)}
+  </style>
+  <div class="card">
+    <div class="ch">
+      <div class="ct"><i class="fa-solid fa-circle-info" style="color:var(--p)"></i> Kelola FAQ</div>
+      <button class="btn bp bsm" onclick="mFaq()"><i class="fa-solid fa-plus"></i> Tambah FAQ</button>
+    </div>
+    ${!faqs.length
+      ? `<div class="empty"><div class="ei"><i class="fa-solid fa-circle-info" style="font-size:40px;color:var(--mu)"></i></div><h3>Belum ada FAQ</h3><p style="color:var(--mu);font-size:13px">Klik tombol "+ Tambah FAQ" untuk menambahkan entri pertama</p></div>`
+      : `<div class="faq-admin-wrap">
+          ${faqs.map(f=>`
+          <div class="faq-accordion-item" id="faq-item-${f.id}">
+            <div class="faq-accordion-hd" onclick="toggleFaqItem(${f.id})">
+              <div class="faq-accordion-num">${f.urutan||f.id}</div>
+              <div class="faq-accordion-q">${f.question}</div>
+              <div class="faq-accordion-actions" onclick="event.stopPropagation()">
+                <button class="btn bsm bo" onclick="mFaq(${f.id})" title="Edit"><i class="fa-solid fa-pen"></i></button>
+                <button class="btn bsm bd" onclick="delFaq(${f.id})" title="Hapus"><i class="fa-solid fa-trash"></i></button>
+              </div>
+              <i class="fa-solid fa-chevron-down faq-accordion-chevron"></i>
+            </div>
+            <div class="faq-accordion-body" id="faq-body-${f.id}">
+              <div class="faq-accordion-content pt-3" style="padding-top:12px">${f.answer}</div>
+            </div>
+          </div>`).join('')}
+        </div>`
+    }
+  </div>`;
+}
+
+function toggleFaqItem(id){
+  const item=document.getElementById('faq-item-'+id);
+  const body=document.getElementById('faq-body-'+id);
+  if(!item||!body)return;
+  const isOpen=item.classList.contains('open');
+  item.classList.toggle('open',!isOpen);
+  body.classList.toggle('open',!isOpen);
 }
 
 function mFaq(id){
@@ -7564,13 +7604,114 @@ function backToLanding(){router('/login');}
 // ─── SISWA: FAQ ───
 async function rSFaq(el){
   let faqs=demoMode?DEMO.faq:((await SB.from('faq').select('*').order('urutan')).data||[]);
-  el.innerHTML=`<div class="card"><div class="ch"><div class="ct"><i class="fa-solid fa-circle-question" style="color:var(--p)"></i> Bantuan &amp; FAQ</div></div>
-    ${!faqs.length?'<div class="empty"><div class="ei"><i class=\"fa-solid fa-circle-info\" style=\"font-size:40px;color:var(--mu)\"></i></div><h3>Belum ada FAQ</h3></div>':
-    faqs.map(f=>`<div class="cb" style="border-bottom:1px solid var(--br)">
-      <div style="font-weight:700;margin-bottom:5px;font-size:14px"><i class="fa-solid fa-circle-question" style="color:var(--p)"></i> ${f.question}</div>
-      <div style="font-size:13px;color:var(--mu);line-height:1.6">${f.answer}</div>
-    </div>`).join('')}
+  window._sfaq=faqs;
+
+  // Kelompokkan berdasarkan prefix [ROLE] pada pertanyaan
+  const groups={};
+  faqs.forEach(f=>{
+    const m=f.question.match(/^\[([^\]]+)\]/);
+    const grp=m?m[1]:'UMUM';
+    if(!groups[grp])groups[grp]=[];
+    groups[grp].push(f);
+  });
+
+  const iconMap={SISWA:'fa-user-graduate',GURU:'fa-chalkboard-user',PROKTOR:'fa-user-shield',ADMIN:'fa-user-gear',UMUM:'fa-circle-question'};
+  const colorMap={SISWA:'#059669',GURU:'#0284c7',PROKTOR:'#7c3aed',ADMIN:'#ea580c',UMUM:'#64748b'};
+
+  el.innerHTML=`
+  <style>
+    .sfaq-wrap{display:flex;flex-direction:column;gap:24px}
+    .sfaq-search-wrap{position:relative}
+    .sfaq-search{width:100%;padding:10px 16px 10px 40px;border:1.5px solid var(--br);border-radius:10px;font-size:13.5px;font-family:inherit;background:#fff;color:var(--tx);outline:none;transition:border-color .15s}
+    .sfaq-search:focus{border-color:var(--p);box-shadow:0 0 0 3px rgba(5,150,105,.08)}
+    .sfaq-search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:var(--mu);font-size:14px;pointer-events:none}
+    .sfaq-group{background:#fff;border:1.5px solid var(--br);border-radius:var(--r);overflow:hidden}
+    .sfaq-group-header{display:flex;align-items:center;gap:10px;padding:14px 18px;background:linear-gradient(90deg,#f8fafc,#fff);border-bottom:1.5px solid var(--br)}
+    .sfaq-group-icon{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0}
+    .sfaq-group-label{font-weight:700;font-size:13px;letter-spacing:.03em}
+    .sfaq-group-count{margin-left:auto;font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--bg);color:var(--mu)}
+    .sfaq-item{border-bottom:1px solid var(--br)}
+    .sfaq-item:last-child{border-bottom:none}
+    .sfaq-item-hd{display:flex;align-items:center;gap:12px;padding:13px 18px;cursor:pointer;user-select:none;transition:background .12s}
+    .sfaq-item-hd:hover{background:#f8fafc}
+    .sfaq-item-q{flex:1;font-weight:600;font-size:13.5px;color:var(--tx);line-height:1.4}
+    .sfaq-item-chevron{font-size:11px;color:var(--mu);transition:transform .22s;flex-shrink:0}
+    .sfaq-item-body{max-height:0;overflow:hidden;transition:max-height .3s ease}
+    .sfaq-item-body.open{max-height:800px}
+    .sfaq-item-answer{padding:0 18px 16px 44px;font-size:13px;color:var(--mu);line-height:1.8}
+    .sfaq-item.open .sfaq-item-chevron{transform:rotate(180deg)}
+    .sfaq-item.open .sfaq-item-hd{background:#f0fdf9}
+    .sfaq-item.open .sfaq-item-q{color:var(--p)}
+    .sfaq-empty{text-align:center;padding:40px 20px;color:var(--mu)}
+    .sfaq-hidden{display:none}
+  </style>
+  <div class="card">
+    <div class="ch">
+      <div class="ct"><i class="fa-solid fa-circle-question" style="color:var(--p)"></i> Bantuan &amp; FAQ</div>
+      <span style="font-size:12px;color:var(--mu);background:var(--bg);padding:3px 10px;border-radius:20px;font-weight:600">${faqs.length} pertanyaan</span>
+    </div>
+    ${!faqs.length
+      ? `<div class="empty"><div class="ei"><i class="fa-solid fa-circle-info" style="font-size:40px;color:var(--mu)"></i></div><h3>Belum ada FAQ</h3></div>`
+      : `<div class="sfaq-wrap">
+          <div class="sfaq-search-wrap">
+            <i class="fa-solid fa-magnifying-glass sfaq-search-icon"></i>
+            <input class="sfaq-search" id="sfaqSearch" placeholder="Cari pertanyaan..." oninput="filterSFaq(this.value)">
+          </div>
+          <div id="sfaq-no-result" class="sfaq-empty sfaq-hidden"><i class="fa-solid fa-face-frown" style="font-size:32px;margin-bottom:10px;display:block"></i>Tidak ada FAQ yang cocok</div>
+          ${Object.entries(groups).map(([grp,items])=>`
+          <div class="sfaq-group" id="sfaq-grp-${grp}">
+            <div class="sfaq-group-header">
+              <div class="sfaq-group-icon" style="background:${colorMap[grp]||'#64748b'}18;color:${colorMap[grp]||'#64748b'}">
+                <i class="fa-solid ${iconMap[grp]||'fa-circle-question'}"></i>
+              </div>
+              <span class="sfaq-group-label" style="color:${colorMap[grp]||'#64748b'}">Panduan ${grp}</span>
+              <span class="sfaq-group-count">${items.length} FAQ</span>
+            </div>
+            ${items.map(f=>`
+            <div class="sfaq-item" id="sfaq-item-${f.id}" data-q="${f.question.toLowerCase()}" data-a="${f.answer.toLowerCase().replace(/"/g,'&quot;')}">
+              <div class="sfaq-item-hd" onclick="toggleSFaqItem(${f.id})">
+                <i class="fa-solid fa-circle-question" style="color:${colorMap[grp]||'#64748b'};font-size:13px;flex-shrink:0"></i>
+                <div class="sfaq-item-q">${f.question.replace(/^\[[^\]]+\]\s*/,'')}</div>
+                <i class="fa-solid fa-chevron-down sfaq-item-chevron"></i>
+              </div>
+              <div class="sfaq-item-body" id="sfaq-body-${f.id}">
+                <div class="sfaq-item-answer">${f.answer}</div>
+              </div>
+            </div>`).join('')}
+          </div>`).join('')}
+        </div>`
+    }
   </div>`;
+}
+
+function toggleSFaqItem(id){
+  const item=document.getElementById('sfaq-item-'+id);
+  const body=document.getElementById('sfaq-body-'+id);
+  if(!item||!body)return;
+  const isOpen=item.classList.contains('open');
+  // Tutup semua yang lain dalam group yang sama
+  item.closest('.sfaq-group')?.querySelectorAll('.sfaq-item.open').forEach(el=>{
+    if(el!==item){el.classList.remove('open');el.querySelector('.sfaq-item-body')?.classList.remove('open');}
+  });
+  item.classList.toggle('open',!isOpen);
+  body.classList.toggle('open',!isOpen);
+}
+
+function filterSFaq(q){
+  const kw=q.toLowerCase().trim();
+  let totalVisible=0;
+  document.querySelectorAll('.sfaq-item').forEach(el=>{
+    const match=!kw||el.dataset.q?.includes(kw)||el.dataset.a?.includes(kw);
+    el.classList.toggle('sfaq-hidden',!match);
+    if(match)totalVisible++;
+  });
+  // Sembunyikan group kalau semua itemnya hidden
+  document.querySelectorAll('.sfaq-group').forEach(grp=>{
+    const anyVisible=[...grp.querySelectorAll('.sfaq-item')].some(el=>!el.classList.contains('sfaq-hidden'));
+    grp.classList.toggle('sfaq-hidden',!anyVisible);
+  });
+  const noResult=document.getElementById('sfaq-no-result');
+  if(noResult)noResult.classList.toggle('sfaq-hidden',totalVisible>0||!kw);
 }
 
 // ═══════════════════════════ ROUTING & DEPLOY ═══════════════════════════
