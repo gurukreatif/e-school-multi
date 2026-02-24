@@ -1106,10 +1106,10 @@ const DEMO={
   ],
   soal:[{id_soal:1,id_pembuat:'1',kode_soal:'DEMO-01',nama_soal:'Ujian Matematika Dasar',mapel:'Matematika',kelas:'9',waktu_ujian:30,tanggal:today(),status:'Aktif',tampilan_soal:'Urut',kunci:'',token:'',jumlah_opsi:4,tampil_tombol_selesai:1}],
   butir:[
-    {id_soal:1,nomer_soal:1,kode_soal:'DEMO-01',pertanyaan:'Berapakah hasil dari 12 × 8 − 24 ÷ 6?',tipe_soal:'Pilihan Ganda',pilihan_1:'92',pilihan_2:'96',pilihan_3:'100',pilihan_4:'88',pilihan_5:'',jawaban_benar:'pilihan_1',status_soal:'Aktif'},
+    {id_soal:1,nomer_soal:1,kode_soal:'DEMO-01',pertanyaan:'Berapakah hasil dari 12 × 8 − 24 ÷ 6?',tipe_soal:'Pilihan Ganda',pilihan_1:'92',pilihan_2:'96',pilihan_3:'100',pilihan_4:'88',pilihan_5:'',jawaban_benar:'A',status_soal:'Aktif'},
     {id_soal:2,nomer_soal:2,kode_soal:'DEMO-01',pertanyaan:'Tentukan Benar atau Salah pernyataan berikut!',tipe_soal:'Benar/Salah',pilihan_1:'2³ = 8',pilihan_2:'√49 = 6',pilihan_3:'4² = 16',pilihan_4:'3² = 10',pilihan_5:'',jawaban_benar:'Benar|Salah|Benar|Salah',status_soal:'Aktif'},
     {id_soal:3,nomer_soal:3,kode_soal:'DEMO-01',pertanyaan:'Sebutkan faktor-faktor dari bilangan 12! (uraian)',tipe_soal:'Uraian',pilihan_1:'',pilihan_2:'',pilihan_3:'',pilihan_4:'',pilihan_5:'',jawaban_benar:'1, 2, 3, 4, 6, 12',status_soal:'Aktif'},
-    {id_soal:4,nomer_soal:4,kode_soal:'DEMO-01',pertanyaan:'Pilih semua pernyataan yang BENAR tentang bilangan prima!',tipe_soal:'Pilihan Ganda Kompleks',pilihan_1:'2 adalah bilangan prima',pilihan_2:'1 adalah bilangan prima',pilihan_3:'7 adalah bilangan prima',pilihan_4:'4 adalah bilangan prima',pilihan_5:'13 adalah bilangan prima',jawaban_benar:'pilihan_1,pilihan_3,pilihan_5',status_soal:'Aktif'},
+    {id_soal:4,nomer_soal:4,kode_soal:'DEMO-01',pertanyaan:'Pilih semua pernyataan yang BENAR tentang bilangan prima!',tipe_soal:'Pilihan Ganda Kompleks',pilihan_1:'2 adalah bilangan prima',pilihan_2:'1 adalah bilangan prima',pilihan_3:'7 adalah bilangan prima',pilihan_4:'4 adalah bilangan prima',pilihan_5:'13 adalah bilangan prima',jawaban_benar:'A,C,E',status_soal:'Aktif'},
     {id_soal:5,nomer_soal:5,kode_soal:'DEMO-01',pertanyaan:'Pasangkan istilah matematika berikut dengan definisinya!',tipe_soal:'Menjodohkan',pilihan_1:'',pilihan_2:'',pilihan_3:'',pilihan_4:'',pilihan_5:'',jawaban_benar:'Bilangan asli:Bilangan bulat positif|Bilangan prima:Hanya dibagi 1 dan dirinya|Bilangan kuadrat:Hasil pangkat dua bilangan',status_soal:'Aktif'},
   ],
   nilai:[],
@@ -2485,7 +2485,7 @@ async function previewSoal(id){
         <span class="stipe">${b.tipe_soal}</span>
         <div style="font-size:13.5px;margin:8px 0">${b.pertanyaan}</div>
         ${renderPilihanPreview(b)}
-        <div style="font-size:11.5px;color:var(--mu);margin-top:8px;border-top:1px solid var(--br);padding-top:7px">Kunci: <strong>${b.jawaban_benar}</strong></div>
+        <div style="font-size:11.5px;color:var(--mu);margin-top:8px;border-top:1px solid var(--br);padding-top:7px">Kunci: <strong>${normKunci(b.jawaban_benar)}</strong></div>
       </div></div>`).join('')}
     </div>
     <div class="mf"><button class="btn bo" onclick="rmModal('mdPrev')">Tutup</button></div>
@@ -2496,7 +2496,13 @@ async function previewSoal(id){
 function renderPilihanPreview(b){
   if(b.tipe_soal==='Pilihan Ganda'||b.tipe_soal==='Pilihan Ganda Kompleks'){
     const labels=['A','B','C','D','E'];
-    return['pilihan_1','pilihan_2','pilihan_3','pilihan_4','pilihan_5'].filter((_,i)=>b['pilihan_'+(i+1)]).map((k,i)=>`<div style="padding:6px 10px;border-radius:6px;border:1px solid var(--br);margin-bottom:4px;font-size:13px;background:${b.jawaban_benar===k||b.jawaban_benar?.includes(k)?'#f0fdf4':'#fff'}"><strong>${labels[i]}.</strong> ${b[k]}</div>`).join('');
+    const kunci=normKunci(b.jawaban_benar||''); // normalisasi ke A/B/C/D
+    const kunciArr=kunci.split(',').map(x=>x.trim()).filter(Boolean);
+    return['pilihan_1','pilihan_2','pilihan_3','pilihan_4','pilihan_5'].filter((_,i)=>b['pilihan_'+(i+1)]).map((_,i)=>{
+      const lbl=labels[i];
+      const isKunci=kunciArr.includes(lbl);
+      return`<div style="padding:6px 10px;border-radius:6px;border:1px solid var(--br);margin-bottom:4px;font-size:13px;background:${isKunci?'#f0fdf4':'#fff'}"><strong>${lbl}.</strong> ${b['pilihan_'+(i+1)]}</div>`;
+    }).join('');
   }if(b.tipe_soal==='Benar/Salah'){
     const ps=[b.pilihan_1,b.pilihan_2,b.pilihan_3,b.pilihan_4].filter(Boolean);
     return ps.map((p,i)=>`<div style="padding:6px 10px;border-radius:6px;border:1px solid var(--br);margin-bottom:4px;font-size:13px">${i+1}. ${p}</div>`).join('');
@@ -3050,7 +3056,7 @@ function upBTipe(d){
   if(t==='Pilihan Ganda'||t==='Pilihan Ganda Kompleks'){
     const labels=['A','B','C','D','E'];
     const isPG=(t==='Pilihan Ganda');
-    const kunciSaved=d.jawaban_benar||'';
+    const kunciSaved=normKunci(d.jawaban_benar||'');
     area.innerHTML=`
       <div style="background:#f8fafc;border-radius:10px;border:1px solid var(--br);padding:14px;margin-bottom:4px">
         <div style="font-size:11px;font-weight:700;color:var(--mu);text-transform:uppercase;letter-spacing:.07em;margin-bottom:12px">
@@ -3081,13 +3087,18 @@ function upBTipe(d){
       labels.forEach((l,i)=>{
         createQuillEditor(`qop_bP${i+1}`,{value:d['pilihan_'+(i+1)]||'',size:'sm',placeholder:`Pilihan ${l}...`,toolbarType:'compact'});
       });
-      // restore kunci selection
+      // restore kunci selection — kunciSaved sudah dinormalisasi ke format A/B/C/D
       if(kunciSaved){
         if(isPG){
-          const idx=parseInt((kunciSaved.match(/\d+/)||['0'])[0]);
-          if(idx>=1&&idx<=5) selOpsiPG(idx,labels.length,true);
+          // "A" → idx=1, "B" → idx=2, dst.
+          const idx=labels.indexOf(kunciSaved.trim().toUpperCase())+1;
+          if(idx>=1) selOpsiPG(idx,labels.length,true);
         }else{
-          kunciSaved.split(',').forEach(k=>{const idx=parseInt((k.match(/\d+/)||['0'])[0]);if(idx>=1&&idx<=5)toggleOpsiPGK(idx,labels.length,true);});
+          // "A,C" → [1, 3]
+          kunciSaved.split(',').forEach(k=>{
+            const idx=labels.indexOf(k.trim().toUpperCase())+1;
+            if(idx>=1) toggleOpsiPGK(idx,labels.length,true);
+          });
         }
       }
     },150);
@@ -3147,6 +3158,21 @@ function upBTipe(d){
   }
 }
 
+// ── Normalisasi format kunci lama (pilihan_1..5) ke format baru (A/B/C/D/E) ──
+// "pilihan_1" → "A", "pilihan_2" → "B", "A" → "A" (sudah benar)
+// Untuk PGK (multi): "pilihan_1,pilihan_3" → "A,C"
+function normKunci(raw){
+  if(!raw)return'';
+  const labels=['A','B','C','D','E'];
+  return raw.split(',').map(k=>{
+    k=k.trim();
+    if(/^[A-Ea-e]$/i.test(k))return k.toUpperCase(); // sudah format baru
+    const m=k.match(/pilihan_(\d+)/i);if(m){const i=parseInt(m[1])-1;return(labels[i]||k);} // format lama
+    const n=parseInt(k);if(n>=1&&n<=5)return labels[n-1]; // format angka
+    return k;
+  }).filter(Boolean).join(',');
+}
+
 // ── PG: klik satu opsi ──
 function selOpsiPG(n,total,silent){
   for(let i=1;i<=total;i++){
@@ -3157,8 +3183,9 @@ function selOpsiPG(n,total,silent){
   const card=document.getElementById('ocard_'+n);const badge=document.getElementById('obadge_'+n);
   if(card)card.classList.add('selected');
   if(badge)badge.className='opsi-badge state-sel';
-  const k=$('bKunci');if(k)k.value='pilihan_'+n;
-  const disp=$('opsiKunciText');if(disp)disp.textContent='Pilihan '+['A','B','C','D','E'][n-1];
+  const label=['A','B','C','D','E'][n-1];
+  const k=$('bKunci');if(k)k.value=label;
+  const disp=$('opsiKunciText');if(disp)disp.textContent='Pilihan '+label;
 }
 
 // ── PGK: toggle multi opsi ──
@@ -3167,11 +3194,12 @@ function toggleOpsiPGK(n,total,silent){
   const isNowSel=card&&!card.classList.contains('selected-multi');
   if(card)card.classList.toggle('selected-multi');
   if(badge)badge.className='opsi-badge '+(isNowSel?'state-multi':'state-unsel');
-  // Rebuild kunci from all selected
+  // Rebuild kunci from all selected — simpan sebagai A,B,C,...
+  const labels=['A','B','C','D','E'];
   const sel=[];
-  for(let i=1;i<=total;i++){const c=document.getElementById('ocard_'+i);if(c&&c.classList.contains('selected-multi'))sel.push('pilihan_'+i);}
+  for(let i=1;i<=total;i++){const c=document.getElementById('ocard_'+i);if(c&&c.classList.contains('selected-multi'))sel.push(labels[i-1]);}
   const k=$('bKunci');if(k)k.value=sel.join(',');
-  const disp=$('opsiKunciText');if(disp)disp.textContent=sel.length?sel.map(s=>'Pilihan '+['A','B','C','D','E'][parseInt(s.slice(-1))-1]).join(', '):'Belum dipilih';
+  const disp=$('opsiKunciText');if(disp)disp.textContent=sel.length?sel.map(s=>'Pilihan '+s).join(', '):'Belum dipilih';
 }
 
 // ── Util: strip HTML tags untuk text plain ──
@@ -3685,7 +3713,7 @@ async function loadAnalisa(){
     const jaws=parseJ(n.jawaban_siswa);
     butirs.forEach(b=>{
       const j=jaws[b.nomer_soal];if(!j)return;
-      const k=b.jawaban_benar;
+      const k=normKunci(b.jawaban_benar);
       if(b.tipe_soal==='Pilihan Ganda'&&j===k)benar[b.nomer_soal]++;
       else if(b.tipe_soal==='Pilihan Ganda Kompleks'&&j.split(',').sort().join(',')===k.split(',').sort().join(','))benar[b.nomer_soal]++;
       else if((b.tipe_soal==='Benar/Salah'||b.tipe_soal==='Menjodohkan')&&j===k)benar[b.nomer_soal]++;
@@ -4188,7 +4216,7 @@ function impButir(){
 function dlTemplateButir(e){
   e.preventDefault();
   const template=[
-    {nomer_soal:1,pertanyaan:'Contoh soal pilihan ganda?',tipe_soal:'Pilihan Ganda',pilihan_1:'Jawaban A',pilihan_2:'Jawaban B',pilihan_3:'Jawaban C',pilihan_4:'Jawaban D',pilihan_5:'',jawaban_benar:'pilihan_1'},
+    {nomer_soal:1,pertanyaan:'Contoh soal pilihan ganda?',tipe_soal:'Pilihan Ganda',pilihan_1:'Jawaban A',pilihan_2:'Jawaban B',pilihan_3:'Jawaban C',pilihan_4:'Jawaban D',pilihan_5:'',jawaban_benar:'A'},
     {nomer_soal:2,pertanyaan:'Contoh soal benar salah — 2+2=4?',tipe_soal:'Benar/Salah',pilihan_1:'2+2=4',pilihan_2:'3+3=7',pilihan_3:'',pilihan_4:'',pilihan_5:'',jawaban_benar:'Benar|Salah'},
     {nomer_soal:3,pertanyaan:'Jelaskan konsep fotosintesis!',tipe_soal:'Uraian',pilihan_1:'',pilihan_2:'',pilihan_3:'',pilihan_4:'',pilihan_5:'',jawaban_benar:'Proses pembuatan makanan oleh tumbuhan menggunakan cahaya matahari'},
   ];
@@ -4219,7 +4247,7 @@ async function doImpButir(){
       pilihan_3:String(r.pilihan_3||'').trim(),
       pilihan_4:String(r.pilihan_4||'').trim(),
       pilihan_5:String(r.pilihan_5||'').trim(),
-      jawaban_benar:String(r.jawaban_benar||'').trim(),
+      jawaban_benar:normKunci(String(r.jawaban_benar||'').trim()),
       status_soal:'Aktif'
     }));
     const{error}=await SB.from('butir_soal').insert(payload);
@@ -5240,10 +5268,26 @@ function shuffleButirSaja(butirs){
 }
 function tambahAcakOpsi(butirs){
   // Urutan soal TIDAK diacak, tapi opsi pilihan diacak
+  const labels=['A','B','C','D','E'];
   return butirs.map(b=>{
     const s={...b};
     if(b.tipe_soal==='Pilihan Ganda'||b.tipe_soal==='Pilihan Ganda Kompleks'){
-      s._shuffledOpts=shuffleArr(['pilihan_1','pilihan_2','pilihan_3','pilihan_4','pilihan_5'].filter(k=>s[k]&&s[k].trim()!==''));
+      const allOpts=['pilihan_1','pilihan_2','pilihan_3','pilihan_4','pilihan_5'].filter(k=>s[k]&&s[k].trim()!=='');
+      s._shuffledOpts=shuffleArr(allOpts);
+      // Remap kunci jawaban ke label posisi baru setelah shuffle
+      // kunci lama misal "A" → pilihan_1, cari di _shuffledOpts posisinya → label baru
+      const origKunci=normKunci(b.jawaban_benar||'');
+      // Bangun map: label asli → pilihan_N
+      const origLabelToKey={};allOpts.forEach((k,i)=>{origLabelToKey[labels[i]]=k;});
+      // Bangun map: pilihan_N → label baru setelah shuffle
+      const keyToNewLabel={};s._shuffledOpts.forEach((k,i)=>{keyToNewLabel[k]=labels[i];});
+      if(b.tipe_soal==='Pilihan Ganda'){
+        const pilihanKey=origLabelToKey[origKunci];
+        s._remappedKunci=pilihanKey?keyToNewLabel[pilihanKey]||origKunci:origKunci;
+      }else{
+        // PGK: "A,C" → remap tiap huruf
+        s._remappedKunci=origKunci.split(',').map(lbl=>{const pk=origLabelToKey[lbl.trim()];return pk?keyToNewLabel[pk]||lbl:lbl;}).join(',');
+      }
     }
     return s;
   });
@@ -5253,11 +5297,21 @@ function shuffleButirPerTipe(butirs){
   butirs.forEach(b=>{if(!groups[b.tipe_soal])groups[b.tipe_soal]=[];groups[b.tipe_soal].push(b);});
   const keys=[...TIPE_ORDER.filter(t=>groups[t]),...Object.keys(groups).filter(t=>!TIPE_ORDER.includes(t))];
   const result=[];
+  const labels=['A','B','C','D','E'];
   keys.forEach(tipe=>{
     shuffleArr(groups[tipe]).forEach(b=>{
       const s={...b};
       if(tipe==='Pilihan Ganda'||tipe==='Pilihan Ganda Kompleks'){
-        s._shuffledOpts=shuffleArr(['pilihan_1','pilihan_2','pilihan_3','pilihan_4','pilihan_5'].filter(k=>s[k]&&s[k].trim()!==''));
+        const allOpts=['pilihan_1','pilihan_2','pilihan_3','pilihan_4','pilihan_5'].filter(k=>s[k]&&s[k].trim()!=='');
+        s._shuffledOpts=shuffleArr(allOpts);
+        const origKunci=normKunci(b.jawaban_benar||'');
+        const origLabelToKey={};allOpts.forEach((k,i)=>{origLabelToKey[labels[i]]=k;});
+        const keyToNewLabel={};s._shuffledOpts.forEach((k,i)=>{keyToNewLabel[k]=labels[i];});
+        if(tipe==='Pilihan Ganda'){
+          const pk=origLabelToKey[origKunci];s._remappedKunci=pk?keyToNewLabel[pk]||origKunci:origKunci;
+        }else{
+          s._remappedKunci=origKunci.split(',').map(lbl=>{const pk=origLabelToKey[lbl.trim()];return pk?keyToNewLabel[pk]||lbl:lbl;}).join(',');
+        }
       }
       result.push(s);
     });
@@ -5398,15 +5452,15 @@ function renderSoal(n){
   let pilihanHtml='';
   const tipe=b.tipe_soal;
   if(tipe==='Pilihan Ganda'){
-    const opts=b._shuffledOpts||['pilihan_1','pilihan_2','pilihan_3','pilihan_4','pilihan_5'].filter(k=>b[k]&&b[k].trim()!=='');
     const labels=['A','B','C','D','E'];
-    pilihanHtml=`<div class="opsi">${opts.map((k,i)=>`<div class="op ${jawaban===k?'sel':''}" onclick="pilihPG(${n},'${k}')"><div class="opradio"></div><div class="opk">${labels[i]}</div><div class="opt">${b[k]}</div></div>`).join('')}</div>`;
+    const opts=b._shuffledOpts||['pilihan_1','pilihan_2','pilihan_3','pilihan_4','pilihan_5'].filter(k=>b[k]&&b[k].trim()!=='');
+    pilihanHtml=`<div class="opsi">${opts.map((k,i)=>{const lbl=labels[i];return`<div class="op ${jawaban===lbl?'sel':''}" onclick="pilihPG(${n},'${lbl}')"><div class="opradio"></div><div class="opk">${lbl}</div><div class="opt">${b[k]}</div></div>`}).join('')}</div>`;
   }else if(tipe==='Pilihan Ganda Kompleks'){
-    const opts=b._shuffledOpts||['pilihan_1','pilihan_2','pilihan_3','pilihan_4','pilihan_5'].filter(k=>b[k]&&b[k].trim()!=='');
     const labels=['A','B','C','D','E'];
+    const opts=b._shuffledOpts||['pilihan_1','pilihan_2','pilihan_3','pilihan_4','pilihan_5'].filter(k=>b[k]&&b[k].trim()!=='');
     const selArr=(jawaban||'').split(',').filter(Boolean);
     pilihanHtml=`<div class="al alin" style="padding:8px 12px;font-size:12px;margin-bottom:10px"><i class=\"fa-solid fa-circle-info\" style=\"color:var(--p)\"></i><div>Pilih SEMUA jawaban yang benar (bisa lebih dari satu)</div></div>
-      <div class="pgk">${opts.map((k,i)=>`<div class="pk ${selArr.includes(k)?'sel':''}" onclick="pilihPGK(${n},'${k}')"><div class="pkcb"></div><div class="opk">${labels[i]}</div><div class="opt">${b[k]}</div></div>`).join('')}</div>`;
+      <div class="pgk">${opts.map((k,i)=>{const lbl=labels[i];return`<div class="pk ${selArr.includes(lbl)?'sel':''}" onclick="pilihPGK(${n},'${lbl}')"><div class="pkcb"></div><div class="opk">${lbl}</div><div class="opt">${b[k]}</div></div>`}).join('')}</div>`;
   }else if(tipe==='Benar/Salah'){
     const stmts=[b.pilihan_1,b.pilihan_2,b.pilihan_3,b.pilihan_4,b.pilihan_5].filter(Boolean);
     const jawArr=(jawaban||'').split('|');
@@ -5588,7 +5642,7 @@ function hitungNilai(){
   butirs.forEach((b,i)=>{
     const idx=i+1;
     const j=jaw[idx];
-    const k=b.jawaban_benar;
+    const k=b._remappedKunci||normKunci(b.jawaban_benar); // gunakan kunci remapped jika opsi diacak
     if(b.tipe_soal==='Uraian'){hasUraian=true;return;}
     if(!j||j.trim()===''){salah++;return;}
     let correct=false;
