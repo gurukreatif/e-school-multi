@@ -5554,24 +5554,83 @@ async function rSDash(el){
 
 // ─── SISWA: DAFTAR UJIAN ───
 async function rSUjian(el){
-  let soalList=demoMode?DEMO.soal:((await SB.from('soal').select('*').eq('status','Aktif').order('id_soal',{ascending:false})).data||[]);
-  el.innerHTML=`<div class="g" style="gap:12px" id="ujianList"></div>`;
+  el.innerHTML=`<div class="g" style="gap:12px" id="ujianList"><div style="text-align:center;padding:30px;color:var(--mu)"><i class="fa-solid fa-spinner fa-spin"></i> Memuat...</div></div>`;
   const ul=$('ujianList');
-  if(!soalList.length){ul.innerHTML='<div class="empty"><div class="ei"><i class="fa-solid fa-pen-to-square" style="font-size:40px;color:var(--mu)"></i></div><h3>Belum ada ujian tersedia</h3><p>Belum ada paket soal yang aktif saat ini</p></div>';return;}
-  ul.innerHTML=soalList.map(s=>`
-    <div class="card"><div class="cb" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
-      <div style="width:50px;height:50px;background:var(--pl);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0"><i class="fa-solid fa-pen-to-square" style="color:var(--p)"></i></div>
-      <div style="flex:1">
-        <div style="font-weight:700;font-size:15px">${s.nama_soal}</div>
-        <div style="font-size:12.5px;color:var(--mu);margin-top:3px">${s.kode_soal} · ${s.mapel} · Kelas ${s.kelas}</div>
-        <div style="display:flex;gap:8px;margin-top:7px;flex-wrap:wrap">
-          <span class="badge bgr"><i class="fa-solid fa-stopwatch"></i> ${s.waktu_ujian} menit</span>
-          ${s.token?'<span class="badge bwa"><i class="fa-solid fa-key"></i> Butuh Token</span>':'<span class="badge bok"><i class="fa-solid fa-circle-check"></i> Tanpa Token</span>'}
-          ${s.tanggal?`<span class="badge bgr"><i class="fa-solid fa-calendar-days"></i> ${fd(s.tanggal)}</span>`:''}
+
+  // Fetch ujian aktif + nilai siswa ini (untuk cek sudah dikerjakan)
+  let soalList=[], sudahDikerjakan={};
+  if(demoMode){
+    soalList=DEMO.soal;
+  } else {
+    const [soalRes, nilaiRes] = await Promise.all([
+      SB.from('soal').select('*').eq('status','Aktif').order('id_soal',{ascending:false}),
+      SB.from('nilai').select('kode_soal,nilai,status_penilaian,tanggal_ujian').eq('id_siswa',sis.id_siswa)
+    ]);
+    soalList = soalRes.data||[];
+    // Buat map kode_soal → data nilai
+    (nilaiRes.data||[]).forEach(n=>{ sudahDikerjakan[n.kode_soal]=n; });
+  }
+
+  if(!soalList.length){
+    ul.innerHTML='<div class="empty"><div class="ei"><i class="fa-solid fa-pen-to-square" style="font-size:40px;color:var(--mu)"></i></div><h3>Belum ada ujian tersedia</h3><p>Belum ada paket soal yang aktif saat ini</p></div>';
+    return;
+  }
+
+  ul.innerHTML=soalList.map(s=>{
+    const done = sudahDikerjakan[s.kode_soal];
+    const isDone = !!done;
+    const perluKoreksi = done?.status_penilaian==='perlu_dinilai';
+    const nilaiVal = done ? parseFloat(done.nilai||0).toFixed(0) : null;
+
+    // Badge status kanan atas
+    const statusBadge = isDone
+      ? (perluKoreksi
+          ? `<span class="badge bwa"><i class="fa-solid fa-hourglass-half"></i> Dikoreksi guru</span>`
+          : `<span class="badge bok"><i class="fa-solid fa-circle-check"></i> Selesai · Nilai ${nilaiVal}</span>`)
+      : '';
+
+    // Icon & warna card
+    const iconBg  = isDone ? '#f0fdf4' : 'var(--pl)';
+    const iconClr = isDone ? '#059669'  : 'var(--p)';
+    const iconIco = isDone ? 'fa-circle-check' : 'fa-pen-to-square';
+
+    // Tombol kerjakan
+    const btn = isDone
+      ? `<button class="btn bo blg" disabled style="opacity:.5;cursor:not-allowed;min-width:130px">
+           <i class="fa-solid fa-lock"></i> Sudah Selesai
+         </button>`
+      : `<button class="btn bp blg" onclick="konfirmUjian(${s.id_soal})" style="min-width:130px">
+           Kerjakan <i class="fa-solid fa-arrow-right"></i>
+         </button>`;
+
+    // Info tanggal dikerjakan jika sudah selesai
+    const tglInfo = done?.tanggal_ujian
+      ? `<span class="badge" style="background:#f1f5f9;color:#64748b"><i class="fa-solid fa-calendar-check"></i> Dikerjakan ${fd(done.tanggal_ujian)}</span>`
+      : '';
+
+    return `
+    <div class="card" style="${isDone?'border-color:#bbf7d0;background:#f0fdf4':''}">
+      <div class="cb" style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+        <div style="width:50px;height:50px;background:${iconBg};border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">
+          <i class="fa-solid ${iconIco}" style="color:${iconClr}"></i>
         </div>
+        <div style="flex:1;min-width:0">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:2px">
+            <div style="font-weight:700;font-size:15px">${s.nama_soal}</div>
+            ${statusBadge}
+          </div>
+          <div style="font-size:12.5px;color:var(--mu);margin-top:2px">${s.kode_soal} · ${s.mapel} · Kelas ${s.kelas}</div>
+          <div style="display:flex;gap:8px;margin-top:7px;flex-wrap:wrap">
+            <span class="badge bgr"><i class="fa-solid fa-stopwatch"></i> ${s.waktu_ujian} menit</span>
+            ${s.token?'<span class="badge bwa"><i class="fa-solid fa-key"></i> Butuh Token</span>':'<span class="badge bok"><i class="fa-solid fa-circle-check"></i> Tanpa Token</span>'}
+            ${s.tanggal?`<span class="badge bgr"><i class="fa-solid fa-calendar-days"></i> ${fd(s.tanggal)}</span>`:''}
+            ${tglInfo}
+          </div>
+        </div>
+        ${btn}
       </div>
-      <button class="btn bp blg" onclick="konfirmUjian(${s.id_soal})">Mulai Ujian <i class="fa-solid fa-arrow-right"></i></button>
-    </div></div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 async function konfirmUjian(idSoal){
