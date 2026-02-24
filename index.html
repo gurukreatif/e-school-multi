@@ -324,6 +324,20 @@ tbody tr:hover td{background:#fafbff}
 .exsoal-nomor{font-size:18px;font-weight:800;color:#1f2937;margin:0 0 2px;line-height:1.2}
 .exsoal-mapel{font-size:12px;color:#6b7280;font-weight:500;margin:0}
 .ex-card-head-r{display:flex;align-items:center;gap:8px;flex-shrink:0}
+
+/* ══ Benar/Salah Soal ══ */
+.bsrow{margin-bottom:14px;padding:12px;border:1.5px solid #e5e7eb;border-radius:8px;background:#fafbfc;transition:all .15s}
+.bsrow:hover{background:#f9fafb;border-color:#d1d5db}
+.bst{font-size:14px;color:#374151;margin-bottom:10px;line-height:1.5;font-weight:500}
+.bstog{display:flex;gap:8px}
+.bsb{flex:1;padding:10px 16px;border-radius:7px;border:1.5px solid #d1d5db;background:#fff;font-size:13.5px;font-weight:600;cursor:pointer;transition:all .15s;color:#6b7280;text-align:center}
+.bsb:hover{background:#f9fafb;border-color:#9ca3af}
+.bsb.b{background:#ecfdf5;border-color:#10b981;color:#047857;font-weight:700}
+.bsb.b:hover{background:#d1fae5;border-color:#059669}
+.bsb.s{background:#fff1f2;border-color:#ef4444;color:#dc2626;font-weight:700}
+.bsb.s:hover{background:#fee2e2;border-color:#dc2626}
+.bsrow[data-jawaban="Benar"]{border-color:#a7f3d0;background:#ecfdf5}
+.bsrow[data-jawaban="Salah"]{border-color:#fecdd3;background:#fff1f2}
 </style>
 </head>
 <body>
@@ -3232,30 +3246,15 @@ async function svButir(id){
     p1=getQuillHTML('qop_bP1');p2=getQuillHTML('qop_bP2');
     p3=getQuillHTML('qop_bP3');p4=getQuillHTML('qop_bP4');p5=getQuillHTML('qop_bP5');
   }else if(tipe==='Benar/Salah'){
-    syncBsKunci();
-    if(_bsState.filter(s=>!s.text.trim()).length){toast('Semua pernyataan harus diisi!','er');return;}
-    if(_bsState.filter(s=>!s.val).length){toast('Setiap pernyataan harus dipilih Benar atau Salah!','er');return;}
-  }else if(tipe==='Menjodohkan'){
-    syncJodohKunci();
-    const valid=_jodohState.filter(p=>p.l&&p.r);
-    if(valid.length<2){toast('Minimal 2 pasangan lengkap!','er');return;}
-  }
-
-  const kunci=$('bKunci')?.value.trim()||'';
-  if(!$('bKode').value){toast('Pilih paket soal!','er');return;}
-  if(!pertanyaan||pertanyaan==='<p><br></p>'){toast('Pertanyaan tidak boleh kosong!','er');return;}
-  if(tipe!=='Uraian'&&!kunci){toast('Pilih kunci jawaban terlebih dahulu!','er');return;}
-
-  const o={kode_soal:$('bKode').value,nomer_soal:parseInt($('bNo').value),pertanyaan,tipe_soal:tipe,
-    pilihan_1:p1,pilihan_2:p2,pilihan_3:p3,pilihan_4:p4,pilihan_5:p5,
-    jawaban_benar:kunci,status_soal:$('bSt').value};
-
-  if(demoMode){toast('Mode demo: data tidak tersimpan','in');rmModal('mdButir');return;}
-  try{
-    if(id){await SB.from('butir_soal').update(o).eq('id_soal',id);toast('Soal diperbarui!','ok');}
-    else{await SB.from('butir_soal').insert(o);toast('Soal ditambahkan!','ok');}
-    rmModal('mdButir');loadButir();
-  }catch(e){toast('Error: '+e.message,'er');}
+    const stmts=[b.pilihan_1,b.pilihan_2,b.pilihan_3,b.pilihan_4,b.pilihan_5].filter(Boolean);
+    // Guard: pastikan jawaban selalu string sebelum split
+    const jawStr=typeof jawaban==='string'?jawaban:(jawaban==null?'':String(jawaban));
+    const jawArr=jawStr?jawStr.split('|'):[];
+    pilihanHtml=stmts.map((s,i)=>`<div class="bsrow" id="bsrow-${n}-${i}"><div class="bst">${i+1}. ${applyArabic(s)}</div>
+      <div class="bstog">
+        <button class="bsb ${jawArr[i]==='Benar'?'b':''}" onclick="pilihBS(${n},${i},'Benar')">Benar</button>
+        <button class="bsb ${jawArr[i]==='Salah'?'s':''}" onclick="pilihBS(${n},${i},'Salah')">Salah</button>
+      </div></div>`).join('');
 }
 
 function cetakLaporanHasil(){
@@ -5617,8 +5616,15 @@ function pilihBS(n,idx,val){
   // Update DOM langsung tanpa re-render penuh (lebih cepat, tidak flicker)
   const row=document.getElementById(`bsrow-${n}-${idx}`);
   if(row){
-    row.querySelectorAll('.bsb').forEach(btn=>{
-      btn.className='bsb'+(btn.textContent.trim()==='Benar'&&val==='Benar'?' b':btn.textContent.trim()==='Salah'&&val==='Salah'?' s':'');
+    const btns=row.querySelectorAll('.bsb');
+    btns.forEach(btn=>{
+      const btnText=btn.textContent.trim();
+      // Remove all state classes first
+      btn.classList.remove('b','s');
+      // Add the appropriate class if this button matches the selected value
+      if(btnText===val){
+        btn.classList.add(val==='Benar'?'b':'s');
+      }
     });
     // Update border bsrow via class
     row.dataset.jawaban=val;
