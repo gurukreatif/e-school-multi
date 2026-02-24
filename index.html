@@ -3035,6 +3035,12 @@ const SIDEBAR_DEF=[
     ]
   },
   {
+    id:'koreksi', icon:'fa-pen-nib', label:'Koreksi Uraian',
+    single:true,
+    hidden:true,  // default hidden, akan ditampilkan jika ada soal uraian
+    items:[{p:'koreksi',icon:'fa-pen-nib',label:'Koreksi Uraian'}]
+  },
+  {
     id:'pengawasan', icon:'fa-shield-halved', label:'Pengawasan Ujian',
     items:[
       {p:'monitor',icon:'fa-display',         label:'Monitor Ujian'},
@@ -3071,6 +3077,9 @@ function buildSidebarNav(){
   let html='';
 
   SIDEBAR_DEF.forEach(grp=>{
+    // Skip jika group hidden
+    if(grp.hidden)return;
+    
     const vis=grp.items.filter(i=>canAccess(i.p));
     if(!vis.length)return;
 
@@ -3176,11 +3185,38 @@ function showAdminPanel(){
   // Sidebar title — tetap nama aplikasi, bukan nama sekolah
   // (nama sekolah tampil di tenant-chip di topbar, bukan di sidebar)
   buildSidebarNav();
+  // Check dan toggle menu Koreksi Uraian
+  checkAndToggleMenuKoreksi();
   const firstPage=(ROLE_PAGES[getRole()]||['dash'])[0];
   nav(firstPage);
 }
 
-const PGNM={dash:'Dashboard',soal:'Paket Soal',butir:'Butir Soal',hasil:'Hasil Ujian',analisa:'Analisa Per-butir',siswa:'Data Siswa',monitor:'Monitor Ujian',lb:'Leaderboard',hadir:'Daftar Hadir',chat:'Chat Siswa',users:'Manajemen User',faq:'FAQ',set:'Pengaturan'};
+// Function untuk check apakah ada soal uraian dan toggle menu
+async function checkAndToggleMenuKoreksi(){
+  try{
+    if(demoMode){
+      // Check demo data
+      const hasUraian=DEMO.butir.some(b=>b.tipe_soal==='Uraian');
+      toggleMenuKoreksi(hasUraian);
+    }else{
+      // Check database
+      const{count}=await SB.from('butir_soal').select('id_soal',{count:'exact',head:true}).eq('tipe_soal','Uraian');
+      toggleMenuKoreksi(count>0);
+    }
+  }catch(e){
+    toggleMenuKoreksi(false);
+  }
+}
+
+function toggleMenuKoreksi(show){
+  const grp=SIDEBAR_DEF.find(g=>g.id==='koreksi');
+  if(grp){
+    grp.hidden=!show;
+    buildSidebarNav();
+  }
+}
+
+const PGNM={dash:'Dashboard',soal:'Paket Soal',butir:'Butir Soal',hasil:'Hasil Ujian',analisa:'Analisa Per-butir',siswa:'Data Siswa',monitor:'Monitor Ujian',lb:'Leaderboard',hadir:'Daftar Hadir',chat:'Chat Siswa',users:'Manajemen User',faq:'FAQ',set:'Pengaturan',koreksi:'Koreksi Uraian'};
 
 function nav(p){
   // RBAC guard
@@ -3193,7 +3229,7 @@ function nav(p){
   el.innerHTML=`<div style="display:flex;align-items:center;gap:9px;padding:20px;color:var(--mu)"><div class="spin"></div> Memuat...</div>`;
   // Update sidebar accordion active state
   activateSbItem(p);
-  const fns={dash:rDash,soal:rSoal,butir:rButir,hasil:rHasil,analisa:rAnalisa,siswa:rSiswa,monitor:rMonitor,lb:rLB,hadir:rHadir,chat:rChat,users:rUsers,faq:rFaq,set:rSet};
+  const fns={dash:rDash,soal:rSoal,butir:rButir,hasil:rHasil,analisa:rAnalisa,siswa:rSiswa,monitor:rMonitor,lb:rLB,hadir:rHadir,chat:rChat,users:rUsers,faq:rFaq,set:rSet,koreksi:rKoreksi};
   if(fns[p])fns[p](el);
 }
 
@@ -4269,6 +4305,8 @@ async function svButir(id){
     if(id){await SB.from('butir_soal').update(o).eq('id_soal',id);toast('Soal diperbarui!','ok');}
     else{await SB.from('butir_soal').insert(o);toast('Soal ditambahkan!','ok');}
     rmModal('mdButir');loadButir();
+    // Refresh menu koreksi uraian
+    checkAndToggleMenuKoreksi();
   }catch(e){toast('Error: '+e.message,'er');}
 }
 
@@ -4277,6 +4315,8 @@ async function delButir(id){
   if(demoMode){toast('Mode demo','in');return;}
   await SB.from('butir_soal').delete().eq('id_soal',id);
   toast('Soal dihapus!','ok');loadButir();
+  // Refresh menu koreksi uraian
+  checkAndToggleMenuKoreksi();
 }
 
 // ─── HASIL UJIAN ───
@@ -4497,38 +4537,84 @@ async function koreksiUraian(idNilai){
   if(demoMode){toast('Mode demo: tidak bisa koreksi','in');return;}
   const{data:n}=await SB.from('nilai').select('*').eq('id_nilai',idNilai).single();if(!n)return;
   const{data:butirs}=await SB.from('butir_soal').select('*').eq('kode_soal',n.kode_soal).eq('tipe_soal','Uraian').order('nomer_soal');
+  const{data:allButirs}=await SB.from('butir_soal').select('*').eq('kode_soal',n.kode_soal).order('nomer_soal');
   const jaws=parseJ(n.jawaban_siswa);
   const nilaiBefore=parseJ(n.detail_uraian);
-  const{count:totalS}=await SB.from('butir_soal').select('id_soal',{count:'exact',head:true}).eq('kode_soal',n.kode_soal);
-  const maxPerS=totalS?parseFloat((100/totalS).toFixed(2)):0;
+  
+  // Hitung skor maksimal dari soal objektif saja
+  let skorMaksimalObjektif=0;
+  (allButirs||[]).forEach(b=>{
+    if(b.tipe_soal==='Pilihan Ganda'){
+      skorMaksimalObjektif+=1;
+    }else if(b.tipe_soal==='Pilihan Ganda Kompleks'){
+      const kArr=(b.jawaban_benar||'').split(',').filter(Boolean);
+      skorMaksimalObjektif+=kArr.length;
+    }else if(b.tipe_soal==='Benar/Salah'){
+      const kArr=(b.jawaban_benar||'').split('|').filter(Boolean);
+      skorMaksimalObjektif+=kArr.length;
+    }else if(b.tipe_soal==='Menjodohkan'){
+      const kArr=(b.jawaban_benar||'').split('|').filter(Boolean);
+      skorMaksimalObjektif+=kArr.length;
+    }
+  });
+  
+  // Skor maksimal uraian = 5 poin per soal
+  const jumlahSoalUraian=(butirs||[]).length;
+  const skorMaksimalUraian=jumlahSoalUraian*5;
+  const skorMaksimalTotal=skorMaksimalObjektif+skorMaksimalUraian;
+  
   document.getElementById('mdKoreksi')?.remove();
   const html=`<div class="mo" id="mdKoreksi"><div class="md mdxl"><div class="mh"><div class="mtt"><i class="fa-solid fa-pen-nib"></i>️ Koreksi Uraian — ${n.nama_siswa}</div><button class="xb" onclick="rmModal('mdKoreksi')">✕</button></div>
     <div class="mbb">
-      <div class="al alin"><i class=\"fa-solid fa-circle-info\" style=\"color:var(--p)\"></i><div>Nilai per soal: <strong>${maxPerS}</strong> | Total soal: ${totalS}</div></div>
+      <div class="al alin"><i class=\"fa-solid fa-circle-info\" style=\"color:var(--p)\"></i><div><strong>Skor per soal uraian: 0-5 poin</strong> | Jumlah soal uraian: ${jumlahSoalUraian} | Skor maks uraian: ${skorMaksimalUraian} | Skor maks total: ${skorMaksimalTotal}</div></div>
       ${(butirs||[]).map(b=>`
         <div class="card" style="margin-bottom:12px"><div class="cb">
           <div style="font-size:11px;font-weight:700;color:var(--mu);margin-bottom:6px">SOAL NOMOR ${b.nomer_soal}</div>
           <div style="font-size:13.5px;margin-bottom:9px">${applyArabic(b.pertanyaan)}</div>
           <div style="background:var(--bg);border-radius:8px;padding:9px;margin-bottom:8px;font-size:13px"><strong>Jawaban Siswa:</strong><br>${jaws[b.nomer_soal]||'<em style="color:var(--mu)">Tidak menjawab</em>'}</div>
           <div style="background:#f0fdf4;border-radius:8px;padding:9px;margin-bottom:10px;font-size:13px"><strong>Kunci Referensi:</strong><br>${b.jawaban_benar||'—'}</div>
-          <div class="fg" style="margin:0"><label class="fl">Nilai (0 – ${maxPerS})</label>
-            <input type="range" id="sv_${b.nomer_soal}" min="0" max="${maxPerS}" step="0.25" value="${nilaiBefore[b.nomer_soal]||0}" style="width:100%" oninput="$('dp_${b.nomer_soal}').textContent=this.value">
-            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--mu);margin-top:3px"><span>0</span><span id="dp_${b.nomer_soal}" style="font-weight:700;color:var(--p)">${nilaiBefore[b.nomer_soal]||0}</span><span>${maxPerS}</span></div>
+          <div class="fg" style="margin:0"><label class="fl">Skor (0 – 5)</label>
+            <input type="range" id="sv_${b.nomer_soal}" min="0" max="5" step="0.5" value="${nilaiBefore[b.nomer_soal]||0}" style="width:100%" oninput="$('dp_${b.nomer_soal}').textContent=this.value">
+            <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--mu);margin-top:3px"><span>0</span><span id="dp_${b.nomer_soal}" style="font-weight:700;color:var(--p)">${nilaiBefore[b.nomer_soal]||0}</span><span>5</span></div>
           </div>
         </div>`).join('')}
     </div>
-    <div class="mf"><button class="btn bo" onclick="rmModal('mdKoreksi')">Batal</button><button class="btn bp" onclick="simpanKoreksi(${idNilai},[${(butirs||[]).map(b=>b.nomer_soal).join(',')}],${maxPerS})"><i class="fa-solid fa-floppy-disk"><\/i> Simpan Koreksi</button></div>
+    <div class="mf"><button class="btn bo" onclick="rmModal('mdKoreksi')">Batal</button><button class="btn bp" onclick="simpanKoreksi(${idNilai},[${(butirs||[]).map(b=>b.nomer_soal).join(',')}],${skorMaksimalObjektif},${skorMaksimalUraian})"><i class="fa-solid fa-floppy-disk"><\/i> Simpan Koreksi</button></div>
   </div></div>`;
   document.body.insertAdjacentHTML('beforeend',html);
 }
 
-async function simpanKoreksi(idNilai,nArr,maxPerS){
+async function simpanKoreksi(idNilai,nArr,skorMaksObjektif,skorMaksUraian){
   const{data:n}=await SB.from('nilai').select('*').eq('id_nilai',idNilai).single();
-  let totalUr=0;const det=nArr.map(no=>{const v=parseFloat($('sv_'+no)?.value||0);totalUr+=v;return`[${no}:${v}]`;}).join('');
-  const nilaiAsal=parseFloat(n.nilai)-(parseFloat(n.nilai_uraian)||0);
-  const nilaiBaru=Math.min(100,nilaiAsal+totalUr);
-  await SB.from('nilai').update({nilai_uraian:totalUr.toFixed(2),detail_uraian:det,nilai:nilaiBaru.toFixed(2),status_penilaian:'selesai'}).eq('id_nilai',idNilai);
-  toast(`Koreksi disimpan! Nilai final: ${nilaiBaru.toFixed(1)}`,'ok');rmModal('mdKoreksi');loadHasil();
+  let totalSkorUraian=0;
+  const det=nArr.map(no=>{
+    const v=parseFloat($('sv_'+no)?.value||0);
+    totalSkorUraian+=v;
+    return`[${no}:${v}]`;
+  }).join('');
+  
+  // Skor perolehan objektif yang sudah ada
+  const skorPerolehanObjektif=parseFloat(n.skor_perolehan||0);
+  
+  // Total skor = objektif + uraian
+  const totalSkorPerolehan=skorPerolehanObjektif+totalSkorUraian;
+  const totalSkorMaksimal=skorMaksObjektif+skorMaksUraian;
+  
+  // Nilai akhir = (total skor perolehan / total skor maksimal) * 100
+  const nilaiFinal=totalSkorMaksimal>0?Math.min(100,(totalSkorPerolehan/totalSkorMaksimal)*100):0;
+  
+  await SB.from('nilai').update({
+    nilai_uraian:totalSkorUraian.toFixed(2),
+    detail_uraian:det,
+    nilai:nilaiFinal.toFixed(2),
+    status_penilaian:'selesai',
+    skor_perolehan:totalSkorPerolehan,
+    skor_maksimal:totalSkorMaksimal
+  }).eq('id_nilai',idNilai);
+  
+  toast(`Koreksi disimpan! Nilai final: ${nilaiFinal.toFixed(1)} (Skor: ${totalSkorPerolehan.toFixed(1)}/${totalSkorMaksimal})`,'ok');
+  rmModal('mdKoreksi');
+  loadHasil();
 }
 
 async function delHasil(id){
@@ -4542,6 +4628,120 @@ function exportHasil(){
   const ws=XLSX.utils.json_to_sheet(d.map(n=>({'Nama Siswa':n.nama_siswa,'Kode Soal':n.kode_soal,'Nilai':parseFloat(n.nilai),'Jawaban Benar':n.jawaban_benar,'Jawaban Salah':n.jawaban_salah,'Total Soal':n.total_soal,'Tanggal':fdt(n.tanggal_ujian),'Status':n.status_penilaian})));
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Hasil Ujian');
   XLSX.writeFile(wb,'hasil-ujian-'+today()+'.xlsx');toast('File Excel diunduh!','ok');
+}
+
+// ─── KOREKSI URAIAN ───
+async function rKoreksi(el){
+  let soalList=demoMode?DEMO.soal:((await SB.from('soal').select('kode_soal,nama_soal,mapel,kelas').order('id_soal',{ascending:false})).data||[]);
+  
+  el.innerHTML=`
+  <div class="card">
+    <div class="ch">
+      <div class="ct"><i class="fa-solid fa-pen-nib" style="color:var(--p)"></i> Koreksi Soal Uraian</div>
+      <button class="btn bsm bp" onclick="loadKoreksiList()"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+    </div>
+    <div class="cb" style="padding:12px">
+      <div class="sbar">
+        <select id="ftKrKode" class="fc" style="width:230px" onchange="loadKoreksiList()">
+          <option value="">Semua Paket Soal</option>
+          ${soalList.map(s=>`<option value="${s.kode_soal}">${s.kode_soal} — ${s.nama_soal}</option>`).join('')}
+        </select>
+        <div class="siw" style="flex:1">
+          <input type="text" id="srKoreksi" class="fc si" placeholder="Cari nama siswa..." oninput="ftKoreksi()">
+        </div>
+        <select id="ftKrStatus" class="fc" style="width:165px" onchange="ftKoreksi()">
+          <option value="">Semua Status</option>
+          <option value="perlu_dinilai">Perlu Dinilai</option>
+          <option value="selesai">Sudah Selesai</option>
+        </select>
+      </div>
+    </div>
+    <div id="koreksiList"><div style="text-align:center;padding:40px;color:var(--mu)"><div class="spin"></div> Memuat...</div></div>
+  </div>`;
+  loadKoreksiList();
+}
+
+async function loadKoreksiList(){
+  const el=$('koreksiList');if(!el)return;
+  const kode=$('ftKrKode')?.value||'';
+  
+  // Ambil semua nilai yang memiliki soal uraian
+  let nilaiList=[];
+  if(demoMode){
+    nilaiList=DEMO.nilai;
+  }else{
+    const query=SB.from('nilai').select('*').order('id_nilai',{ascending:false});
+    if(kode)query.eq('kode_soal',kode);
+    const{data}=await query;
+    nilaiList=data||[];
+  }
+  
+  // Filter hanya yang punya soal uraian (status perlu_dinilai atau selesai dengan nilai_uraian)
+  const filtered=[];
+  for(const n of nilaiList){
+    if(n.status_penilaian==='perlu_dinilai'||n.nilai_uraian>0){
+      // Cek apakah memang ada soal uraian
+      const{data:uraian}=await SB.from('butir_soal').select('id_soal',{count:'exact',head:true}).eq('kode_soal',n.kode_soal).eq('tipe_soal','Uraian');
+      if(uraian&&uraian.count>0){
+        filtered.push(n);
+      }
+    }
+  }
+  
+  window._koreksiData=filtered;
+  ftKoreksi();
+}
+
+function ftKoreksi(){
+  const el=$('koreksiList');if(!el)return;
+  const sr=($('srKoreksi')?.value||'').toLowerCase();
+  const st=$('ftKrStatus')?.value||'';
+  
+  let d=window._koreksiData||[];
+  if(sr)d=d.filter(n=>n.nama_siswa.toLowerCase().includes(sr));
+  if(st)d=d.filter(n=>n.status_penilaian===st);
+  
+  if(!d.length){
+    el.innerHTML='<div class="empty"><div class="ei"><i class="fa-solid fa-pen-nib" style="font-size:40px;color:var(--mu)"></i></div><h3>Tidak ada yang perlu dikoreksi</h3><p>Semua soal uraian sudah dikoreksi atau tidak ada ujian dengan soal uraian.</p></div>';
+    return;
+  }
+  
+  el.innerHTML=`<div class="tw"><table>
+    <thead><tr>
+      <th style="width:32px">No</th>
+      <th>Nama Siswa</th>
+      <th>Paket Soal</th>
+      <th style="width:80px">Nilai Sementara</th>
+      <th style="width:90px">Nilai Uraian</th>
+      <th style="width:80px">Nilai Akhir</th>
+      <th style="width:100px">Status</th>
+      <th style="width:80px">Aksi</th>
+    </tr></thead>
+    <tbody id="tbKoreksi"></tbody>
+  </table></div>`;
+  
+  const tb=$('tbKoreksi');
+  if(!tb)return;
+  
+  tb.innerHTML=d.map((n,i)=>{
+    const nilaiSementara=n.status_penilaian==='perlu_dinilai'?parseFloat(n.nilai):parseFloat(n.nilai)-(parseFloat(n.nilai_uraian)||0);
+    const statusBadge=n.status_penilaian==='perlu_dinilai'
+      ?'<span class="badge bwa"><i class="fa-solid fa-hourglass-half"></i> Perlu Dinilai</span>'
+      :'<span class="badge bok"><i class="fa-solid fa-check-circle"></i> Selesai</span>';
+    
+    return`<tr>
+      <td style="text-align:center">${i+1}</td>
+      <td><div style="font-weight:600">${n.nama_siswa}</div></td>
+      <td><div style="font-size:11.5px;color:var(--mu)">${n.kode_soal}</div></td>
+      <td style="text-align:center"><div class="nr ${nilaiSementara>=60?'nrok':'nrno'}" style="width:42px;height:42px;font-size:12px">${nilaiSementara.toFixed(0)}</div></td>
+      <td style="text-align:center;font-weight:700;color:var(--p)">${parseFloat(n.nilai_uraian||0).toFixed(1)}</td>
+      <td style="text-align:center"><div class="nr ${parseFloat(n.nilai)>=60?'nrok':'nrno'}" style="width:42px;height:42px;font-size:12px">${parseFloat(n.nilai).toFixed(0)}</div></td>
+      <td style="text-align:center">${statusBadge}</td>
+      <td style="text-align:center">
+        <button class="btn bsm bp" onclick="koreksiUraian(${n.id_nilai})" title="Koreksi"><i class="fa-solid fa-pen-nib"></i></button>
+      </td>
+    </tr>`;
+  }).join('');
 }
 
 // ─── ANALISA PER-BUTIR ───
@@ -6532,6 +6732,17 @@ async function mulaiUjian(idSoal, expectedToken){
   
   // Setup exam state
   EX.soal=soal;EX.butirs=butirs;EX.jaw={};EX.ragu={};EX.cur=1;EX.sid=sis.id_siswa;EX.asi=null;
+  
+  // Shuffle opsi menjodohkan SEKALI saja di awal, simpan di butir
+  butirs.forEach((b,i)=>{
+    if(b.tipe_soal==='Menjodohkan'){
+      const pairs=(b.jawaban_benar||'').split('|').filter(Boolean);
+      const rights=pairs.map(p=>p.split(':')[1]||'');
+      // Simpan shuffled rights ke butir agar konsisten selama ujian
+      b._shuffledRights=[...rights].sort(()=>Math.random()-.5);
+    }
+  });
+  
   if(existingJaw){
     EX.tsec=existingJaw.waktu_sisa||soal.waktu_ujian*60;EX.asi=existingJaw.id_jawaban;
     try{const jl=JSON.parse(existingJaw.jawaban||'{}');Object.assign(EX.jaw,jl);}catch(e){}
@@ -6657,8 +6868,8 @@ function renderSoal(n){
   }else if(tipe==='Menjodohkan'){
     const pairs=(b.jawaban_benar||'').split('|').filter(Boolean);
     const lefts=pairs.map(p=>p.split(':')[0]||'');
-    const rights=pairs.map(p=>p.split(':')[1]||'');
-    const shuffledRights=[...rights].sort(()=>Math.random()-.5);
+    // Gunakan shuffled rights yang sudah disimpan di butir (diacak sekali di awal)
+    const shuffledRights=b._shuffledRights||pairs.map(p=>p.split(':')[1]||'');
     const jawArr=(jawaban||'').split('|').filter(Boolean);
     const jawMap={};jawArr.forEach(j=>{const[l,r]=j.split(':');jawMap[l]=r;});
     pilihanHtml=`<div style="font-size:12.5px;color:var(--mu);margin-bottom:10px">Pasangkan kolom kiri dengan kolom kanan yang sesuai:</div>
@@ -6965,39 +7176,89 @@ async function selesaiUjian(){
 
 function hitungNilai(){
   const{butirs,jaw,soal}=EX;
-  const total=butirs.length;
-  let benar=0,salah=0,hasUraian=false;
+  let skorPerolehan=0,skorMaksimal=0,hasUraian=false;
   const jawStr=Object.entries(jaw).map(([n,j])=>`[${n}:${j}]`).join('');
+  
+  let totalBenar=0,totalSalah=0; // untuk statistik
 
   // KEY = index tampilan (i+1), BUKAN nomer_soal asli
   butirs.forEach((b,i)=>{
     const idx=i+1;
     const j=jaw[idx];
-    const k=b._remappedKunci||normKunci(b.jawaban_benar); // gunakan kunci remapped jika opsi diacak
-    if(b.tipe_soal==='Uraian'){hasUraian=true;return;}
-    if(!j||j.trim()===''){salah++;return;}
-    let correct=false;
-    if(b.tipe_soal==='Pilihan Ganda'){
-      correct=(j===k);
-    }else if(b.tipe_soal==='Pilihan Ganda Kompleks'){
-      const jSet=j.split(',').map(x=>x.trim()).filter(Boolean).sort().join(',');
-      const kSet=k.split(',').map(x=>x.trim()).filter(Boolean).sort().join(',');
-      correct=(jSet===kSet);
-    }else if(b.tipe_soal==='Benar/Salah'){
-      correct=(j.trim()===k.trim());
-    }else if(b.tipe_soal==='Menjodohkan'){
-      const normJ=j.split('|').map(p=>p.trim()).filter(Boolean).sort().join('|');
-      const normK=k.split('|').map(p=>p.trim()).filter(Boolean).sort().join('|');
-      correct=(normJ===normK);
+    const k=b._remappedKunci||normKunci(b.jawaban_benar);
+    
+    if(b.tipe_soal==='Uraian'){
+      hasUraian=true;
+      // Uraian TIDAK dihitung di skor maksimal otomatis
+      // Akan dinilai manual oleh guru nanti
+      return;
     }
-    if(correct)benar++;else salah++;
+    
+    if(b.tipe_soal==='Pilihan Ganda'){
+      // PG: 1 skor
+      skorMaksimal+=1;
+      if(j&&j.trim()!==''&&j===k){
+        skorPerolehan+=1;
+        totalBenar+=1;
+      }else{
+        totalSalah+=1;
+      }
+    }else if(b.tipe_soal==='Pilihan Ganda Kompleks'){
+      // PGK: skor = jumlah opsi benar
+      const kArr=k.split(',').map(x=>x.trim()).filter(Boolean);
+      const jArr=(j||'').split(',').map(x=>x.trim()).filter(Boolean);
+      skorMaksimal+=kArr.length;
+      
+      // Hitung benar per opsi
+      let benarCount=0;
+      kArr.forEach(opt=>{
+        if(jArr.includes(opt))benarCount++;
+      });
+      skorPerolehan+=benarCount;
+      
+      if(benarCount===kArr.length&&jArr.length===kArr.length){
+        totalBenar+=kArr.length;
+      }else{
+        totalBenar+=benarCount;
+        totalSalah+=(kArr.length-benarCount);
+      }
+    }else if(b.tipe_soal==='Benar/Salah'){
+      // Benar/Salah: skor = jumlah pernyataan
+      const kArr=k.split('|').filter(Boolean);
+      const jArr=(j||'').split('|').filter(Boolean);
+      skorMaksimal+=kArr.length;
+      
+      let benarCount=0;
+      kArr.forEach((kunci,idx)=>{
+        if(jArr[idx]&&jArr[idx].trim()===kunci.trim()){
+          benarCount++;
+        }
+      });
+      skorPerolehan+=benarCount;
+      totalBenar+=benarCount;
+      totalSalah+=(kArr.length-benarCount);
+    }else if(b.tipe_soal==='Menjodohkan'){
+      // Menjodohkan: skor = jumlah pasangan
+      const kPairs=k.split('|').map(p=>p.trim()).filter(Boolean);
+      const jPairs=(j||'').split('|').map(p=>p.trim()).filter(Boolean);
+      skorMaksimal+=kPairs.length;
+      
+      let benarCount=0;
+      kPairs.forEach(kp=>{
+        if(jPairs.includes(kp))benarCount++;
+      });
+      skorPerolehan+=benarCount;
+      totalBenar+=benarCount;
+      totalSalah+=(kPairs.length-benarCount);
+    }
   });
 
-  salah+=butirs.filter(b=>b.tipe_soal==='Uraian').length;
-  const nilaiTotal=total>0?Math.min(100,(benar/total)*100):0;
+  // Hitung nilai akhir: (skor perolehan / skor maksimal) * 100
+  // Jika ada uraian, nilai ini adalah nilai sementara (hanya dari soal objektif)
+  const nilaiTotal=skorMaksimal>0?Math.min(100,(skorPerolehan/skorMaksimal)*100):0;
   const statusPenilaian=hasUraian?'perlu_dinilai':'otomatis';
 
-  simpanNilai({id_siswa:sis.id_siswa,nama_siswa:sis.nama_siswa,kode_soal:soal.kode_soal,nilai:nilaiTotal.toFixed(2),jawaban_benar:benar,jawaban_salah:salah,total_soal:total,jawaban_siswa:jawStr,nilai_uraian:0,detail_uraian:'',status_penilaian:statusPenilaian},nilaiTotal,benar,salah,total,hasUraian);
+  simpanNilai({id_siswa:sis.id_siswa,nama_siswa:sis.nama_siswa,kode_soal:soal.kode_soal,nilai:nilaiTotal.toFixed(2),jawaban_benar:totalBenar,jawaban_salah:totalSalah,total_soal:butirs.length,jawaban_siswa:jawStr,nilai_uraian:0,detail_uraian:'',status_penilaian:statusPenilaian,skor_perolehan:skorPerolehan,skor_maksimal:skorMaksimal},nilaiTotal,totalBenar,totalSalah,butirs.length,hasUraian);
 }
 
 async function simpanNilai(obj,nilaiTotal,benar,salah,total,hasUraian){
@@ -7020,22 +7281,23 @@ async function simpanNilai(obj,nilaiTotal,benar,salah,total,hasUraian){
       toast('Koneksi bermasalah. Nilai Anda tersimpan lokal dan akan dikirim saat online.','wa',6000);
     }
   }
-  showHasilUjian(nilaiTotal,benar,salah,total,hasUraian,EX.soal.nama_soal);
+  showHasilUjian(nilaiTotal,benar,salah,total,hasUraian,EX.soal.nama_soal,obj.skor_perolehan,obj.skor_maksimal);
 }
 
-function showHasilUjian(nilai,benar,salah,total,hasUraian,namaSoal){
+function showHasilUjian(nilai,benar,salah,total,hasUraian,namaSoal,skorPerolehan,skorMaksimal){
   hide('examScreen');show('siswaPanel');
   const el=$('sisBody');const lulus=nilai>=60;
   el.innerHTML=`<div class="reshero">
     <div style="font-size:14px;color:rgba(255,255,255,.7)">Ujian Selesai — ${namaSoal}</div>
-    <div class="resscore">${parseFloat(nilai).toFixed(0)}</div>
+    <div class="resscore">${parseFloat(nilai).toFixed(0)}${hasUraian?'<sup style="font-size:18px">*</sup>':''}</div>
     <div style="font-size:13px;color:rgba(255,255,255,.7);margin-top:5px">${sis.nama_siswa}</div>
-    <span class="badge ${lulus?'bok':'bno'}" style="margin-top:10px;font-size:12.5px">${lulus?'<i class="fa-solid fa-star"></i> SELAMAT! Anda Lulus':'<i class="fa-solid fa-circle-xmark"></i> Maaf, Belum Lulus'}</span>
+    ${skorPerolehan!==undefined&&skorMaksimal!==undefined?`<div style="font-size:12px;color:rgba(255,255,255,.6);margin-top:4px">Skor Objektif: ${skorPerolehan} / ${skorMaksimal}${hasUraian?' (belum termasuk uraian)':''}</div>`:''}
+    ${hasUraian?'':'<span class="badge '+(lulus?'bok':'bno')+'" style="margin-top:10px;font-size:12.5px">'+(lulus?'<i class="fa-solid fa-star"></i> SELAMAT! Anda Lulus':'<i class="fa-solid fa-circle-xmark"></i> Maaf, Belum Lulus')+'</span>'}
     <div class="resgrid"><div class="resst"><div class="ressv">${benar}</div><div class="ressl"><i class="fa-solid fa-circle-check"></i> Benar</div></div>
       <div class="resst"><div class="ressv">${salah}</div><div class="ressl"><i class="fa-solid fa-circle-xmark"></i> Salah</div></div>
-      <div class="resst"><div class="ressv">${total}</div><div class="ressl"><i class="fa-solid fa-list-ol"></i> Total</div></div></div>
+      <div class="resst"><div class="ressv">${total}</div><div class="ressl"><i class="fa-solid fa-list-ol"></i> Total Soal</div></div></div>
   </div>
-  ${hasUraian?'<div class="al alwa" style="margin-top:14px"><i class="fa-solid fa-hourglass-half"></i><div>Nilai Anda masih <strong>tentatif</strong> karena ada soal uraian yang perlu dikoreksi manual oleh guru.</div></div>':''}
+  ${hasUraian?'<div class="al alwa" style="margin-top:14px"><i class="fa-solid fa-hourglass-half"></i><div><strong>Nilai Sementara!</strong><br>Nilai di atas hanya dari soal objektif (PG, Benar/Salah, Menjodohkan). Soal uraian akan dikoreksi manual oleh guru dan nilai akhir akan diperbarui.</div></div>':''}
   <div style="display:flex;gap:10px;margin-top:16px">
     <button class="btn bp" onclick="snav('snilai')" style="flex:1"><i class="fa-solid fa-chart-bar"></i> Lihat Nilai Saya</button>
     <button class="btn bo" onclick="snav('sdash')" style="flex:1"><i class="fa-solid fa-house"></i> Dashboard</button>
