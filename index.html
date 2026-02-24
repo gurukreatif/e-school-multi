@@ -553,10 +553,10 @@ tbody tr:hover td{background:#fafbff}
     <p style="font-size:11.5px;color:var(--mu);margin-bottom:22px">Admin &amp; Guru</p>
     <h2>Selamat Datang</h2>
     <p class="ls">Masuk ke panel pengelolaan ujian</p>
-    <div id="admErr" class="al aler hidden"></div>
-    <div class="fg"><label class="fl">Username</label><input id="admU" class="fc" placeholder="Username" onkeydown="if(event.key==='Enter')loginAdmin()"></div>
-    <div class="fg"><label class="fl">Password</label><div class="pww"><input id="admP" type="password" class="fc" placeholder="Password" onkeydown="if(event.key==='Enter')loginAdmin()"><button class="pwb" onclick="tpw('admP',this)"><i class="fa-solid fa-eye"></i></button></div></div>
-    <button class="btn bp blg" style="width:100%" onclick="loginAdmin()" id="admBtn">Masuk <i class="fa-solid fa-arrow-right"></i></button>
+    <div id="oldAdmErr" class="al aler hidden"></div>
+    <div class="fg"><label class="fl">Username</label><input id="oldAdmU" class="fc" placeholder="Username" onkeydown="if(event.key==='Enter')loginAdmin()"></div>
+    <div class="fg"><label class="fl">Password</label><div class="pww"><input id="oldAdmP" type="password" class="fc" placeholder="Password" onkeydown="if(event.key==='Enter')loginAdmin()"><button class="pwb" onclick="tpw('oldAdmP',this)"><i class="fa-solid fa-eye"></i></button></div></div>
+    <button class="btn bp blg" style="width:100%" onclick="loginAdmin()" id="oldAdmBtn">Masuk <i class="fa-solid fa-arrow-right"></i></button>
     <div class="swl"><a onclick="showSiswaLogin()">Login sebagai Siswa <i class="fa-solid fa-arrow-right"></i></a></div>  
     <div style="font-size:11px;color:#94a3b8;text-align:center;margin-top:14px">&copy; 2026 Emes EduTech</div>
   </div>
@@ -587,10 +587,10 @@ tbody tr:hover td{background:#fafbff}
     <p style="font-size:11.5px;color:var(--mu);margin-bottom:22px">Portal Siswa</p>
     <h2>Login Siswa</h2>
     <p class="ls">Masukkan nomor peserta dan password</p>
-    <div id="sisErr" class="al aler hidden"></div>
-    <div class="fg"><label class="fl">Nomor Peserta / NIS</label><input id="sisU" class="fc" placeholder="Nomor peserta" onkeydown="if(event.key==='Enter')loginSiswa()"></div>
-    <div class="fg"><label class="fl">Password</label><div class="pww"><input id="sisP" type="password" class="fc" placeholder="Password" onkeydown="if(event.key==='Enter')loginSiswa()"><button class="pwb" onclick="tpw('sisP',this)"><i class="fa-solid fa-eye"></i></button></div></div>
-    <button class="btn bs blg" style="width:100%;background:#059669;border-color:#059669" onclick="loginSiswa()" id="sisBtn">Masuk <i class="fa-solid fa-arrow-right"></i></button>
+    <div id="sisErr2" class="al aler hidden"></div>
+    <div class="fg"><label class="fl">Nomor Peserta / NIS</label><input id="sisU2" class="fc" placeholder="Nomor peserta" onkeydown="if(event.key==='Enter')loginSiswa()"></div>
+    <div class="fg"><label class="fl">Password</label><div class="pww"><input id="sisP2" type="password" class="fc" placeholder="Password" onkeydown="if(event.key==='Enter')loginSiswa()"><button class="pwb" onclick="tpw('sisP2',this)"><i class="fa-solid fa-eye"></i></button></div></div>
+    <button class="btn bs blg" style="width:100%;background:#059669;border-color:#059669" onclick="loginSiswa()" id="sisBtn2">Masuk <i class="fa-solid fa-arrow-right"></i></button>
     <div class="swl"><a onclick="showAdminLogin()"><i class="fa-solid fa-arrow-left"></i> Login sebagai Admin/Guru</a></div>
     <div style="font-size:11px;color:#94a3b8;text-align:center;margin-top:14px">&copy; 2026 Emes EduTech</div>
   </div>
@@ -3153,6 +3153,7 @@ function renderBsRows(){
   wrap.innerHTML=_bsState.map((s,i)=>`
     <div class="bs-row">
       <span class="bs-num">${i+1}</span>
+      <label for="bstxt_${i}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0">Pernyataan ${i+1}</label>
       <input class="bs-input" id="bstxt_${i}"
         value="${(s.text||'').replace(/\//g,'\\').replace(/"/g,'&quot;').replace(/</g,'&lt;')}"
         placeholder="Isi pernyataan ${i+1}...">
@@ -3205,10 +3206,12 @@ function renderJodohRows(){
   const wrap=$('jodohRowsWrap');if(!wrap)return;
   wrap.innerHTML=_jodohState.map((p,i)=>`
     <div class="jodoh-row">
+      <label for="jleft_${i}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0">Kolom Kiri ${i+1}</label>
       <input class="jodoh-input" id="jleft_${i}"
         value="${(p.l||'').replace(/"/g,'&quot;').replace(/</g,'&lt;')}"
         placeholder="Pernyataan ${i+1}">
       <div class="jodoh-arrow"><i class="fa-solid fa-arrow-right"></i></div>
+      <label for="jright_${i}" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border-width:0">Kolom Kanan ${i+1}</label>
       <input class="jodoh-input" id="jright_${i}"
         value="${(p.r||'').replace(/"/g,'&quot;').replace(/</g,'&lt;')}"
         placeholder="Jawaban ${i+1}">
