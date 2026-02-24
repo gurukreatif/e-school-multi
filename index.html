@@ -231,379 +231,388 @@ tbody tr:hover td{background:#fafbff}
 .cfg{min-height:100vh;background:linear-gradient(135deg,#0f172a,#064e3b);display:flex;align-items:center;justify-content:center;padding:20px}
 .cfgcard{background:#fff;border-radius:18px;padding:34px;max-width:480px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.25)}
 /* EXAM */
-/* ═══════════ EXAM SCREEN — ANBK LAYOUT · EMERALD THEME ═══════════ */
+/* ════════════════════════════════════════════════════════
+   EXAM — PIXEL-PERFECT ANBK · TEMA HIJAU EMERALD
+   Layout: topbar hijau | white card besar | 4-btn fixed bar
+════════════════════════════════════════════════════════ */
 :root{
   --em:#059669;--em-d:#047857;--em-dd:#065f46;
-  --em-l:#d1fae5;--em-ll:#ecfdf5;--em-bg:#f4f6f8;
-  --wa2:#f59e0b;--er2:#ef4444;
+  --em-l:#d1fae5;--em-ll:#ecfdf5;
+  --wa2:#f59e0b;--er2:#e53935;
+  --exfont:15px;
 }
 
-/* ══ OUTER WRAPPER ══ */
+/* ── Shell ── */
 .exl{
   display:flex;flex-direction:column;
-  height:100vh;min-height:100vh;
-  overflow:hidden;
-  background:var(--em-bg);
+  height:100vh;overflow:hidden;
+  background:#f0f2f5;
   font-family:'Plus Jakarta Sans',sans-serif;
 }
 
-/* ══ TOP HEADER BAR — full width like ANBK ══ */
+/* ════ TOPBAR ════
+   Hijau gelap + logo kiri + nama peserta kanan + ikon tas */
 .exhd{
   background:var(--em-dd);
   color:#fff;
-  height:52px;min-height:52px;
+  height:56px;min-height:56px;flex-shrink:0;
   padding:0 24px;
   display:flex;align-items:center;justify-content:space-between;
-  gap:16px;flex-shrink:0;
-  box-shadow:0 2px 8px rgba(0,0,0,.18);
-  z-index:20;
+  gap:16px;
+  box-shadow:0 2px 8px rgba(0,0,0,.22);
+  z-index:30;position:relative;
 }
-.exhd-left{display:flex;align-items:center;gap:14px;min-width:0;flex:1}
+.exhd-left{display:flex;align-items:center;gap:12px;flex:1;min-width:0}
 .exhd-logo{
-  width:32px;height:32px;border-radius:8px;
-  background:rgba(255,255,255,.18);
-  display:flex;align-items:center;justify-content:center;
-  flex-shrink:0;font-size:16px;
+  width:38px;height:38px;border-radius:10px;flex-shrink:0;
+  background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.22);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
 }
-.exhd-title{min-width:0}
-.exhd-title h2{font-size:13.5px;font-weight:800;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}
-.exhd-title p{font-size:10.5px;color:rgba(255,255,255,.55);margin:0;font-weight:500}
+.exhd-logo img{width:32px;height:32px;object-fit:contain;border-radius:7px}
+.exhd-logo i{font-size:17px;color:#fff}
+.exhd-title{}
+.exhd-title h2{font-size:13px;font-weight:800;margin:0;line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.exhd-title p{font-size:10.5px;color:rgba(255,255,255,.55);margin:1px 0 0;font-weight:500}
 .exhd-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.exhd-peserta{
+  font-size:11.5px;font-weight:700;color:#fff;letter-spacing:.05em;
+  text-transform:uppercase;opacity:.9;white-space:nowrap;
+}
+.exhd-icon-btn{
+  width:36px;height:36px;border-radius:9px;flex-shrink:0;
+  background:rgba(255,255,255,.14);border:1.5px solid rgba(255,255,255,.28);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:15px;cursor:pointer;transition:background .13s;
+}
+.exhd-icon-btn:hover{background:rgba(255,255,255,.26)}
+/* offline indicator lives in topbar */
+#offlineInd{margin:0!important}
 
-/* Timer pill */
-.timebox{
-  display:flex;align-items:center;gap:8px;
-  background:rgba(255,255,255,.1);
-  border:1px solid rgba(255,255,255,.2);
-  border-radius:8px;
-  padding:5px 12px 5px 10px;
-  margin:0;
-}
-.tl{font-size:9.5px;font-weight:700;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.1em;white-space:nowrap}
-.td{
-  font-family:'JetBrains Mono',monospace;
-  font-size:18px;font-weight:700;color:#fff;
-  letter-spacing:.06em;line-height:1;min-width:52px;text-align:right;
-}
-.td.warn{color:#fbbf24}.td.dang{color:#f87171;animation:pulse 1s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-
-/* Header action buttons */
-.exhd-btn{
-  display:flex;align-items:center;gap:6px;
-  padding:6px 13px;
-  border-radius:7px;
-  font-size:12px;font-weight:700;
-  cursor:pointer;transition:all .13s;
-  font-family:inherit;border:1.5px solid rgba(255,255,255,.25);
-  background:rgba(255,255,255,.1);color:#fff;
-  white-space:nowrap;
-}
-.exhd-btn:hover{background:rgba(255,255,255,.2)}
-.exhd-btn.primary{background:rgba(255,255,255,.22);border-color:rgba(255,255,255,.4)}
-.exhd-btn.danger{background:var(--er2);border-color:var(--er2)}
-.exhd-btn.danger:hover{background:#dc2626}
-
-/* ══ SOAL NUMBER HEADER (below top bar, above card) ══ */
-.exsoal-meta{
-  padding:18px 32px 0;
-  max-width:900px;width:100%;margin:0 auto;
-}
-.exsoal-nomor{
-  font-size:22px;font-weight:800;color:#1e293b;
-  margin-bottom:2px;line-height:1.2;
-}
-.exsoal-mapel{font-size:12.5px;color:#64748b;font-weight:500;margin-bottom:0}
-.exsoal-divider{
-  height:1px;background:#e2e8f0;
-  max-width:900px;width:calc(100% - 64px);
-  margin:10px auto 0;
-}
-
-/* ══ MAIN SCROLL AREA ══ */
+/* ════ WHITE CARD ════
+   Kotak putih dengan margin abu² di sekeliling — persis ANBK */
 .exmain{
-  flex:1;overflow-y:auto;
-  padding:16px 32px 100px;
-  background:var(--em-bg);
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  padding:20px 32px 80px;   /* bottom padding untuk nav bar */
+  background:#f0f2f5;
 }
 .exmain::-webkit-scrollbar{width:5px}
 .exmain::-webkit-scrollbar-thumb{background:#a7f3d0;border-radius:5px}
 
-/* ══ SOAL CARD ══ */
-.soalcard-wrapper{
-  max-width:900px;width:100%;
-  margin:0 auto;
-  display:flex;flex-direction:column;
-}
-.soalcard{
+/* Card putih utama */
+.ex-card{
   background:#fff;
-  border:1px solid #e2e8f0;
   border-radius:10px;
-  padding:28px 32px 24px;
-  box-shadow:0 1px 8px rgba(0,0,0,.05);
+  box-shadow:0 1px 10px rgba(0,0,0,.08);
+  overflow:hidden;
+  max-width:860px;margin:0 auto;
 }
-/* Remove old header bar from card — ANBK puts it outside */
+
+/* ── Sub-header di dalam card (nomor soal + mapel kiri | timer + tombol kanan) ── */
+.ex-card-head{
+  padding:16px 24px 14px;
+  display:flex;align-items:flex-start;justify-content:space-between;
+  gap:16px;
+  border-bottom:1px solid #e5e7eb;
+}
+.ex-card-head-l{}
+.exsoal-nomor{font-size:20px;font-weight:800;color:#111827;margin:0 0 2px;line-height:1.2}
+.exsoal-mapel{font-size:12px;color:#6b7280;font-weight:500;margin:0}
+.ex-card-head-r{display:flex;align-items:center;gap:8px;flex-shrink:0;padding-top:2px}
+
+/* Timer — kotak border seperti ANBK (bukan pill transparan) */
+.timebox{
+  display:flex;align-items:stretch;
+  border:1.5px solid #d1d5db;border-radius:7px;
+  overflow:hidden;margin:0;background:#fff;
+}
+.tl{
+  font-size:11px;font-weight:600;color:#374151;
+  background:#f9fafb;border-right:1.5px solid #d1d5db;
+  padding:5px 9px;white-space:nowrap;display:flex;align-items:center;
+  letter-spacing:.01em;
+}
+.td{
+  font-family:'JetBrains Mono',monospace;
+  font-size:14.5px;font-weight:700;color:#111827;
+  letter-spacing:.07em;padding:5px 11px;
+  min-width:56px;text-align:center;
+  display:flex;align-items:center;justify-content:center;
+}
+.td.warn{color:#d97706}
+.td.dang{color:var(--er2);animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Tombol di sub-header */
+.exhd-btn{
+  display:flex;align-items:center;gap:7px;
+  padding:6px 14px;border-radius:7px;
+  font-size:12px;font-weight:700;font-family:inherit;
+  cursor:pointer;transition:all .13s;white-space:nowrap;
+}
+.exhd-btn.info-soal{
+  background:#fff;border:1.5px solid #d1d5db;color:#374151;
+}
+.exhd-btn.info-soal:hover{border-color:var(--em);color:var(--em);background:var(--em-ll)}
+.exhd-btn.daftar-soal{
+  background:var(--em);border:1.5px solid var(--em);color:#fff;
+}
+.exhd-btn.daftar-soal:hover{background:var(--em-d);border-color:var(--em-d)}
+.exhd-btn.danger{background:var(--er2);border:1.5px solid var(--er2);color:#fff}
+.exhd-btn.danger:hover{background:#c62828;border-color:#c62828}
+/* Alias untuk kode lama yang masih pakai .primary */
+.exhd-btn.primary{background:var(--em);border:1.5px solid var(--em);color:#fff}
+.exhd-btn.primary:hover{background:var(--em-d)}
+
+/* ── Ukuran font control (A A A) ── */
+.ex-fontctrl{
+  padding:6px 24px;
+  text-align:right;
+  border-bottom:1px solid #f3f4f6;
+  background:#fafafa;
+  font-size:11px;color:#6b7280;
+  display:flex;align-items:center;justify-content:flex-end;gap:6px;
+}
+.ex-fontctrl span{font-size:11px;font-weight:500;color:#9ca3af}
+.ex-fbtn{
+  background:none;border:none;cursor:pointer;
+  font-weight:700;color:#6b7280;padding:1px 5px;
+  border-radius:4px;transition:all .12s;font-family:inherit;line-height:1;
+}
+.ex-fbtn:hover,.ex-fbtn.active{color:var(--em);background:var(--em-ll)}
+.ex-fbtn.sm{font-size:11px}
+.ex-fbtn.md{font-size:14px}
+.ex-fbtn.lg{font-size:17px}
+
+/* ── Body soal ── */
+.ex-card-body{padding:22px 24px 18px}
+
+/* Wrapper lama — pakai display:contents agar tidak ada tambahan box */
+.soalcard-wrapper{display:contents}
+.soalcard{background:none;border:none;padding:0;box-shadow:none;border-radius:0}
 .soalcard-hd{display:none}
 .snl{display:none}
+.exsoal-meta{display:none}
+.exsoal-divider{display:none}
+
+/* Badge tipe */
 .stipe{
   display:inline-flex;align-items:center;
   font-size:10.5px;font-weight:700;
   background:var(--em-l);color:var(--em-dd);
-  padding:3px 10px;border-radius:100px;
-  margin-bottom:14px;
+  padding:3px 11px;border-radius:100px;margin-bottom:14px;
 }
+
+/* Teks soal */
 .stxt{
-  font-size:15px;line-height:1.8;
-  margin-bottom:24px;color:#1e293b;font-weight:500;
+  font-size:var(--exfont);line-height:1.8;
+  margin-bottom:20px;color:#111827;font-weight:500;
 }
-.stxt img{max-width:100%;max-height:150px;object-fit:contain;border-radius:8px;margin:8px 0;border:1px solid #e2e8f0;display:block}
-.opt img,.pgk img,.bst img,.jleft img{max-width:100%;max-height:100px;object-fit:contain;border-radius:6px;margin:4px 0;border:1px solid #e2e8f0;display:block}
+.stxt img{max-width:100%;max-height:180px;object-fit:contain;border-radius:8px;margin:8px 0;border:1px solid #e2e8f0;display:block}
+.opt img,.pgk img,.bst img,.jleft img{max-width:100%;max-height:110px;object-fit:contain;border-radius:6px;margin:4px 0;border:1px solid #e2e8f0;display:block}
 
-/* ══ ARABIC TEXT ══ */
-.arab{
-  font-family:'Amiri',serif;
-  font-size:1.25em;
-  line-height:2;
-  direction:rtl;
-  text-align:right;
-  display:block;
-  unicode-bidi:plaintext;
-}
-/* Inline Arab dalam teks campuran */
-span.arab-inline{
-  font-family:'Amiri',serif;
-  font-size:1.15em;
-  direction:rtl;
-  unicode-bidi:embed;
-  display:inline;
-}
-/* Quill editor Arab */
-.ql-editor .arab, .ql-editor p:has(span.arab-inline){
-  font-family:'Amiri',serif;
-}
+/* Arabic */
+.arab{font-family:'Amiri',serif;font-size:1.25em;line-height:2.1;direction:rtl;text-align:right;display:block;unicode-bidi:plaintext}
+span.arab-inline{font-family:'Amiri',serif;font-size:1.15em;direction:rtl;unicode-bidi:embed;display:inline}
+.ql-editor .arab{font-family:'Amiri',serif}
+.stxt .arab{font-size:1.2em;line-height:2.1;margin:4px 0}
+.opt .arab,.opt .arab-inline,.bst .arab,.bst .arab-inline{font-size:1.1em;line-height:1.9}
+.jleft .arab,.jleft .arab-inline{font-size:1.05em}
 
-/* ══ OPSI — ANBK radio style ══ */
-.opsi{display:flex;flex-direction:column;gap:6px}
+/* ════ OPSI — ANBK style ════
+   - semua opsi di dalam kotak abu-abu tipis
+   - radio bulat standar
+   - huruf dalam lingkaran kecil  */
+.opsi-wrap{
+  border:1px solid #d1d5db;border-radius:8px;
+  overflow:hidden;background:#f9fafb;
+}
+.opsi{display:flex;flex-direction:column;gap:0}
 .op{
-  display:flex;align-items:center;gap:12px;
-  padding:11px 16px;
-  border:1.5px solid #e9ecef;
-  border-radius:8px;
-  cursor:pointer;transition:all .13s;
-  background:#fff;
+  display:flex;align-items:center;gap:0;
+  padding:10px 14px 10px 12px;
+  border-bottom:1px solid #e5e7eb;
+  cursor:pointer;transition:background .1s;background:transparent;
+  border:none;border-radius:0;
 }
-.op:hover{border-color:var(--em);background:var(--em-ll)}
-.op.sel{border-color:var(--em);background:var(--em-ll)}
-.op.correct{border-color:#16a34a;background:#f0fdf4}
-.op.wrong{border-color:var(--er2);background:#fff1f2}
+.opsi-wrap .op:last-child{border-bottom:none}
+.op:hover{background:rgba(5,150,105,.05)}
+.op.sel{background:rgba(5,150,105,.07)}
+.op.correct{background:rgba(22,163,74,.07)}
+.op.wrong{background:rgba(229,57,53,.06)}
 
-/* Radio circle — ANBK style */
+/* Radio */
 .opradio{
   display:flex!important;
-  width:18px;height:18px;min-width:18px;
-  border:2px solid #cbd5e1;
-  border-radius:50%;
+  width:17px;height:17px;min-width:17px;
+  border:2px solid #9ca3af;border-radius:50%;
   align-items:center;justify-content:center;
-  transition:all .13s;flex-shrink:0;
+  transition:all .12s;flex-shrink:0;background:#fff;
 }
 .op:hover .opradio{border-color:var(--em)}
 .op.sel .opradio{border-color:var(--em);background:var(--em)}
-.op.sel .opradio::after{content:'';width:6px;height:6px;background:#fff;border-radius:50%;display:block}
+.op.sel .opradio::after,.op.correct .opradio::after,.op.wrong .opradio::after{
+  content:'';width:5px;height:5px;background:#fff;border-radius:50%;display:block;
+}
 .op.correct .opradio{border-color:#16a34a;background:#16a34a}
-.op.correct .opradio::after{content:'';width:6px;height:6px;background:#fff;border-radius:50%;display:block}
 .op.wrong .opradio{border-color:var(--er2);background:var(--er2)}
-.op.wrong .opradio::after{content:'';width:6px;height:6px;background:#fff;border-radius:50%;display:block}
 
-/* Label huruf */
+/* Huruf dalam lingkaran kecil */
 .opk{
-  width:24px;min-width:24px;
+  width:21px;height:21px;min-width:21px;
   display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:700;
-  color:#64748b;flex-shrink:0;
-  transition:color .13s;
-  /* Remove box style from previous version */
-  background:none;border:none;border-radius:0;height:auto;
-  font-family:'Plus Jakarta Sans',sans-serif;
+  font-size:11px;font-weight:800;
+  border:1.5px solid #d1d5db;border-radius:50%;
+  color:#6b7280;background:#fff;
+  flex-shrink:0;margin:0 10px;
+  transition:all .12s;font-family:'Plus Jakarta Sans',sans-serif;
 }
-.op.sel .opk{color:var(--em-dd)}
+.op.sel .opk{border-color:var(--em);color:var(--em);background:var(--em-ll)}
+.op.correct .opk{border-color:#16a34a;color:#16a34a;background:#f0fdf4}
+.op.wrong .opk{border-color:var(--er2);color:var(--er2);background:#fff1f2}
 .opt{
-  font-size:14px;line-height:1.6;
-  flex:1;color:#334155;
-  /* Remove padding from previous version */
-  padding:0;
-  align-self:auto;
+  font-size:var(--exfont);line-height:1.65;flex:1;
+  color:#111827;padding:0;align-self:center;
 }
 
-/* ══ PGK ══ */
-.pgk{display:flex;flex-direction:column;gap:6px}
+/* PGK */
+.pgk{display:flex;flex-direction:column;gap:0}
 .pk{
-  display:flex;align-items:center;gap:12px;
-  padding:11px 16px;
-  border:1.5px solid #e9ecef;border-radius:8px;
-  cursor:pointer;transition:all .13s;background:#fff;
+  display:flex;align-items:center;gap:0;
+  padding:10px 14px 10px 12px;
+  border-bottom:1px solid #e5e7eb;
+  cursor:pointer;transition:background .1s;background:transparent;
 }
-.pk:hover{border-color:var(--em);background:var(--em-ll)}
-.pk.sel{border-color:var(--em);background:var(--em-ll)}
-/* Checkbox ANBK-style */
+.pk:last-child{border-bottom:none}
+.pk:hover{background:rgba(5,150,105,.05)}
+.pk.sel{background:rgba(5,150,105,.07)}
 .pkcb{
-  display:flex!important;
-  width:18px;height:18px;min-width:18px;
-  border:2px solid #cbd5e1;
-  border-radius:4px;
+  display:flex!important;width:17px;height:17px;min-width:17px;
+  border:2px solid #9ca3af;border-radius:4px;
   align-items:center;justify-content:center;
-  transition:all .13s;flex-shrink:0;
+  transition:all .12s;flex-shrink:0;background:#fff;
 }
 .pk:hover .pkcb{border-color:var(--em)}
 .pk.sel .pkcb{border-color:var(--em);background:var(--em)}
-.pk.sel .pkcb::after{content:'✓';color:#fff;font-size:11px;font-weight:900;line-height:1}
-.pk .opk{color:#64748b;background:none;border:none}
-.pk.sel .opk{color:var(--em-dd)}
+.pk.sel .pkcb::after{content:'✓';color:#fff;font-size:10px;font-weight:900;line-height:1}
+.pk .opk{margin:0 10px;border-color:#d1d5db;color:#6b7280;background:#fff}
+.pk.sel .opk{border-color:var(--em);color:var(--em);background:var(--em-ll)}
 
-/* ══ BENAR/SALAH ══ */
-.bsrow{
-  display:flex;align-items:stretch;
-  border:1.5px solid #e9ecef;border-radius:8px;
-  margin-bottom:7px;background:#fff;overflow:hidden;
-  transition:border-color .12s;
-}
-.bst{font-size:14px;flex:1;padding:13px 16px;line-height:1.55;color:#334155;border-right:1.5px solid #e9ecef}
+/* Benar/Salah */
+.bsrow{display:flex;align-items:stretch;border:1.5px solid #e2e8f0;border-radius:8px;margin-bottom:7px;background:#fff;overflow:hidden;transition:border-color .12s}
+.bst{font-size:var(--exfont);flex:1;padding:13px 16px;line-height:1.55;color:#334155;border-right:1.5px solid #e2e8f0}
 .bstog{display:flex;flex-shrink:0}
-.bsb{
-  padding:0 20px;min-width:72px;
-  font-size:12.5px;font-weight:700;
-  border:none;border-left:1px solid #e9ecef;
-  background:#f8fafc;cursor:pointer;transition:all .12s;color:#64748b;font-family:inherit;
-}
+.bsb{padding:0 20px;min-width:72px;font-size:12.5px;font-weight:700;border:none;border-left:1px solid #e2e8f0;background:#f8fafc;cursor:pointer;transition:all .12s;color:#64748b;font-family:inherit}
 .bsb:first-child{border-left:none}
 .bsb:hover{background:var(--em-l);color:var(--em-d)}
 .bsb.b{background:#dcfce7;color:#15803d;border-left-color:#86efac;font-weight:800}
 .bsb.s{background:#fee2e2;color:#b91c1c;border-left-color:#fca5a5;font-weight:800}
 
-/* ══ MENJODOHKAN ══ */
+/* Menjodohkan */
 .jrow{display:flex;align-items:center;gap:10px;margin-bottom:8px}
-.jleft{flex:1;padding:11px 14px;background:#f8fafc;border:1.5px solid #e9ecef;border-radius:8px;font-size:14px;color:#334155;font-weight:500}
-/* Arab dalam berbagai konteks soal */
-.stxt .arab{font-size:1.2em;line-height:2.1;margin:4px 0}
-.opt .arab,.opt .arab-inline{font-size:1.1em;line-height:1.9}
-.bst .arab,.bst .arab-inline{font-size:1.1em;line-height:1.9}
-.jleft .arab,.jleft .arab-inline{font-size:1.05em}
+.jleft{flex:1;padding:11px 14px;background:#f8fafc;border:1.5px solid #e2e8f0;border-radius:8px;font-size:var(--exfont);color:#334155;font-weight:500}
 .jarr{color:#94a3b8;font-weight:700;font-size:18px;flex-shrink:0}
-.jsel{flex:1;border-radius:8px!important;border-color:#e9ecef!important}
+.jsel{flex:1;border-radius:8px!important;border-color:#e2e8f0!important}
 
-/* ══ NAV BAR BAWAH — ANBK style, 4 tombol berwarna ══ */
+/* ════ NAV BAR BAWAH ════
+   4 tombol berwarna: Merah | Kuning | Hijau | Biru  */
 .exnav{
-  position:fixed;bottom:0;left:0;right:0;
-  z-index:50;
+  position:fixed;bottom:0;left:0;right:0;z-index:50;
   display:flex;align-items:center;justify-content:center;
-  gap:10px;padding:12px 24px;
-  background:#fff;
-  border-top:1px solid #e2e8f0;
-  box-shadow:0 -2px 16px rgba(0,0,0,.07);
+  gap:8px;padding:10px 28px;
+  background:#fff;border-top:1px solid #e5e7eb;
+  box-shadow:0 -2px 16px rgba(0,0,0,.08);
 }
-.exnav-right{display:flex;gap:10px;align-items:center}/* kept for compat */
+.exnav-right{display:contents}/* tidak perlu wrapper */
 
 .exnav .btn-prev{
-  display:flex;align-items:center;gap:6px;
-  padding:10px 20px;border:none;border-radius:8px;
-  background:#e9ecef;font-size:13px;font-weight:700;color:#495057;
-  cursor:pointer;transition:all .13s;font-family:inherit;
+  display:flex;align-items:center;gap:7px;
+  padding:11px 22px;border:none;border-radius:8px;
+  background:#e53935;font-size:13px;font-weight:700;color:#fff;
+  cursor:pointer;font-family:inherit;transition:opacity .12s;
 }
-.exnav .btn-prev:hover{background:#dee2e6;color:#212529}
-.exnav .btn-prev:disabled{opacity:.4;cursor:not-allowed}
-
+.exnav .btn-prev:hover{opacity:.85}
+.exnav .btn-prev:disabled{opacity:.35;cursor:not-allowed}
 .exnav .btn-ragu{
-  display:flex;align-items:center;gap:6px;
-  padding:10px 20px;border:none;border-radius:8px;
+  display:flex;align-items:center;gap:7px;
+  padding:11px 22px;border:none;border-radius:8px;
   background:#f59e0b;font-size:13px;font-weight:700;color:#fff;
-  cursor:pointer;transition:all .13s;font-family:inherit;
+  cursor:pointer;font-family:inherit;transition:opacity .12s;
 }
-.exnav .btn-ragu:hover{background:#d97706}
-.exnav .btn-ragu.active{background:#92400e}
-
+.exnav .btn-ragu:hover{opacity:.85}
+.exnav .btn-ragu.active{background:#d97706}
 .exnav .btn-save{
-  display:flex;align-items:center;gap:6px;
-  padding:10px 20px;border:none;border-radius:8px;
+  display:flex;align-items:center;gap:7px;
+  padding:11px 22px;border:none;border-radius:8px;
   background:var(--em);font-size:13px;font-weight:700;color:#fff;
-  cursor:pointer;transition:all .13s;font-family:inherit;
+  cursor:pointer;font-family:inherit;transition:opacity .12s;
 }
-.exnav .btn-save:hover{background:var(--em-d)}
-
+.exnav .btn-save:hover{opacity:.85}
 .exnav .btn-next{
-  display:flex;align-items:center;gap:6px;
-  padding:10px 20px;border:none;border-radius:8px;
-  background:#3b82f6;font-size:13px;font-weight:700;color:#fff;
-  cursor:pointer;transition:all .13s;font-family:inherit;
+  display:flex;align-items:center;gap:7px;
+  padding:11px 22px;border:none;border-radius:8px;
+  background:#1565c0;font-size:13px;font-weight:700;color:#fff;
+  cursor:pointer;font-family:inherit;transition:opacity .12s;
 }
-.exnav .btn-next:hover{background:#2563eb}
-
+.exnav .btn-next:hover{opacity:.85}
 .exnav .btn-finish{
-  display:flex;align-items:center;gap:6px;
-  padding:10px 20px;border:none;border-radius:8px;
+  display:flex;align-items:center;gap:7px;
+  padding:11px 22px;border:none;border-radius:8px;
   background:var(--er2);font-size:13px;font-weight:700;color:#fff;
-  cursor:pointer;transition:all .13s;font-family:inherit;
+  cursor:pointer;font-family:inherit;transition:opacity .12s;
 }
-.exnav .btn-finish:hover{background:#dc2626}
+.exnav .btn-finish:hover{opacity:.85}
 
-/* ══ MODAL DAFTAR SOAL ══ */
-.exsb{
-  position:fixed;inset:0;z-index:500;
-  display:none;align-items:flex-start;justify-content:flex-end;
-  padding:60px 0 0;
-  pointer-events:none;
-}
-.exsb.open{display:flex;pointer-events:all}
-
-/* Overlay behind modal */
+/* ════ MODAL DAFTAR SOAL ════
+   Menggantung tepat di bawah topbar (top:56px)
+   Slide dari kanan */
 .exsb-overlay{
-  position:fixed;inset:0;background:rgba(0,0,0,.45);
-  z-index:499;display:none;
+  position:fixed;inset:0;background:rgba(0,0,0,.32);
+  z-index:199;display:none;
 }
 .exsb-overlay.show{display:block}
 
-/* Modal panel */
-.exsb-panel{
-  width:340px;max-width:92vw;
-  height:calc(100vh - 60px);
-  background:#fff;
+.exsb{
+  position:fixed;top:56px;right:0;
+  width:320px;max-width:88vw;
+  height:calc(100vh - 56px);
+  z-index:200;
   display:flex;flex-direction:column;
-  box-shadow:-8px 0 40px rgba(0,0,0,.15);
-  pointer-events:all;
+  background:#fff;
+  box-shadow:-4px 0 28px rgba(0,0,0,.16);
+  transform:translateX(102%);
+  transition:transform .26s cubic-bezier(.4,0,.2,1);
   overflow:hidden;
 }
+.exsb.open{transform:translateX(0)}
+
+/* Header modal */
+.exsb-panel{display:contents}
 .exsb-panel-hd{
-  background:var(--em-dd);
-  color:#fff;
-  padding:16px 20px;
+  background:var(--em-dd);color:#fff;
+  padding:13px 16px;flex-shrink:0;
   display:flex;align-items:center;justify-content:space-between;
-  flex-shrink:0;
 }
-.exsb-panel-hd h3{font-size:14px;font-weight:800;margin:0}
+.exsb-panel-hd h3{font-size:13px;font-weight:800;margin:0;letter-spacing:.02em}
 .exsb-close{
+  width:26px;height:26px;border-radius:6px;
   background:rgba(255,255,255,.15);border:none;color:#fff;
-  width:28px;height:28px;border-radius:6px;cursor:pointer;
-  display:flex;align-items:center;justify-content:center;font-size:14px;
-  transition:background .12s;
+  display:flex;align-items:center;justify-content:center;
+  font-size:13px;cursor:pointer;transition:background .12s;
 }
 .exsb-close:hover{background:rgba(255,255,255,.3)}
-.exsb-panel-body{flex:1;overflow-y:auto;padding:16px 20px}
+.exsb-panel-body{flex:1;overflow-y:auto;padding:14px 16px}
 .exsb-panel-body::-webkit-scrollbar{width:4px}
 .exsb-panel-body::-webkit-scrollbar-thumb{background:#a7f3d0;border-radius:4px}
 
-/* Number grid inside modal */
+/* Grid nomor soal */
 .ng{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-bottom:10px}
 .ng-group{margin-bottom:16px}
-.ng-group-label{
-  font-size:9.5px;font-weight:700;color:#64748b;
-  text-transform:uppercase;letter-spacing:.1em;
-  padding:2px 0 6px;border-bottom:1px solid #e2e8f0;margin-bottom:8px;
-}
+.ng-group-label{font-size:9.5px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:.1em;padding:2px 0 6px;border-bottom:1px solid #e2e8f0;margin-bottom:8px}
 .ng-nav-title{display:none}
 .num{
-  aspect-ratio:1;border:1.5px solid #e2e8f0;
-  border-radius:7px;
+  aspect-ratio:1;border:1.5px solid #e2e8f0;border-radius:7px;
   display:flex;align-items:center;justify-content:center;
-  font-size:12px;font-weight:600;
-  cursor:pointer;transition:all .12s;
+  font-size:12px;font-weight:600;cursor:pointer;transition:all .12s;
   color:#475569;background:#f8fafc;user-select:none;
 }
 .num:hover{border-color:var(--em);color:var(--em);background:var(--em-ll)}
@@ -611,28 +620,14 @@ span.arab-inline{
 .num.ans{background:#34d399;border-color:#34d399;color:#fff}
 .num.ragu{background:var(--wa2);border-color:var(--wa2);color:#fff}
 
-/* Legend inside modal */
-.leg{
-  display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;
-  font-size:11px;color:#64748b;
-  padding:12px 0 4px;
-  border-top:1px solid #e2e8f0;margin-top:4px;
-}
+/* Legend */
+.leg{display:grid;grid-template-columns:1fr 1fr;gap:6px 12px;font-size:11px;color:#64748b;padding:12px 0 4px;border-top:1px solid #e2e8f0;margin-top:4px}
 .legi{display:flex;align-items:center;gap:6px}
 .legd{width:12px;height:12px;border-radius:3px;flex-shrink:0}
 
-/* timebox not visible in modal context */
-.timebox-modal{display:none}
-
-/* ══ HIDDEN ELEMENTS (sidebar was for desktop, now modal-only) ══ */
-.exhd-as-sidebar{display:none}
-.exsb-finish{display:none}/* finish via header btn */
-
-/* ══ OFFLINE indicator ══ */
-#offlineInd{margin:0!important}
-
-/* ══ MOBILE — ANBK mobile style ══ */
-.ex-mob-top{display:none}
+/* Elemen lama yang tidak dipakai */
+.timebox-modal,.exhd-as-sidebar,.exsb-finish,.ex-mob-top{display:none}
+.exsoal-meta,.exsoal-divider{display:none}
 
 
 /* RESULT */
@@ -698,19 +693,20 @@ span.arab-inline{
   flex-shrink:0;line-height:1;
 }
 .chat-reply-cancel:hover{color:var(--er)}
-/* Hover to show reply button */
-.cm-wrap{position:relative;display:flex;flex-direction:column;}
-.cm-wrap:hover .cm-reply-btn,.cm-wrap:focus-within .cm-reply-btn{opacity:1}
+.cm-wrap{display:flex;flex-direction:column;gap:2px}
+/* Tombol Balas inline — muncul saat hover */
 .cm-reply-btn{
-  opacity:0;transition:opacity .15s;
-  position:absolute;bottom:4px;
-  background:#fff;border:1px solid var(--br);
-  border-radius:5px;padding:2px 8px;font-size:11px;font-weight:600;
-  color:var(--p);cursor:pointer;white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,.1);
+  opacity:0;height:0;overflow:hidden;
+  transition:opacity .15s,height .15s;
+  background:none;border:none;padding:0 2px;
+  font-size:11px;font-weight:600;color:var(--mu);
+  cursor:pointer;white-space:nowrap;
+  display:flex;align-items:center;gap:4px;
+  font-family:inherit;align-self:flex-start;
 }
-.cm-wrap.is-me .cm-reply-btn{right:calc(100% + 6px)}
-.cm-wrap.is-other .cm-reply-btn{left:calc(100% + 6px)}
-.cm-reply-btn:hover{background:var(--pl)}
+.cm-wrap.is-me .cm-reply-btn{align-self:flex-end}
+.cm-wrap:hover .cm-reply-btn{opacity:1;height:18px}
+.cm-reply-btn:hover{color:var(--p)}
 /* GAME */
 .gamecard{border-radius:13px;padding:20px;text-align:center;cursor:pointer;transition:all .2s;border:2px solid var(--br);background:#fff}
 .gamecard:hover{transform:translateY(-4px);box-shadow:var(--sh2);border-color:var(--p)}
@@ -736,63 +732,47 @@ span.arab-inline{
   .tbunm,.tburl,.tbusr-div{display:none}
   #mbtn,#mbtnDiv{display:flex!important}
 
-  /* ══ MOBILE EXAM — ANBK mobile layout ══ */
-  .exl{height:100dvh;overflow:hidden}
-
-  /* Header compact */
-  .exhd{height:48px;min-height:48px;padding:0 14px}
-  .exhd-title h2{font-size:12px}
-  .exhd-title p{display:none}
-  .td{font-size:15px;min-width:44px}
-  .timebox{padding:4px 8px 4px 7px;gap:5px}
-  .tl{display:none}
-  .exhd-btn span{display:none}/* show only icon */
-  .exhd-btn{padding:5px 9px}
-  .exhd-logo{width:26px;height:26px;font-size:13px}
-
-  /* Soal meta */
-  .exsoal-meta{padding:12px 14px 0}
-  .exsoal-nomor{font-size:17px}
-  .exsoal-divider{width:calc(100% - 28px);margin:8px auto 0}
-
-  /* Main scroll */
-  .exmain{padding:12px 14px 90px}
-
-  /* Card */
-  .soalcard{padding:18px 16px 16px;border-radius:8px}
-  .stxt{font-size:14px;line-height:1.7;margin-bottom:18px}
-  .arab{font-size:1.2em}
-  .stipe{font-size:10px;margin-bottom:10px}
-
-  /* Opsi */
-  .op{padding:9px 13px;gap:10px}
-  .opradio{width:16px;height:16px;min-width:16px}
-  .opradio::after,.op.sel .opradio::after,.op.correct .opradio::after,.op.wrong .opradio::after{width:5px!important;height:5px!important}
-  .opk{width:20px;min-width:20px;font-size:12px}
+  /* ── MOBILE EXAM ── */
+  .exhd{height:50px;min-height:50px;padding:0 14px}
+  .exhd-title h2{font-size:12px}.exhd-title p{display:none}
+  .exhd-logo{width:28px;height:28px;font-size:13px}
+  .exhd-peserta{display:none}
+  .timebox{} .tl{display:none} .td{font-size:13px;padding:5px 9px;min-width:46px}
+  .exhd-btn span{display:none}.exhd-btn{padding:5px 9px;gap:5px}
+  .exmain{padding:12px 12px 80px}
+  .ex-card{border-radius:8px;margin:0}
+  .ex-card-head{padding:12px 16px 10px;flex-direction:column;gap:8px}
+  .ex-card-head-r{width:100%;justify-content:flex-start;gap:7px}
+  .exhd-btn.info-soal{flex:1;justify-content:center;font-size:11.5px;padding:6px 10px}
+  .exhd-btn.daftar-soal{flex:1;justify-content:center;font-size:11.5px;padding:6px 10px}
+  .exsoal-nomor{font-size:17px}.exsoal-mapel{font-size:11px}
+  .ex-fontctrl{padding:5px 16px}
+  .ex-card-body{padding:16px 14px 14px}
+  .stxt{font-size:14px;line-height:1.7;margin-bottom:16px}
+  .op{padding:9px 12px 9px 10px}
+  .opk{width:19px;height:19px;min-width:19px;font-size:10px;margin:0 8px}
+  .opradio{width:15px;height:15px;min-width:15px}
   .opt{font-size:13.5px}
-  .pk{padding:9px 13px;gap:10px}
-  .pkcb{width:16px;height:16px;min-width:16px}
-
-  /* BS */
-  .bsb{padding:0 13px;min-width:58px;font-size:12px}
-  .bst{font-size:13.5px;padding:11px 13px}
-
-  /* Nav bar bawah */
-  .exnav{
-    padding:8px 10px;gap:6px;
-    justify-content:stretch;
-  }
+  .pk{padding:9px 12px 9px 10px}
+  .pkcb{width:15px;height:15px;min-width:15px}
+  .bsb{padding:0 13px;min-width:56px;font-size:12px}
+  .bst{font-size:13.5px;padding:11px 12px}
+  /* Nav bar */
+  .exnav{padding:7px 8px;gap:5px}
   .exnav .btn-prev,.exnav .btn-ragu,.exnav .btn-save,.exnav .btn-next,.exnav .btn-finish{
-    flex:1;padding:10px 6px;font-size:11.5px;justify-content:center;
+    flex:1;padding:10px 4px;font-size:11px;justify-content:center;gap:5px;border-radius:7px;
   }
-
-  /* Modal daftar soal */
-  .exsb-panel{width:100%;height:auto;max-height:75dvh}
-  .exsb{padding:0;align-items:flex-end}
-  .exsb-panel{border-radius:18px 18px 0 0}
+  /* Modal daftar soal di mobile: slide dari bawah */
+  .exsb{
+    top:auto;bottom:0;right:0;left:0;
+    width:100%;max-width:100%;
+    height:auto;max-height:78dvh;
+    transform:translateY(102%);
+    border-radius:18px 18px 0 0;
+  }
+  .exsb.open{transform:translateY(0)}
   .ng{grid-template-columns:repeat(7,1fr);gap:5px}
   .num{font-size:11px}
-  .exsb-overlay.show{display:block}
 }
 
 @media(max-width:480px){
@@ -5265,36 +5245,62 @@ async function loadChat(){
     el.innerHTML='<div style="text-align:center;color:var(--mu);padding:40px;font-size:13px"><i class="fa-regular fa-comment-dots" style="font-size:28px;display:block;margin-bottom:8px"></i>Belum ada pesan chat</div>';
     return;
   }
-  // Map id→pesan untuk lookup reply
-  const msgMap={};d.forEach(m=>{msgMap[m.id]=m;});
-  const isMe=m=>m.role==='admin';
-
+  const isAdmin=m=>m.role==='admin';
+  // Render HTML skeleton — isi teks diset via textContent setelah render
   el.innerHTML=d.map(m=>{
-    const me=isMe(m);
-    // Reply bar jika ada
-    let replyBar='';
-    if(m.id_reply&&(m.reply_nama||m.reply_pesan)){
-      replyBar=`<div class="cm-reply-bar" onclick="scrollToMsg(${m.id_reply})">
-        <div class="cm-reply-bar-name">${escHtml(m.reply_nama||'')}</div>
-        <div class="cm-reply-bar-text">${escHtml((m.reply_pesan||'').substring(0,80))}${(m.reply_pesan||'').length>80?'…':''}</div>
-      </div>`;
-    }
-    return`<div class="cm-wrap ${me?'is-me':'is-other'}" id="cmsg-${m.id}"
-        style="align-self:${me?'flex-end':'flex-start'};display:flex;flex-direction:column;max-width:72%">
+    const me=isAdmin(m);
+    const hasReply=m.id_reply&&(m.reply_nama||m.reply_pesan);
+    return`<div class="cm-wrap ${me?'is-me':'is-other'}" id="cmsg-${m.id}" style="align-self:${me?'flex-end':'flex-start'}">
       <div class="cmmeta" style="justify-content:${me?'flex-end':'flex-start'}">
-        ${me?`<span style="font-size:9.5px;color:var(--p);font-weight:700">Admin</span>`:`<i class="fa-solid fa-user-graduate" style="font-size:9px;color:var(--mu)"></i>`}
-        <span>${escHtml(m.nama_pengirim)}</span>
-        <span>·</span><span>${fdt(m.waktu)}</span>
+        ${me?`<span style="font-size:9.5px;color:var(--p);font-weight:700">Admin</span>`
+            :`<i class="fa-solid fa-user-graduate" style="font-size:9px;color:var(--mu)"></i>`}
+        <span class="cm-name"></span>
+        <span>·</span>
+        <span>${fdt(m.waktu)}</span>
       </div>
       <div class="cm ${me?'me':'other'}">
-        ${replyBar}
-        ${escHtml(m.pesan)}
+        ${hasReply?`<div class="cm-reply-bar" data-target="${m.id_reply}">
+          <div class="cm-reply-bar-name cm-rname"></div>
+          <div class="cm-reply-bar-text cm-rtext"></div>
+        </div>`:''}
+        <span class="cm-pesan"></span>
       </div>
-      <button class="cm-reply-btn" onclick="setReply(${m.id},'${escAttr(m.nama_pengirim)}','${escAttr(m.pesan)}')">
+      <button class="cm-reply-btn" data-id="${m.id}">
         <i class="fa-solid fa-reply" style="font-size:10px"></i> Balas
       </button>
     </div>`;
   }).join('');
+
+  // Set teks via textContent — aman dari XSS & karakter spesial
+  d.forEach(m=>{
+    const wrap=document.getElementById(`cmsg-${m.id}`);if(!wrap)return;
+    const nameEl=wrap.querySelector('.cm-name');
+    const pesanEl=wrap.querySelector('.cm-pesan');
+    if(nameEl)nameEl.textContent=m.nama_pengirim||'';
+    if(pesanEl)pesanEl.textContent=m.pesan||'';
+    if(m.id_reply&&(m.reply_nama||m.reply_pesan)){
+      const rname=wrap.querySelector('.cm-rname');
+      const rtext=wrap.querySelector('.cm-rtext');
+      if(rname)rname.textContent=m.reply_nama||'';
+      if(rtext){
+        const txt=m.reply_pesan||'';
+        rtext.textContent=txt.length>80?txt.substring(0,80)+'…':txt;
+      }
+    }
+  });
+
+  // Event delegation: tombol Balas
+  el.onclick=e=>{
+    const btn=e.target.closest('.cm-reply-btn');
+    if(btn){
+      const id=+btn.dataset.id;
+      const msg=d.find(m=>m.id===id);
+      if(msg)setReply(msg.id,msg.nama_pengirim,msg.pesan);
+      return;
+    }
+    const rb=e.target.closest('.cm-reply-bar');
+    if(rb)scrollToMsg(+rb.dataset.target);
+  };
   el.scrollTop=el.scrollHeight;
 }
 
@@ -6056,58 +6062,48 @@ function renderExam(){
   const b=EX.butirs;const s=EX.soal;
   scr.innerHTML=`
     <div class="exl">
-      <!-- TOP HEADER BAR -->
+
+      <!-- ── TOPBAR: logo kiri | nama peserta kanan + ikon ── -->
       <div class="exhd">
         <div class="exhd-left">
-          <div class="exhd-logo"><i class="fa-solid fa-book-open"></i></div>
+          <div class="exhd-logo">
+            ${s.logo_sekolah?`<img src="${s.logo_sekolah}" alt="logo">`:`<i class="fa-solid fa-book-open"></i>`}
+          </div>
           <div class="exhd-title">
             <h2>${s.nama_soal}</h2>
-            <p>${s.mapel} &nbsp;·&nbsp; ${s.waktu_ujian} menit &nbsp;·&nbsp; ${b.length} soal</p>
+            <p>${s.mapel} · ${s.waktu_ujian} menit · ${b.length} soal</p>
           </div>
         </div>
         <div class="exhd-right">
-          <div id="offlineInd" style="display:none;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;border:1px solid rgba(255,255,255,.3)"></div>
-          <div class="timebox">
-            <div class="tl">Waktu</div>
-            <div class="td" id="examTD">${secToTime(EX.tsec)}</div>
-          </div>
-          <button class="exhd-btn primary" onclick="toggleDaftarSoal()">
-            <i class="fa-solid fa-table-cells-large"></i>
-            <span>Daftar Soal</span>
-          </button>
-          ${s.tampil_tombol_selesai?`<button class="exhd-btn danger" onclick="selesaiUjian()">
-            <i class="fa-solid fa-flag-checkered"></i>
-            <span>Selesai</span>
-          </button>`:''}
+          <div id="offlineInd" style="display:none;align-items:center;gap:5px;padding:4px 10px;border-radius:6px;font-size:11px;font-weight:600;border:1.5px solid rgba(255,255,255,.3);background:rgba(255,255,255,.1);color:#fff"></div>
+          <span class="exhd-peserta">${sis.nama_siswa||''}</span>
+          <button class="exhd-icon-btn" title="Info"><i class="fa-solid fa-graduation-cap"></i></button>
         </div>
       </div>
 
-      <!-- OVERLAY daftar soal -->
+      <!-- Overlay daftar soal -->
       <div class="exsb-overlay" id="exsbOverlay" onclick="closeDaftarSoal()"></div>
 
-      <!-- MODAL DAFTAR SOAL -->
+      <!-- Modal daftar soal (menggantung di bawah topbar) -->
       <div class="exsb" id="exSidebar">
-        <div class="exsb-panel">
-          <div class="exsb-panel-hd">
-            <h3><i class="fa-solid fa-table-cells-large" style="margin-right:6px"></i>Daftar Soal</h3>
-            <button class="exsb-close" onclick="closeDaftarSoal()">
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-          <div class="exsb-panel-body">
-            <div class="ng" id="numGrid"></div>
-            <div class="leg">
-              <div class="legi"><div class="legd" style="background:var(--em);border:none"></div>Sedang</div>
-              <div class="legi"><div class="legd" style="background:#34d399"></div>Dijawab</div>
-              <div class="legi"><div class="legd" style="background:var(--wa2)"></div>Ragu-ragu</div>
-              <div class="legi"><div class="legd" style="background:#e2e8f0;border:1px solid #cbd5e1"></div>Belum</div>
-            </div>
+        <div class="exsb-panel-hd">
+          <h3><i class="fa-solid fa-table-cells-large" style="margin-right:7px"></i>Daftar Soal</h3>
+          <button class="exsb-close" onclick="closeDaftarSoal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="exsb-panel-body">
+          <div id="numGrid"></div>
+          <div class="leg">
+            <div class="legi"><div class="legd" style="background:var(--em)"></div>Sedang</div>
+            <div class="legi"><div class="legd" style="background:#34d399"></div>Dijawab</div>
+            <div class="legi"><div class="legd" style="background:var(--wa2)"></div>Ragu-ragu</div>
+            <div class="legi"><div class="legd" style="background:#e2e8f0;border:1px solid #d1d5db"></div>Belum</div>
           </div>
         </div>
       </div>
 
-      <!-- MAIN CONTENT -->
+      <!-- Main scroll area -->
       <div class="exmain" id="exMain"></div>
+
     </div>`;
   updateNumGrid();renderSoal(EX.cur);startTimer();startAutoSave();
   updateOfflineIndicator();
@@ -6178,31 +6174,63 @@ function renderSoal(n){
   }
   const isRagu=!!EX.ragu[n];
   const isSaved=EX.jaw[n]!==undefined&&EX.jaw[n]!=='';
+  // Bungkus opsi pilihan ganda & PGK dalam kotak abu-abu tipis (ANBK style)
+  const isOpsiBox=(tipe==='Pilihan Ganda'||tipe==='Pilihan Ganda Kompleks');
   el.innerHTML=`
-    <!-- Soal nomor + mapel (di luar card, seperti ANBK) -->
-    <div class="exsoal-meta">
-      <div class="exsoal-nomor">Soal nomor ${n}</div>
-      <div class="exsoal-mapel">${EX.soal.mapel}</div>
-    </div>
-    <div class="exsoal-divider"></div>
+    <!-- WHITE CARD utama -->
+    <div class="ex-card">
 
-    <div class="soalcard-wrapper">
-      <div class="soalcard">
+      <!-- Sub-header: nomor+mapel kiri | timer+tombol kanan -->
+      <div class="ex-card-head">
+        <div class="ex-card-head-l">
+          <div class="exsoal-nomor">Soal nomor ${n}</div>
+          <div class="exsoal-mapel">${EX.soal.mapel}</div>
+        </div>
+        <div class="ex-card-head-r">
+          <div class="timebox">
+            <div class="tl">Sisa Waktu</div>
+            <div class="td" id="examTD">${secToTime(EX.tsec)}</div>
+          </div>
+          <button class="exhd-btn info-soal" onclick="showInfoSoal()">
+            <i class="fa-solid fa-circle-info"></i>
+            <span>Informasi Soal</span>
+          </button>
+          <button class="exhd-btn daftar-soal" onclick="toggleDaftarSoal()">
+            <i class="fa-solid fa-table-cells-large"></i>
+            <span>Daftar Soal</span>
+          </button>
+          ${EX.soal.tampil_tombol_selesai?`<button class="exhd-btn danger" onclick="selesaiUjian()"><i class="fa-solid fa-flag-checkered"></i><span>Selesai</span></button>`:''}
+        </div>
+      </div>
+
+      <!-- Font size control: Ukuran font soal: A A A -->
+      <div class="ex-fontctrl">
+        <span>Ukuran font soal:</span>
+        <button class="ex-fbtn sm ${EX.fontSize===13?'active':''}" onclick="setExFontSize(13)">A</button>
+        <button class="ex-fbtn md ${(!EX.fontSize||EX.fontSize===15)?'active':''}" onclick="setExFontSize(15)">A</button>
+        <button class="ex-fbtn lg ${EX.fontSize===17?'active':''}" onclick="setExFontSize(17)">A</button>
+      </div>
+
+      <!-- Soal body: teks + pilihan -->
+      <div class="ex-card-body">
         <span class="stipe">${b.tipe_soal}</span>
         <div class="stxt">${applyArabic(b.pertanyaan)}</div>
-        ${pilihanHtml}
+        ${isOpsiBox
+          ?`<div class="opsi-wrap">${pilihanHtml}</div>`
+          :pilihanHtml}
       </div>
+
     </div>
 
-    <!-- Nav bar 4 tombol ANBK style -->
+    <!-- Fixed nav bar: 4 tombol berwarna -->
     <div class="exnav">
       <button class="btn-prev" onclick="goSoal(${Math.max(1,n-1)})" ${n<=1?'disabled':''}>
         <i class="fa-solid fa-chevron-left"></i>
         <span class="btn-prev-txt">Soal Sebelumnya</span>
       </button>
       <button class="btn-ragu ${isRagu?'active':''}" onclick="toggleRagu(${n})">
-        <i class="fa-${isRagu?'solid':'regular'} fa-flag"></i>
-        <span class="btn-ragu-text">${isRagu?'Batal Ragu':'Ragu - Ragu'}</span>
+        <i class="fa-${isRagu?'solid':'regular'} fa-bookmark"></i>
+        <span class="btn-ragu-text">Ragu - Ragu</span>
       </button>
       <button class="btn-save" onclick="simpanJawaban(${n})">
         <i class="fa-solid fa-floppy-disk"></i>
@@ -6219,6 +6247,8 @@ function renderSoal(n){
           </button>`}
     </div>
   `;
+  // Sync timer display ke elemen baru
+  const tdEl=$('examTD');if(tdEl){tdEl.textContent=secToTime(EX.tsec);}
 }
 
 function pilihPG(n,val){EX.jaw[n]=val;updateNumGrid();renderSoal(n);}
@@ -6280,9 +6310,38 @@ function startTimer(){
     EX.tsec--;
     const t=secToTime(EX.tsec);
     const cls='td'+(EX.tsec<=300?' warn':'')+(EX.tsec<=60?' dang':'');
+    // examTD ada di dalam ex-card-head (di-render ulang tiap goSoal)
     const el=$('examTD');if(el){el.textContent=t;el.className=cls;}
     if(EX.tsec<=0){clearInterval(EX.timer);autoSubmit();}
   },1000);
+}
+
+// Font size control
+function setExFontSize(px){
+  EX.fontSize=px;
+  document.documentElement.style.setProperty('--exfont',px+'px');
+  // Update active button tanpa re-render soal penuh
+  document.querySelectorAll('.ex-fbtn').forEach(b=>{
+    b.classList.toggle('active',parseInt(b.textContent)===px||
+      (px===15&&b.classList.contains('md'))||
+      (px===13&&b.classList.contains('sm'))||
+      (px===17&&b.classList.contains('lg')));
+  });
+  // Hitung active berdasarkan ukuran
+  document.querySelectorAll('.ex-fbtn').forEach(b=>{b.classList.remove('active')});
+  const map={13:'sm',15:'md',17:'lg'};
+  const cls=map[px]||'md';
+  document.querySelector(`.ex-fbtn.${cls}`)?.classList.add('active');
+}
+
+// Info soal popup sederhana
+function showInfoSoal(){
+  const s=EX.soal;
+  const total=EX.butirs.length;
+  const dijawab=Object.values(EX.jaw).filter(v=>v!==undefined&&v!=='').length;
+  const ragu=Object.values(EX.ragu).filter(Boolean).length;
+  const belum=total-dijawab;
+  alert(`ℹ️ Informasi Soal\n\n📋 Paket: ${s.nama_soal}\n📚 Mapel: ${s.mapel}\n⏱ Durasi: ${s.waktu_ujian} menit\n\n✅ Dijawab: ${dijawab} soal\n⚠️ Ragu-ragu: ${ragu} soal\n⬜ Belum dijawab: ${belum} soal`);
 }
 
 // ── Daftar Soal Modal (ANBK style) ──
@@ -6520,30 +6579,58 @@ async function loadSChat(){
     el.innerHTML='<div style="text-align:center;color:var(--mu);padding:30px;font-size:13px"><i class="fa-regular fa-comment-dots" style="font-size:28px;display:block;margin-bottom:8px"></i>Belum ada pesan. Kirim pesan pertama Anda!</div>';
     return;
   }
+  const isMe=m=>(m.id_siswa===sis.id_siswa&&m.role!=='admin')||m.role==='siswa';
   el.innerHTML=d.map(m=>{
-    const me=m.id_siswa===sis.id_siswa||m.role==='siswa';
-    let replyBar='';
-    if(m.id_reply&&(m.reply_nama||m.reply_pesan)){
-      replyBar=`<div class="cm-reply-bar" onclick="scrollToMsg(${m.id_reply})">
-        <div class="cm-reply-bar-name">${escHtml(m.reply_nama||'')}</div>
-        <div class="cm-reply-bar-text">${escHtml((m.reply_pesan||'').substring(0,80))}${(m.reply_pesan||'').length>80?'…':''}</div>
-      </div>`;
-    }
-    return`<div class="cm-wrap ${me?'is-me':'is-other'}" id="cmsg-${m.id}"
-        style="align-self:${me?'flex-end':'flex-start'};display:flex;flex-direction:column;max-width:72%">
+    const me=isMe(m);
+    const hasReply=m.id_reply&&(m.reply_nama||m.reply_pesan);
+    return`<div class="cm-wrap ${me?'is-me':'is-other'}" id="cmsg-${m.id}" style="align-self:${me?'flex-end':'flex-start'}">
       <div class="cmmeta" style="justify-content:${me?'flex-end':'flex-start'}">
         ${!me?`<i class="fa-solid fa-chalkboard-teacher" style="font-size:9px;color:var(--p)"></i>`:''}
-        <span>${escHtml(m.nama_pengirim)}</span><span>·</span><span>${fdt(m.waktu)}</span>
+        <span class="cm-name"></span><span>·</span><span>${fdt(m.waktu)}</span>
       </div>
       <div class="cm ${me?'me':'other'}">
-        ${replyBar}
-        ${escHtml(m.pesan)}
+        ${hasReply?`<div class="cm-reply-bar" data-target="${m.id_reply}">
+          <div class="cm-reply-bar-name cm-rname"></div>
+          <div class="cm-reply-bar-text cm-rtext"></div>
+        </div>`:''}
+        <span class="cm-pesan"></span>
       </div>
-      <button class="cm-reply-btn" onclick="setSReply(${m.id},'${escAttr(m.nama_pengirim)}','${escAttr(m.pesan)}')">
+      <button class="cm-reply-btn" data-id="${m.id}">
         <i class="fa-solid fa-reply" style="font-size:10px"></i> Balas
       </button>
     </div>`;
   }).join('');
+
+  // Set teks via textContent
+  d.forEach(m=>{
+    const wrap=document.getElementById(`cmsg-${m.id}`);if(!wrap)return;
+    const nameEl=wrap.querySelector('.cm-name');
+    const pesanEl=wrap.querySelector('.cm-pesan');
+    if(nameEl)nameEl.textContent=m.nama_pengirim||'';
+    if(pesanEl)pesanEl.textContent=m.pesan||'';
+    if(m.id_reply&&(m.reply_nama||m.reply_pesan)){
+      const rname=wrap.querySelector('.cm-rname');
+      const rtext=wrap.querySelector('.cm-rtext');
+      if(rname)rname.textContent=m.reply_nama||'';
+      if(rtext){
+        const txt=m.reply_pesan||'';
+        rtext.textContent=txt.length>80?txt.substring(0,80)+'…':txt;
+      }
+    }
+  });
+
+  // Event delegation
+  el.onclick=e=>{
+    const btn=e.target.closest('.cm-reply-btn');
+    if(btn){
+      const id=+btn.dataset.id;
+      const msg=d.find(m=>m.id===id);
+      if(msg)setSReply(msg.id,msg.nama_pengirim,msg.pesan);
+      return;
+    }
+    const rb=e.target.closest('.cm-reply-bar');
+    if(rb)scrollToMsg(+rb.dataset.target);
+  };
   el.scrollTop=el.scrollHeight;
 }
 
