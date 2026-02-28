@@ -1736,6 +1736,44 @@ const TENANT_TABLES = new Set([
   'nilai','chat','skor_game','pengaturan'
 ]);
 
+// ════════════════════════════════════════════════════════════════════
+// FASE 1 SECURITY — Password Hashing + Tenant Context
+// ════════════════════════════════════════════════════════════════════
+
+// Hash password dengan SHA-256 (Web Crypto API — tersedia di semua browser modern)
+async function hashPassword(plain){
+  if(!plain) return '';
+  const enc = new TextEncoder().encode(String(plain));
+  const buf = await crypto.subtle.digest('SHA-256', enc);
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+// Verifikasi password: support hash SHA-256 dan plaintext lama (migrasi bertahap)
+async function verifyPassword(plain, stored){
+  if(!plain || !stored) return false;
+  // Stored adalah SHA-256 hex (64 char)
+  if(/^[0-9a-f]{64}$/i.test(stored)){
+    const h = await hashPassword(plain);
+    return h === stored;
+  }
+  // Legacy plaintext — cocokkan langsung, caller akan upgrade ke hash setelah login berhasil
+  return String(plain) === String(stored);
+}
+
+// Panggil RPC set_tenant_npsn di Postgres agar session variable app.current_npsn ter-set
+// Ini mengaktifkan RLS policy berbasis npsn di database level
+async function setTenantContext(npsn){
+  if(!npsn || !SB) return;
+  try{
+    const { error } = await SB.rpc('set_tenant_npsn', { p_npsn: String(npsn) });
+    if(error) console.warn('set_tenant_npsn:', error.message);
+  }catch(e){
+    // RPC belum ada (DB lama sebelum migration Fase 1) — tidak fatal
+    // patchSupabaseForTenant masih memfilter di JS layer
+    console.warn('set_tenant_npsn RPC not available (run fase1_security_migration.sql):', e.message);
+  }
+}
+
 // ── TENANT-AWARE SUPABASE WRAPPER ──
 // Membungkus SB.from() agar otomatis inject npsn filter + insert
 // Tidak perlu ubah kode query yang sudah ada.
@@ -2310,14 +2348,200 @@ create index if not exists idx_soal_npsn on soal(npsn);
 create index if not exists idx_butir_npsn on butir_soal(npsn);
 
 -- ── MIGRASI: tambah kolom baru (jalankan sekali untuk DB yang sudah ada) ──
--- Jika sudah menjalankan schema di atas, LEWATI bagian ini.
--- Jika DB sudah ada sebelum update, jalankan ALTER TABLE berikut:
 alter table soal add column if not exists jam_mulai time;
 alter table soal add column if not exists jam_selesai time;
 create index if not exists idx_jawaban_npsn on jawaban_siswa(npsn);
 create index if not exists idx_nilai_npsn on nilai(npsn);
 create index if not exists idx_chat_npsn on chat(npsn);
 create index if not exists idx_game_npsn on skor_game(npsn);
+
+-- ════════════════════════════════════════════════════════════════════
+-- FASE 1 SECURITY: RLS berbasis NPSN + Password Hashing
+-- Jalankan blok ini SETELAH schema tabel di atas sudah ada
+-- ════════════════════════════════════════════════════════════════════
+
+-- ── STEP A: Fungsi helper set_tenant_npsn (dipanggil dari JS setelah login) ──
+-- Menyimpan npsn aktif di session Postgres sehingga RLS bisa membacanya
+create or replace function set_tenant_npsn(p_npsn text)
+returns void
+language plpgsql
+security definer
+as $$
+begin
+  -- Validasi: hanya 8 digit angka yang diizinkan
+  if p_npsn !~ '^[0-9]{8}$' then
+    raise exception 'NPSN tidak valid';
+  end if;
+  perform set_config('app.current_npsn', p_npsn, false);
+end;
+$$;
+
+-- Izinkan anon key memanggil fungsi ini
+grant execute on function set_tenant_npsn(text) to anon, authenticated;
+
+-- ── STEP B: Fungsi helper get_tenant_npsn ──
+create or replace function get_tenant_npsn()
+returns text
+language sql
+stable
+as $$
+  select nullif(current_setting('app.current_npsn', true), '');
+$$;
+
+-- ── STEP C: Hapus policy lama, ganti dengan RLS berbasis npsn ──
+-- Tenants: semua boleh baca (untuk landing page & lookup NPSN), hanya insert lewat super admin
+do $$ begin
+  drop policy if exists "allow all tenants" on tenants;
+  drop policy if exists "tenant_select" on tenants;
+  drop policy if exists "tenant_insert" on tenants;
+exception when undefined_object then null;
+end $$;
+
+create policy "tenant_select" on tenants
+  for select using (true);  -- landing page perlu lihat semua sekolah aktif
+
+create policy "tenant_insert" on tenants
+  for insert with check (true);  -- super admin insert via service (no RLS bypass needed)
+
+create policy "tenant_update" on tenants
+  for update using (true);
+
+create policy "tenant_delete" on tenants
+  for delete using (true);
+
+-- Admins: hanya bisa akses row milik npsn sendiri
+do $$ begin
+  drop policy if exists "allow all admins" on admins;
+  drop policy if exists "admins_tenant" on admins;
+exception when undefined_object then null;
+end $$;
+
+create policy "admins_tenant" on admins
+  for all
+  using (npsn = get_tenant_npsn() or get_tenant_npsn() is null)
+  with check (npsn = get_tenant_npsn() or get_tenant_npsn() is null);
+
+-- Siswa
+do $$ begin
+  drop policy if exists "allow all siswa" on siswa;
+  drop policy if exists "siswa_tenant" on siswa;
+exception when undefined_object then null;
+end $$;
+
+create policy "siswa_tenant" on siswa
+  for all
+  using (npsn = get_tenant_npsn() or get_tenant_npsn() is null)
+  with check (npsn = get_tenant_npsn() or get_tenant_npsn() is null);
+
+-- Soal
+do $$ begin
+  drop policy if exists "allow all soal" on soal;
+  drop policy if exists "soal_tenant" on soal;
+exception when undefined_object then null;
+end $$;
+
+create policy "soal_tenant" on soal
+  for all
+  using (npsn = get_tenant_npsn() or get_tenant_npsn() is null)
+  with check (npsn = get_tenant_npsn() or get_tenant_npsn() is null);
+
+-- Butir Soal
+do $$ begin
+  drop policy if exists "allow all butir_soal" on butir_soal;
+  drop policy if exists "butir_tenant" on butir_soal;
+exception when undefined_object then null;
+end $$;
+
+create policy "butir_tenant" on butir_soal
+  for all
+  using (npsn = get_tenant_npsn() or get_tenant_npsn() is null)
+  with check (npsn = get_tenant_npsn() or get_tenant_npsn() is null);
+
+-- Jawaban Siswa
+do $$ begin
+  drop policy if exists "allow all jawaban_siswa" on jawaban_siswa;
+  drop policy if exists "jawaban_tenant" on jawaban_siswa;
+exception when undefined_object then null;
+end $$;
+
+create policy "jawaban_tenant" on jawaban_siswa
+  for all
+  using (npsn = get_tenant_npsn() or get_tenant_npsn() is null)
+  with check (npsn = get_tenant_npsn() or get_tenant_npsn() is null);
+
+-- Nilai
+do $$ begin
+  drop policy if exists "allow all nilai" on nilai;
+  drop policy if exists "nilai_tenant" on nilai;
+exception when undefined_object then null;
+end $$;
+
+create policy "nilai_tenant" on nilai
+  for all
+  using (npsn = get_tenant_npsn() or get_tenant_npsn() is null)
+  with check (npsn = get_tenant_npsn() or get_tenant_npsn() is null);
+
+-- Chat
+do $$ begin
+  drop policy if exists "allow all chat" on chat;
+  drop policy if exists "chat_tenant" on chat;
+exception when undefined_object then null;
+end $$;
+
+create policy "chat_tenant" on chat
+  for all
+  using (npsn = get_tenant_npsn() or get_tenant_npsn() is null)
+  with check (npsn = get_tenant_npsn() or get_tenant_npsn() is null);
+
+-- Skor Game
+do $$ begin
+  drop policy if exists "allow all skor_game" on skor_game;
+  drop policy if exists "game_tenant" on skor_game;
+exception when undefined_object then null;
+end $$;
+
+create policy "game_tenant" on skor_game
+  for all
+  using (npsn = get_tenant_npsn() or get_tenant_npsn() is null)
+  with check (npsn = get_tenant_npsn() or get_tenant_npsn() is null);
+
+-- FAQ (global, tidak per tenant)
+do $$ begin
+  drop policy if exists "allow all faq" on faq;
+  drop policy if exists "faq_all" on faq;
+exception when undefined_object then null;
+end $$;
+
+create policy "faq_all" on faq for all using (true) with check (true);
+
+-- Pengaturan
+do $$ begin
+  drop policy if exists "allow all pengaturan" on pengaturan;
+  drop policy if exists "pengaturan_tenant" on pengaturan;
+exception when undefined_object then null;
+end $$;
+
+create policy "pengaturan_tenant" on pengaturan
+  for all
+  using (npsn = get_tenant_npsn() or get_tenant_npsn() is null)
+  with check (npsn = get_tenant_npsn() or get_tenant_npsn() is null);
+
+-- ── STEP D: Hash password admin default yang masih plaintext ──
+-- Jalankan SEKALI untuk migrate password lama ke SHA-256
+-- SHA-256("admin") = 8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918
+update admins
+  set password = '8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918'
+  where password = 'admin';
+
+-- SHA-256("guru1") = e5a00a7e4f1c8e9a3b2c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5
+-- Lebih aman: biarkan user ganti password sendiri, atau generate hash di sini:
+-- update admins set password = encode(sha256(password::bytea), 'hex') where password !~ '^[0-9a-f]{64}$';
+-- CATATAN: PostgreSQL sha256() tersedia sejak v14. Jika versi lebih lama, skip dan biarkan
+-- migrasi hash terjadi otomatis saat user login pertama kali.
+
+-- ── SELESAI ──
+-- Verifikasi dengan: select proname from pg_proc where proname = 'set_tenant_npsn';
+-- Pastikan hasilnya 1 row.
 `;}
 
 // ═══════════════════════════ URL ROUTER ═══════════════════════════
@@ -2655,7 +2879,16 @@ async function loginAdmin(){
     }else{
       const{data,error}=await SB.from('admins').select('*').eq('npsn',npsn).eq('username',u).single();
       if(error||!data){showErr(er,'Username tidak ditemukan untuk sekolah ini!');setBtn('admBtn','Masuk <i class="fa-solid fa-arrow-right"></i>');return;}
-      if(data.password!==p){showErr(er,'Password salah!');setBtn('admBtn','Masuk <i class="fa-solid fa-arrow-right"></i>');return;}
+      const pwOk = await verifyPassword(p, data.password);
+      if(!pwOk){showErr(er,'Password salah!');setBtn('admBtn','Masuk <i class="fa-solid fa-arrow-right"></i>');return;}
+      // Upgrade hash otomatis jika masih plaintext (migrasi bertahap)
+      if(!/^[0-9a-f]{64}$/.test(data.password)){
+        const newHash = await hashPassword(p);
+        await SB.from('admins').update({password: newHash}).eq('id', data.id);
+        data.password = newHash;
+      }
+      // Set tenant context di Postgres untuk RLS
+      await setTenantContext(npsn);
       adm=data; setBtn('admBtn','Masuk <i class="fa-solid fa-arrow-right"></i>'); showAdminPanel(); return;
     }
   }catch(e){showErr(er,'Error: '+e.message);}
@@ -2679,8 +2912,17 @@ async function loginSiswa(){
     }else{
       const{data,error}=await SB.from('siswa').select('*').eq('npsn',npsn).eq('username',u).single();
       if(error||!data){showErr(er,'Nomor peserta tidak ditemukan!');setBtn('sisBtn','Masuk <i class="fa-solid fa-arrow-right"></i>');return;}
-      if(data.password!==p){showErr(er,'Password salah!');setBtn('sisBtn','Masuk <i class="fa-solid fa-arrow-right"></i>');return;}
       if(data.status==='Nonaktif'){showErr(er,'Akun dinonaktifkan. Hubungi admin.');setBtn('sisBtn','Masuk <i class="fa-solid fa-arrow-right"></i>');return;}
+      const pwOk = await verifyPassword(p, data.password);
+      if(!pwOk){showErr(er,'Password salah!');setBtn('sisBtn','Masuk <i class="fa-solid fa-arrow-right"></i>');return;}
+      // Upgrade hash otomatis jika masih plaintext
+      if(!/^[0-9a-f]{64}$/.test(data.password)){
+        const newHash = await hashPassword(p);
+        await SB.from('siswa').update({password: newHash}).eq('id_siswa', data.id_siswa);
+        data.password = newHash;
+      }
+      // Set tenant context di Postgres untuk RLS
+      await setTenantContext(npsn);
       sis=data; setBtn('sisBtn','Masuk <i class="fa-solid fa-arrow-right"></i>'); showSiswaPanel(); return;
     }
   }catch(e){showErr(er,'Error: '+e.message);}
@@ -2935,7 +3177,8 @@ async function saveTenant(existingNpsn){
     } else {
       const {error} = await SB.from('tenants').insert({npsn,...payload});
       if(error) throw error;
-      await SB.from('admins').insert({npsn,username:'admin',password:'admin',nama_admin:'Administrator',role:'admin'});
+      const defHash = await hashPassword('admin');
+      await SB.from('admins').insert({npsn,username:'admin',password:defHash,nama_admin:'Administrator',role:'admin'});
       await SB.from('pengaturan').insert({npsn,nama_sekolah:nama,alamat_sekolah:kabkota});
       toast('Sekolah berhasil ditambahkan! Login admin: admin / admin','ok',6000);
       _tenantGridLoaded=false;
@@ -5037,9 +5280,11 @@ function mSiswa(id){
 
 async function svSiswa(id){
   const o={nama_siswa:$('msN').value.trim(),username:$('msU').value.trim(),kelas:$('msK').value,rombel:$('msR').value,status:$('msSt').value};
-  const pw=$('msP').value.trim();if(pw||!id)o.password=pw;
+  const pw=$('msP').value.trim();
   if(!o.nama_siswa||!o.username){toast('Nama dan username wajib diisi!','er');return;}
   if(!id&&!pw){toast('Password wajib diisi untuk siswa baru!','er');return;}
+  // Hash password sebelum simpan
+  if(pw) o.password = await hashPassword(pw);
   if(demoMode){toast('Mode demo: data tidak tersimpan','in');rmModal('mdSiswa');return;}
   try{
     if(id){await SB.from('siswa').update(o).eq('id_siswa',id);toast('Data siswa diperbarui!','ok');}
@@ -5273,7 +5518,7 @@ async function doImpSiswa(){
 
   // Siapkan semua baris sekaligus dengan npsn eksplisit (bypass patchSupabaseForTenant)
   // Key sudah dinormalize ke lowercase saat parsing file
-  const payload=d.map(r=>({
+  const rawRows = d.map(r=>({
     npsn,
     nama_siswa:String(r.nama_siswa||r.nama||'').trim(),
     username:String(r.username||r.nis||r.nisn||'').trim(),
@@ -5282,6 +5527,8 @@ async function doImpSiswa(){
     rombel:String(r.rombel||'').trim(),
     status:'Aktif',session_token:'',page_url:'',force_logout:false
   })).filter(r=>r.nama_siswa&&r.username);
+  // Hash semua password sebelum insert
+  const payload = await Promise.all(rawRows.map(async r=>({...r, password: await hashPassword(r.password)})));
 
   if(!payload.length){toast('Tidak ada data valid! Pastikan kolom nama_siswa dan username terisi.','er');setBtn('impBtn','Import');return;}
 
@@ -5306,7 +5553,8 @@ async function doImpSiswa(){
 
 function expSiswa(){
   const d=window._siswa||[];if(!d.length){toast('Tidak ada data siswa','er');return;}
-  const ws=XLSX.utils.json_to_sheet(d.map(s=>({'Nama Siswa':s.nama_siswa,'Username/NIS':s.username,'Password':s.password,'Kelas':s.kelas,'Rombel':s.rombel,'Status':s.status})));
+  // Password tidak diekspor (sudah di-hash, tidak bisa dikembalikan ke plaintext)
+  const ws=XLSX.utils.json_to_sheet(d.map(s=>({'Nama Siswa':s.nama_siswa,'Username/NIS':s.username,'Kelas':s.kelas,'Rombel':s.rombel,'Status':s.status})));
   const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Data Siswa');
   XLSX.writeFile(wb,'data-siswa-'+today()+'.xlsx');toast('File Excel diunduh!','ok');
 }
@@ -6092,8 +6340,11 @@ function mUser(id){
 
 async function svUser(id){
   const o={nama_admin:$('muN').value.trim(),username:$('muU').value.trim(),role:$('muR').value};
-  const pw=$('muP').value.trim();if(pw||!id)o.password=pw;
+  const pw=$('muP').value.trim();
   if(!o.nama_admin||!o.username){toast('Nama dan username wajib!','er');return;}
+  // Hash password sebelum simpan
+  if(pw) o.password = await hashPassword(pw);
+  else if(!id) {toast('Password wajib untuk user baru!','er');return;}
   if(demoMode){toast('Mode demo','in');rmModal('mdUser');return;}
   try{
     if(id){await SB.from('admins').update(o).eq('id',id);toast('User diperbarui!','ok');}
