@@ -4570,7 +4570,7 @@ async function rHasil(el){
   <!-- KOP SURAT — hanya tampil saat cetak -->
   <div class="print-kop" style="display:none" id="phKopH">
     ${pg.kop_custom
-      ? `<img src="${pg.kop_custom}" style="width:100%;max-height:70px;object-fit:contain;display:block">`
+      ? `<img src="${pg.kop_custom}" style="width:100%;height:auto;display:block">`
       : `<div class="print-kop-inner">
            ${(pg.logo_sekolah) ? `<img src="${pg.logo_sekolah}" class="print-kop-logo" onerror="this.style.display='none'" alt="">` : ''}
            <div class="print-kop-teks">
@@ -4709,7 +4709,7 @@ function cetakLaporanHasil(){
   const kopEl=$('phKopH');
   if(kopEl){
     if(pg.kop_custom){
-      kopEl.innerHTML=`<img src="${pg.kop_custom}" style="width:100%;max-height:70px;object-fit:contain;display:block">`;
+      kopEl.innerHTML=`<img src="${pg.kop_custom}" style="width:100%;height:auto;display:block">`;
     } else {
       kopEl.innerHTML=`<div class="print-kop-inner">
         ${pg.logo_sekolah?`<img src="${pg.logo_sekolah}" class="print-kop-logo" onerror="this.style.display='none'" alt="">`:'<div class="print-kop-logo" style="display:flex;align-items:center;justify-content:center;border:1pt solid #ccc;font-size:8pt;color:#999;text-align:center;line-height:1.2">Logo<br>Sekolah</div>'}
@@ -4995,7 +4995,7 @@ async function rAnalisa(el){
   <!-- KOP CETAK -->
   <div class="print-kop" style="display:none" id="phKopA">
     ${pg.kop_custom
-      ? `<img src="${pg.kop_custom}" style="width:100%;max-height:70px;object-fit:contain;display:block">`
+      ? `<img src="${pg.kop_custom}" style="width:100%;height:auto;display:block">`
       : `<div class="print-kop-inner">
            ${(pg.logo_sekolah) ? `<img src="${pg.logo_sekolah}" class="print-kop-logo" onerror="this.style.display='none'" alt="">` : ''}
            <div class="print-kop-teks">
@@ -5183,7 +5183,7 @@ function cetakLaporanAnalisa(){
   const kopEl=$('phKopA');
   if(kopEl){
     if(pg.kop_custom){
-      kopEl.innerHTML=`<img src="${pg.kop_custom}" style="width:100%;max-height:70px;object-fit:contain;display:block">`;
+      kopEl.innerHTML=`<img src="${pg.kop_custom}" style="width:100%;height:auto;display:block">`;
     } else {
       kopEl.innerHTML=`<div class="print-kop-inner">
         ${pg.logo_sekolah?`<img src="${pg.logo_sekolah}" class="print-kop-logo" onerror="this.style.display='none'" alt="">`:'<div class="print-kop-logo" style="display:flex;align-items:center;justify-content:center;border:1pt solid #ccc;font-size:8pt;color:#999;text-align:center;line-height:1.2">Logo<br>Sekolah</div>'}
@@ -5338,7 +5338,7 @@ async function printKartu(){
   const namaSkl=pg.nama_sekolah||'NAMA SEKOLAH';
   const logoSrc=pg.logo_sekolah||'';
   const kopHtml=pg.kop_custom
-    ?`<div style="border-bottom:2.5pt solid #000;padding-bottom:6px;margin-bottom:10px"><img src="${pg.kop_custom}" style="width:100%;max-height:70px;object-fit:contain;display:block"></div>`
+    ?`<div style="border-bottom:2.5pt solid #000;padding-bottom:6px;margin-bottom:10px"><img src="${pg.kop_custom}" style="width:100%;height:auto;display:block"></div>`
     :`<div style="display:flex;align-items:center;gap:10px;border-bottom:2.5pt solid #000;padding-bottom:8px;margin-bottom:10px">
         ${logoSrc?`<img src="${logoSrc}" alt="Logo" style="width:16mm;height:16mm;object-fit:contain;flex-shrink:0" onerror="this.style.display='none'">`:''}
         <div style="flex:1;text-align:center">
@@ -5893,7 +5893,7 @@ async function cetakHadir(){
     </style>
   </head><body>
     ${useKopImg
-      ? `<div style="border-bottom:2.5pt solid #000;padding-bottom:6px;margin-bottom:8px"><img src="${pg.kop_custom}" style="width:100%;max-height:75px;object-fit:contain;display:block"></div>`
+      ? `<div style="border-bottom:2.5pt solid #000;padding-bottom:6px;margin-bottom:8px"><img src="${pg.kop_custom}" style="width:100%;height:auto;display:block"></div>`
       : `<div class="kop">
            ${logoSrc ? `<img src="${logoSrc}" alt="Logo" onerror="this.style.display='none'">` : ''}
            <div class="kop-teks">
@@ -6039,7 +6039,7 @@ async function cetakBeritaAcara(){
 
     <!-- KOP DINAMIS -->
     ${useKopImg
-      ? `<div style="border-bottom:2.5pt solid #000;padding-bottom:6px;margin-bottom:8px"><img src="${pg.kop_custom}" style="width:100%;max-height:75px;object-fit:contain;display:block"></div>`
+      ? `<div style="border-bottom:2.5pt solid #000;padding-bottom:6px;margin-bottom:8px"><img src="${pg.kop_custom}" style="width:100%;height:auto;display:block"></div>`
       : `<div class="kop">
            ${logoSrc ? `<img src="${logoSrc}" alt="Logo" onerror="this.style.display='none'">` : ''}
            <div class="kop-teks">
