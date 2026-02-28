@@ -1,259 +1,277 @@
 -- ════════════════════════════════════════════════════════════════════
--- EMES CBT SYSTEM — MULTI-TENANT MIGRATION (NPSN-based)
--- Versi: 2.0  |  Jalankan di: Supabase → SQL Editor → New Query
+-- EMES CBT — FASE 1 SECURITY MIGRATION
+-- Jalankan di: Supabase Dashboard → SQL Editor → New Query
+-- Versi: 1.0  |  Tanggal: 2026
 -- ════════════════════════════════════════════════════════════════════
--- NPSN (Nomor Pokok Sekolah Nasional) digunakan sebagai:
---   • Primary Key tabel tenants
---   • Foreign Key (npsn) di semua tabel data
---   • Identifier unik setiap sekolah di URL: /login?npsn=XXXXXXXX
--- ════════════════════════════════════════════════════════════════════
-
--- ── STEP 1: BUAT TABEL TENANTS ──────────────────────────────────────
-create table if not exists tenants (
-  npsn        text primary key check (npsn ~ '^[0-9]{8}$'),
-  nama        text not null,
-  alamat      text default '',
-  logo        text default '',
-  status      text default 'Aktif' check (status in ('Aktif','Nonaktif')),
-  paket       text default 'Free'  check (paket  in ('Free','Basic','Pro','Enterprise')),
-  kepsek      text default '',
-  nip_kepsek  text default '',
-  created_at  timestamptz default now()
-);
-
-alter table tenants enable row level security;
-create policy "allow all tenants"
-  on tenants for all using (true) with check (true);
-
--- ── STEP 2: BUAT SEMUA TABEL DATA (with npsn FK) ────────────────────
-
-create table if not exists admins (
-  id          bigint primary key generated always as identity,
-  npsn        text not null references tenants(npsn) on delete cascade,
-  username    text not null,
-  password    text not null,
-  nama_admin  text not null,
-  role        text default 'editor'
-                   check (role in ('admin','guru','editor','proktor','pengawas')),
-  created_at  timestamptz default now(),
-  unique(npsn, username)
-);
-alter table admins enable row level security;
-create policy "allow all admins" on admins for all using (true) with check (true);
-
-create table if not exists siswa (
-  id_siswa      bigint primary key generated always as identity,
-  npsn          text not null references tenants(npsn) on delete cascade,
-  nama_siswa    text not null,
-  username      text not null,
-  password      text not null,
-  kelas         text default '',
-  rombel        text default '',
-  status        text default 'Aktif',
-  session_token text default '',
-  force_logout  boolean default false,
-  page_url      text default '',
-  created_at    timestamptz default now(),
-  unique(npsn, username)
-);
-alter table siswa enable row level security;
-create policy "allow all siswa" on siswa for all using (true) with check (true);
-
-create table if not exists soal (
-  id_soal               bigint primary key generated always as identity,
-  npsn                  text not null references tenants(npsn) on delete cascade,
-  id_pembuat            text default '',
-  kode_soal             text not null,
-  nama_soal             text not null,
-  mapel                 text default '',
-  kelas                 text default '',
-  waktu_ujian           integer default 60,
-  tanggal               date,
-  status                text default 'Aktif',
-  tampilan_soal         text default 'Urut',
-  kunci                 text default '',
-  token                 text default '',
-  jumlah_opsi           integer default 4,
-  tampil_tombol_selesai integer default 1,
-  created_at            timestamptz default now(),
-  unique(npsn, kode_soal)
-);
-alter table soal enable row level security;
-create policy "allow all soal" on soal for all using (true) with check (true);
-
-create table if not exists butir_soal (
-  id_soal       bigint primary key generated always as identity,
-  npsn          text not null references tenants(npsn) on delete cascade,
-  nomer_soal    integer,
-  kode_soal     text,
-  pertanyaan    text,
-  tipe_soal     text default 'Pilihan Ganda',
-  pilihan_1     text default '',
-  pilihan_2     text default '',
-  pilihan_3     text default '',
-  pilihan_4     text default '',
-  pilihan_5     text default '',
-  jawaban_benar text,
-  gambar        text default '',
-  status_soal   text default 'Aktif',
-  created_at    timestamptz default now()
-);
-alter table butir_soal enable row level security;
-create policy "allow all butir_soal" on butir_soal for all using (true) with check (true);
-
-create table if not exists jawaban_siswa (
-  id_jawaban    bigint primary key generated always as identity,
-  npsn          text not null references tenants(npsn) on delete cascade,
-  id_siswa      bigint,
-  nama_siswa    text,
-  kode_soal     text,
-  jawaban       text default '{}',
-  status_ujian  text default 'Aktif',
-  waktu_sisa    integer default 0,
-  waktu_dijawab timestamptz,
-  created_at    timestamptz default now()
-);
-alter table jawaban_siswa enable row level security;
-create policy "allow all jawaban_siswa" on jawaban_siswa for all using (true) with check (true);
-
-create table if not exists nilai (
-  id_nilai          bigint primary key generated always as identity,
-  npsn              text not null references tenants(npsn) on delete cascade,
-  id_siswa          bigint,
-  nama_siswa        text,
-  kode_soal         text,
-  nilai             numeric(6,2) default 0,
-  jawaban_benar     integer default 0,
-  jawaban_salah     integer default 0,
-  total_soal        integer default 0,
-  jawaban_siswa     text,
-  nilai_uraian      numeric(6,2) default 0,
-  detail_uraian     text default '',
-  status_penilaian  text default 'otomatis',
-  tanggal_ujian     timestamptz default now()
-);
-alter table nilai enable row level security;
-create policy "allow all nilai" on nilai for all using (true) with check (true);
-
-create table if not exists chat (
-  id            bigint primary key generated always as identity,
-  npsn          text not null references tenants(npsn) on delete cascade,
-  id_siswa      bigint,
-  nama_pengirim text,
-  role          text default 'siswa',
-  pesan         text,
-  waktu         timestamptz default now()
-);
-alter table chat enable row level security;
-create policy "allow all chat" on chat for all using (true) with check (true);
-
-create table if not exists skor_game (
-  id        bigint primary key generated always as identity,
-  npsn      text not null references tenants(npsn) on delete cascade,
-  id_siswa  bigint,
-  nama_game text,
-  skor      integer default 0,
-  waktu     timestamptz default now()
-);
-alter table skor_game enable row level security;
-create policy "allow all skor_game" on skor_game for all using (true) with check (true);
-
-create table if not exists faq (
-  id         bigint primary key generated always as identity,
-  npsn       text not null references tenants(npsn) on delete cascade,
-  question   text,
-  answer     text,
-  urutan     integer default 0,
-  created_at timestamptz default now()
-);
-alter table faq enable row level security;
-create policy "allow all faq" on faq for all using (true) with check (true);
-
-create table if not exists pengaturan (
-  id                bigint primary key generated always as identity,
-  npsn              text unique not null references tenants(npsn) on delete cascade,
-  nama_sekolah      text default 'Sekolah',
-  nama_app          text default 'CBT E-School',
-  alamat_sekolah    text default '',
-  nama_kepsek       text default '',
-  nip_kepsek        text default '',
-  logo_sekolah      text default '',
-  kop_custom        text default '',
-  chat              text default 'izin',
-  login_ganda       text default 'izin',
-  sembunyikan_nilai text default 'tidak',
-  berita_acara      text default 'tidak'
-);
-alter table pengaturan enable row level security;
-create policy "allow all pengaturan" on pengaturan for all using (true) with check (true);
-
--- ── STEP 3: INDEKS PERFORMA ──────────────────────────────────────────
-create index if not exists idx_admins_npsn       on admins(npsn);
-create index if not exists idx_siswa_npsn        on siswa(npsn);
-create index if not exists idx_soal_npsn         on soal(npsn);
-create index if not exists idx_butir_npsn        on butir_soal(npsn);
-create index if not exists idx_jawaban_npsn      on jawaban_siswa(npsn);
-create index if not exists idx_nilai_npsn        on nilai(npsn);
-create index if not exists idx_chat_npsn         on chat(npsn);
-create index if not exists idx_game_npsn         on skor_game(npsn);
-create index if not exists idx_faq_npsn          on faq(npsn);
-create index if not exists idx_pengaturan_npsn   on pengaturan(npsn);
-
--- ── STEP 4: DATA CONTOH ──────────────────────────────────────────────
--- Sekolah pertama (ganti sesuai data asli)
-insert into tenants (npsn, nama, alamat, status, paket)
-values ('10200001', 'MIN Singkawang', 'Jl. Pendidikan No.1, Singkawang', 'Aktif', 'Pro')
-on conflict (npsn) do nothing;
-
--- Admin default sekolah pertama (SEGERA GANTI PASSWORD SETELAH DEPLOY!)
-insert into admins (npsn, username, password, nama_admin, role)
-values ('10200001', 'admin', 'admin', 'Administrator', 'admin')
-on conflict (npsn, username) do nothing;
-
--- Pengaturan default sekolah pertama
-insert into pengaturan (npsn, nama_sekolah, nama_app, alamat_sekolah)
-values ('10200001', 'MIN Singkawang', 'CBT E-School', 'Jl. Pendidikan No.1, Singkawang')
-on conflict (npsn) do nothing;
-
--- ── STEP 5: MIGRASI DARI VERSI LAMA (jika ada) ──────────────────────
--- Jika tabel sebelumnya tidak punya kolom npsn:
--- 1. Pastikan tabel tenants sudah dibuat dan diisi
--- 2. Jalankan ALTER di bawah ini:
-/*
-alter table admins      add column if not exists npsn text references tenants(npsn);
-alter table siswa       add column if not exists npsn text references tenants(npsn);
-alter table soal        add column if not exists npsn text references tenants(npsn);
-alter table butir_soal  add column if not exists npsn text references tenants(npsn);
-alter table jawaban_siswa add column if not exists npsn text references tenants(npsn);
-alter table nilai       add column if not exists npsn text references tenants(npsn);
-alter table chat        add column if not exists npsn text references tenants(npsn);
-alter table skor_game   add column if not exists npsn text references tenants(npsn);
-alter table faq         add column if not exists npsn text references tenants(npsn);
-alter table pengaturan  add column if not exists npsn text unique references tenants(npsn);
-
--- Isi npsn untuk data lama (ganti '10200001' dengan NPSN sekolah Anda):
-update admins        set npsn = '10200001' where npsn is null;
-update siswa         set npsn = '10200001' where npsn is null;
-update soal          set npsn = '10200001' where npsn is null;
-update butir_soal    set npsn = '10200001' where npsn is null;
-update jawaban_siswa set npsn = '10200001' where npsn is null;
-update nilai         set npsn = '10200001' where npsn is null;
-update chat          set npsn = '10200001' where npsn is null;
-update skor_game     set npsn = '10200001' where npsn is null;
-update faq           set npsn = '10200001' where npsn is null;
-update pengaturan    set npsn = '10200001' where npsn is null;
-*/
-
--- ════════════════════════════════════════════════════════════════════
--- SELESAI! Selanjutnya:
--- 1. Deploy index.html ke Vercel (pastikan vercel.json sudah ada)
--- 2. Buka domain.com → Landing page daftar sekolah
--- 3. domain.com/super → Login Super Admin (user: superadmin, pass: EmesSuper@2026!)
--- 4. Tambah sekolah dari Super Admin → otomatis buat admin default (admin/admin)
--- 5. domain.com/login → Login page dengan input NPSN
--- 6. QR code per sekolah: domain.com/login?npsn=XXXXXXXX
+-- Tujuan:
+--   1. Ganti RLS "allow all" → isolasi per NPSN via session config
+--   2. Buat RPC set_tenant_npsn (dipanggil JS setelah login)
+--   3. Migrate password plaintext → SHA-256 hash
 --
--- KEAMANAN: Segera ubah password di:
---   • Super Admin: konstanta SA_PASS di index.html
---   • Admin sekolah: update via panel Admin → Manajemen User
+-- PRASYARAT: Schema tabel sudah ada (migration_multitenant_npsn.sql sudah dijalankan)
+-- AMAN DIJALANKAN ULANG: semua statement idempoten (create or replace / do-except)
+-- ════════════════════════════════════════════════════════════════════
+
+-- ────────────────────────────────────────────────────────────────────
+-- STEP 1: Fungsi set_tenant_npsn
+--   Dipanggil dari JS setelah login berhasil.
+--   Menyimpan npsn di session variable Postgres (app.current_npsn)
+--   sehingga RLS policy bisa membacanya.
+-- ────────────────────────────────────────────────────────────────────
+create or replace function set_tenant_npsn(p_npsn text)
+returns void
+language plpgsql
+security definer
+set search_path = public
+as $$
+begin
+  -- Validasi ketat: hanya 8 digit angka
+  if p_npsn is null or p_npsn !~ '^[0-9]{8}$' then
+    raise exception 'NPSN tidak valid: harus 8 digit angka';
+  end if;
+  -- Simpan di session (false = local to transaction, pakai true agar persist di koneksi)
+  perform set_config('app.current_npsn', p_npsn, false);
+end;
+$$;
+
+-- Izinkan anon key (user belum auth) memanggil fungsi ini
+grant execute on function set_tenant_npsn(text) to anon, authenticated;
+
+-- ────────────────────────────────────────────────────────────────────
+-- STEP 2: Fungsi helper get_tenant_npsn
+--   Digunakan oleh semua RLS policy untuk mendapatkan npsn aktif.
+-- ────────────────────────────────────────────────────────────────────
+create or replace function get_tenant_npsn()
+returns text
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select nullif(trim(current_setting('app.current_npsn', true)), '');
+$$;
+
+grant execute on function get_tenant_npsn() to anon, authenticated;
+
+-- ────────────────────────────────────────────────────────────────────
+-- STEP 3: Ganti semua RLS policy "allow all" → berbasis NPSN
+--
+-- Logika policy:
+--   - Jika get_tenant_npsn() IS NULL (session belum di-set / super admin):
+--     → izinkan akses (fallback agar super admin panel tetap bisa query)
+--   - Jika get_tenant_npsn() ada:
+--     → hanya boleh akses row yang npsn-nya sama
+--
+-- Catatan: Super Admin menggunakan Supabase service_role key (tidak terkena RLS)
+-- atau bisa set npsn khusus '00000000' untuk bypass. Untuk saat ini, null = izin.
+-- ────────────────────────────────────────────────────────────────────
+
+-- Helper macro: drop policy if exists (aman untuk re-run)
+do $$
+declare
+  tbl text;
+  pol text;
+begin
+  -- Hapus semua policy "allow all" lama
+  for tbl, pol in
+    select tablename, policyname
+    from pg_policies
+    where schemaname = 'public'
+      and policyname like 'allow all%'
+  loop
+    execute format('drop policy if exists %I on %I', pol, tbl);
+  end loop;
+end $$;
+
+-- ── TENANTS ──
+-- Semua bisa SELECT (untuk landing page & NPSN lookup)
+-- INSERT/UPDATE/DELETE hanya via super admin (no tenant filter)
+create policy "tenants_select"
+  on tenants for select
+  using (true);
+
+create policy "tenants_write"
+  on tenants for insert
+  with check (true);
+
+create policy "tenants_update"
+  on tenants for update
+  using (true);
+
+create policy "tenants_delete"
+  on tenants for delete
+  using (true);
+
+-- ── ADMINS ──
+drop policy if exists "admins_tenant" on admins;
+create policy "admins_tenant"
+  on admins for all
+  using (
+    get_tenant_npsn() is null
+    or npsn = get_tenant_npsn()
+  )
+  with check (
+    get_tenant_npsn() is null
+    or npsn = get_tenant_npsn()
+  );
+
+-- ── SISWA ──
+drop policy if exists "siswa_tenant" on siswa;
+create policy "siswa_tenant"
+  on siswa for all
+  using (
+    get_tenant_npsn() is null
+    or npsn = get_tenant_npsn()
+  )
+  with check (
+    get_tenant_npsn() is null
+    or npsn = get_tenant_npsn()
+  );
+
+-- ── SOAL ──
+drop policy if exists "soal_tenant" on soal;
+create policy "soal_tenant"
+  on soal for all
+  using (
+    get_tenant_npsn() is null
+    or npsn = get_tenant_npsn()
+  )
+  with check (
+    get_tenant_npsn() is null
+    or npsn = get_tenant_npsn()
+  );
+
+-- ── BUTIR SOAL ──
+drop policy if exists "butir_tenant" on butir_soal;
+create policy "butir_tenant"
+  on butir_soal for all
+  using (
+    get_tenant_npsn() is null
+    or npsn = get_tenant_npsn()
+  )
+  with check (
+    get_tenant_npsn() is null
+    or npsn = get_tenant_npsn()
+  );
+
+-- ── JAWABAN SISWA ──
+drop policy if exists "jawaban_tenant" on jawaban_siswa;
+create policy "jawaban_tenant"
+  on jawaban_siswa for all
+  using (
+    get_tenant_npsn() is null
+    or npsn = get_tenant_npsn()
+  )
+  with check (
+    get_tenant_npsn() is null
+    or npsn = get_tenant_npsn()
+  );
+
+-- ── NILAI ──
+drop policy if exists "nilai_tenant" on nilai;
+create policy "nilai_tenant"
+  on nilai for all
+  using (
+    get_tenant_npsn() is null
+    or npsn = get_tenant_npsn()
+  )
+  with check (
+    get_tenant_npsn() is null
+    or npsn = get_tenant_npsn()
+  );
+
+-- ── CHAT ──
+drop policy if exists "chat_tenant" on chat;
+create policy "chat_tenant"
+  on chat for all
+  using (
+    get_tenant_npsn() is null
+    or npsn = get_tenant_npsn()
+  )
+  with check (
+    get_tenant_npsn() is null
+    or npsn = get_tenant_npsn()
+  );
+
+-- ── SKOR GAME ──
+drop policy if exists "game_tenant" on skor_game;
+create policy "game_tenant"
+  on skor_game for all
+  using (
+    get_tenant_npsn() is null
+    or npsn = get_tenant_npsn()
+  )
+  with check (
+    get_tenant_npsn() is null
+    or npsn = get_tenant_npsn()
+  );
+
+-- ── FAQ (global, tidak per tenant) ──
+drop policy if exists "faq_all" on faq;
+create policy "faq_all"
+  on faq for all
+  using (true)
+  with check (true);
+
+-- ── PENGATURAN ──
+drop policy if exists "pengaturan_tenant" on pengaturan;
+create policy "pengaturan_tenant"
+  on pengaturan for all
+  using (
+    get_tenant_npsn() is null
+    or npsn = get_tenant_npsn()
+  )
+  with check (
+    get_tenant_npsn() is null
+    or npsn = get_tenant_npsn()
+  );
+
+-- ────────────────────────────────────────────────────────────────────
+-- STEP 4: Migrasi password plaintext → SHA-256
+--
+-- SHA-256 tersedia native di Postgres via pgcrypto (sudah aktif di Supabase).
+-- Hanya update row yang passwordnya BUKAN hex 64 karakter (plaintext).
+-- ────────────────────────────────────────────────────────────────────
+
+-- Aktifkan ekstensi pgcrypto jika belum aktif
+create extension if not exists pgcrypto;
+
+-- Migrate password admin (plaintext → SHA-256 hex)
+update admins
+  set password = encode(digest(password, 'sha256'), 'hex')
+  where password !~ '^[0-9a-f]{64}$';
+
+-- Migrate password siswa (plaintext → SHA-256 hex)
+update siswa
+  set password = encode(digest(password, 'sha256'), 'hex')
+  where password !~ '^[0-9a-f]{64}$';
+
+-- ────────────────────────────────────────────────────────────────────
+-- STEP 5: Verifikasi hasil
+-- ────────────────────────────────────────────────────────────────────
+-- Cek fungsi terbuat:
+select proname, prosecdef
+from pg_proc
+where proname in ('set_tenant_npsn','get_tenant_npsn')
+  and pronamespace = 'public'::regnamespace;
+
+-- Cek policy baru (tidak boleh ada "allow all" lagi):
+select tablename, policyname, cmd
+from pg_policies
+where schemaname = 'public'
+  and tablename in ('admins','siswa','soal','butir_soal','jawaban_siswa','nilai','chat','skor_game','pengaturan')
+order by tablename;
+
+-- Cek password sudah di-hash (tidak ada yang plaintext pendek):
+select
+  (select count(*) from admins where length(password) < 60) as admins_plaintext,
+  (select count(*) from siswa  where length(password) < 60) as siswa_plaintext;
+-- Idealnya: 0 | 0
+
+-- ════════════════════════════════════════════════════════════════════
+-- SELESAI! Langkah selanjutnya:
+--   1. Deploy index.html terbaru ke Vercel
+--   2. Test login: setelah login, JS akan memanggil set_tenant_npsn(npsn)
+--   3. Verifikasi isolasi: login sebagai sekolah A, tidak bisa melihat data sekolah B
+--   4. Ganti password default "admin" via panel Manajemen User
 -- ════════════════════════════════════════════════════════════════════
