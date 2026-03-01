@@ -4656,8 +4656,7 @@ async function rHasil(el){
     <div class="print-ttd-box">
       <p class="ttd-tempat" id="phTtdLokasiH">……………, ………………………</p>
       <p class="ttd-role">Guru / Pengawas Ujian,</p>
-      <div class="ttd-garis"></div>
-      <p class="ttd-nama">( __________________________ )</p>
+            <p class="ttd-nama">( __________________________ )</p>
       <p class="ttd-nip">NIP. ……………………………………</p>
     </div>
   </div>`;
@@ -5058,8 +5057,7 @@ async function rAnalisa(el){
     <div class="print-ttd-box">
       <p class="ttd-tempat" id="phTtdLokasiA">……………, ………………………</p>
       <p class="ttd-role">Guru Mata Pelajaran,</p>
-      <div class="ttd-garis"></div>
-      <p class="ttd-nama">( __________________________ )</p>
+            <p class="ttd-nama">( __________________________ )</p>
       <p class="ttd-nip">NIP. ……………………………………</p>
     </div>
   </div>`;
@@ -5819,23 +5817,23 @@ async function loadHadir(){
         </tr>`).join('')}
       </tbody>
     </table>
-    <div style="margin-top:30px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 16px;text-align:center">
+    <div style="margin-top:30px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 16px;text-align:center;align-items:end">
       <div>
         <div style="font-size:10pt;font-weight:600;min-height:2.8em;display:flex;align-items:flex-start;justify-content:center">Proktor,</div>
         <div style="height:18mm"></div>
-        <div style="border-top:1px solid #000;padding-top:4px;font-size:9pt">( ……………………………… )</div>
+        <div style="font-size:9pt;padding-top:4px">( ……………………………… )</div>
         <div style="font-size:8.5pt;margin-top:3px">NIP. ………………………………</div>
       </div>
       <div>
         <div style="font-size:10pt;font-weight:600;min-height:2.8em;display:flex;align-items:flex-start;justify-content:center">Pengawas Ruang,</div>
         <div style="height:18mm"></div>
-        <div style="border-top:1px solid #000;padding-top:4px;font-size:9pt">( ……………………………… )</div>
+        <div style="font-size:9pt;padding-top:4px">( ……………………………… )</div>
         <div style="font-size:8.5pt;margin-top:3px">NIP. ………………………………</div>
       </div>
       <div>
         <div style="font-size:10pt;font-weight:600;min-height:2.8em;display:flex;align-items:flex-start;justify-content:center;flex-direction:column">Mengetahui,<br>Kepala Sekolah</div>
         <div style="height:18mm"></div>
-        <div style="border-top:1px solid #000;padding-top:4px;font-size:9pt">( ……………………………… )</div>
+        <div style="font-size:9pt;padding-top:4px">( ……………………………… )</div>
         <div style="font-size:8.5pt;margin-top:3px">NIP. ………………………………</div>
       </div>
     </div>
@@ -5895,11 +5893,10 @@ async function cetakHadir(){
       .td-ttd{width:85px;height:22px}
       .td-ket{width:70px}
       /* TTD */
-      .ttd-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 16px;margin-top:20px;page-break-inside:avoid}
+      .ttd-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 16px;margin-top:20px;page-break-inside:avoid;align-items:end}
       .ttd-box{text-align:center}
       .ttd-box .ttd-role{font-size:9pt;font-weight:700;line-height:1.5;min-height:2.8em;display:flex;align-items:flex-start;justify-content:center;flex-direction:column}
       .ttd-box .ttd-spacer{height:18mm}
-      .ttd-box .ttd-garis{border-top:1pt solid #000;margin:0 8mm 3px}
       .ttd-box .ttd-nama{font-size:9pt;font-weight:700;padding-top:3px}
       .ttd-box .ttd-nip{font-size:8pt;margin-top:2px}
     </style>
@@ -5952,15 +5949,13 @@ async function cetakHadir(){
       <div class="ttd-box">
         <div class="ttd-role">Proktor,</div>
         <div class="ttd-spacer"></div>
-        <div class="ttd-garis"></div>
-        <div class="ttd-nama">( ………………………………… )</div>
+                <div class="ttd-nama">( ………………………………… )</div>
         <div class="ttd-nip">NIP. ………………………………</div>
       </div>
       <div class="ttd-box">
         <div class="ttd-role">Pengawas Ruang,</div>
         <div class="ttd-spacer"></div>
-        <div class="ttd-garis"></div>
-        <div class="ttd-nama">( ………………………………… )</div>
+                <div class="ttd-nama">( ………………………………… )</div>
         <div class="ttd-nip">NIP. ………………………………</div>
       </div>
       <div class="ttd-box">
@@ -5969,8 +5964,7 @@ async function cetakHadir(){
         ${namaKS
           ? `<div class="ttd-nama">${namaKS}</div>
              <div class="ttd-nip">NIP. ${nipKS||'………………………………'}</div>`
-          : `<div class="ttd-garis"></div>
-             <div class="ttd-nama">…………………………………………</div>
+          : `             <div class="ttd-nama">…………………………………………</div>
              <div class="ttd-nip">NIP. ………………………………</div>`
         }
       </div>
@@ -6049,11 +6043,10 @@ async function cetakBeritaAcara(){
       .catatan-line{border-bottom:.5pt solid #bbb;min-height:16px;margin-bottom:4px}
 
       /* ── TTD 3 KOLOM ── */
-      .ttd-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 12px;margin-top:16px;page-break-inside:avoid}
+      .ttd-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 12px;margin-top:16px;page-break-inside:avoid;align-items:end}
       .ttd-box{text-align:center}
       .ttd-role{font-size:9pt;font-weight:700;line-height:1.5;min-height:2.8em;display:flex;align-items:flex-start;justify-content:center;flex-direction:column}
       .ttd-spacer{height:18mm}
-      .ttd-garis{border-top:1pt solid #000;margin:0 8mm 2px}
       .ttd-nama{font-size:8.5pt;padding-top:3px}
       .ttd-nip{font-size:8pt;margin-top:2px}
     </style>
@@ -6124,15 +6117,13 @@ async function cetakBeritaAcara(){
       <div class="ttd-box">
         <div class="ttd-role">Proktor,</div>
         <div class="ttd-spacer"></div>
-        <div class="ttd-garis"></div>
-        <div class="ttd-nama">( ………………………………… )</div>
+                <div class="ttd-nama">( ………………………………… )</div>
         <div class="ttd-nip">NIP. ………………………………</div>
       </div>
       <div class="ttd-box">
         <div class="ttd-role">Pengawas Ruang,</div>
         <div class="ttd-spacer"></div>
-        <div class="ttd-garis"></div>
-        <div class="ttd-nama">( ………………………………… )</div>
+                <div class="ttd-nama">( ………………………………… )</div>
         <div class="ttd-nip">NIP. ………………………………</div>
       </div>
       <div class="ttd-box">
@@ -6141,8 +6132,7 @@ async function cetakBeritaAcara(){
         ${namaKS
           ? `<div class="ttd-nama" style="font-weight:700">${namaKS}</div>
              <div class="ttd-nip">NIP. ${nipKS||'………………………………'}</div>`
-          : `<div class="ttd-garis"></div>
-             <div class="ttd-nama">…………………………………………</div>
+          : `             <div class="ttd-nama">…………………………………………</div>
              <div class="ttd-nip">NIP. ………………………………</div>`
         }
       </div>
