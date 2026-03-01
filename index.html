@@ -5819,19 +5819,19 @@ async function loadHadir(){
     </table>
     <div style="margin-top:30px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 16px;text-align:center;align-items:end">
       <div>
-        <div style="font-size:10pt;font-weight:600;min-height:2.8em;display:flex;align-items:flex-start;justify-content:center">Proktor,</div>
+        <div style="font-size:10pt;font-weight:600;min-height:2.8em;display:block;text-align:center">Proktor,</div>
         <div style="height:18mm"></div>
         <div style="font-size:9pt;padding-top:4px">( ……………………………… )</div>
         <div style="font-size:8.5pt;margin-top:3px">NIP. ………………………………</div>
       </div>
       <div>
-        <div style="font-size:10pt;font-weight:600;min-height:2.8em;display:flex;align-items:flex-start;justify-content:center">Pengawas Ruang,</div>
+        <div style="font-size:10pt;font-weight:600;min-height:2.8em;display:block;text-align:center">Pengawas Ruang,</div>
         <div style="height:18mm"></div>
         <div style="font-size:9pt;padding-top:4px">( ……………………………… )</div>
         <div style="font-size:8.5pt;margin-top:3px">NIP. ………………………………</div>
       </div>
       <div>
-        <div style="font-size:10pt;font-weight:600;min-height:2.8em;display:flex;align-items:flex-start;justify-content:center;flex-direction:column">Mengetahui,<br>Kepala Sekolah</div>
+        <div style="font-size:10pt;font-weight:600;min-height:2.8em;display:block;text-align:center;flex-direction:column">Mengetahui,<br>Kepala Sekolah</div>
         <div style="height:18mm"></div>
         <div style="font-size:9pt;padding-top:4px">( ……………………………… )</div>
         <div style="font-size:8.5pt;margin-top:3px">NIP. ………………………………</div>
@@ -5893,11 +5893,11 @@ async function cetakHadir(){
       .td-ttd{width:85px;height:22px}
       .td-ket{width:70px}
       /* TTD */
-      .ttd-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 16px;margin-top:20px;page-break-inside:avoid;align-items:end}
+      .ttd-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 16px;margin-top:20px;page-break-inside:avoid}
       .ttd-box{text-align:center}
-      .ttd-box .ttd-role{font-size:9pt;font-weight:700;line-height:1.5;min-height:2.8em;display:flex;align-items:flex-start;justify-content:center;flex-direction:column}
+      .ttd-box .ttd-role{font-size:9pt;font-weight:700;line-height:1.5;height:3em;text-align:center}
       .ttd-box .ttd-spacer{height:18mm}
-      .ttd-box .ttd-nama{font-size:9pt;font-weight:700;padding-top:3px}
+      .ttd-box .ttd-nama{font-size:9pt;font-weight:700}
       .ttd-box .ttd-nip{font-size:8pt;margin-top:2px}
     </style>
   </head><body>
@@ -6043,9 +6043,9 @@ async function cetakBeritaAcara(){
       .catatan-line{border-bottom:.5pt solid #bbb;min-height:16px;margin-bottom:4px}
 
       /* ── TTD 3 KOLOM ── */
-      .ttd-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 12px;margin-top:16px;page-break-inside:avoid;align-items:end}
+      .ttd-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:0 12px;margin-top:16px;page-break-inside:avoid}
       .ttd-box{text-align:center}
-      .ttd-role{font-size:9pt;font-weight:700;line-height:1.5;min-height:2.8em;display:flex;align-items:flex-start;justify-content:center;flex-direction:column}
+      .ttd-role{font-size:9pt;font-weight:700;line-height:1.5;height:3em;text-align:center}
       .ttd-spacer{height:18mm}
       .ttd-nama{font-size:8.5pt;padding-top:3px}
       .ttd-nip{font-size:8pt;margin-top:2px}
