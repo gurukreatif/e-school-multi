@@ -8,6 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;600&family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <!-- KaTeX MUST load before Quill so formula blot works -->
@@ -329,6 +330,7 @@ tbody tr:hover td{background:#fafbff}
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;600&family=Amiri:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.2.0/crypto-js.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <!-- KaTeX MUST load before Quill so formula blot works -->
@@ -1740,23 +1742,51 @@ const TENANT_TABLES = new Set([
 // FASE 1 SECURITY — Password Hashing + Tenant Context
 // ════════════════════════════════════════════════════════════════════
 
-// Hash password dengan SHA-256 (Web Crypto API — tersedia di semua browser modern)
-async function hashPassword(plain){
+// ── AES PASSWORD ENCRYPTION ──
+// Menggunakan AES (dua arah) agar password bisa ditampilkan di kartu login
+// Secret key ada di JS — ini by design untuk kemudahan operasional sekolah
+const _PK = 'EMESCBT_2026_KEY';
+
+function encryptPassword(plain){
   if(!plain) return '';
-  const enc = new TextEncoder().encode(String(plain));
-  const buf = await crypto.subtle.digest('SHA-256', enc);
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+  // Jika sudah terenkripsi (prefix ENC:), kembalikan apa adanya
+  if(String(plain).startsWith('ENC:')) return plain;
+  return 'ENC:' + CryptoJS.AES.encrypt(String(plain), _PK).toString();
 }
 
-// Verifikasi password: support hash SHA-256 dan plaintext lama (migrasi bertahap)
+function decryptPassword(stored){
+  if(!stored) return '';
+  // AES encrypted (prefix ENC:)
+  if(String(stored).startsWith('ENC:')){
+    try{
+      const bytes = CryptoJS.AES.decrypt(stored.slice(4), _PK);
+      return bytes.toString(CryptoJS.enc.Utf8) || stored;
+    }catch(e){ return stored; }
+  }
+  // Legacy plain text atau SHA-256 hash — kembalikan apa adanya
+  return stored;
+}
+
+// Wrapper async agar kompatibel dengan kode lama yang pakai await hashPassword()
+async function hashPassword(plain){
+  return encryptPassword(plain);
+}
+
+// Verifikasi password: support AES, SHA-256 lama, dan plaintext
 async function verifyPassword(plain, stored){
   if(!plain || !stored) return false;
-  // Stored adalah SHA-256 hex (64 char)
+  // AES encrypted
+  if(String(stored).startsWith('ENC:')){
+    return decryptPassword(stored) === String(plain);
+  }
+  // Legacy SHA-256 hex (64 char) — gunakan Web Crypto
   if(/^[0-9a-f]{64}$/i.test(stored)){
-    const h = await hashPassword(plain);
+    const enc = new TextEncoder().encode(String(plain));
+    const buf = await crypto.subtle.digest('SHA-256', enc);
+    const h = Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
     return h === stored;
   }
-  // Legacy plaintext — cocokkan langsung, caller akan upgrade ke hash setelah login berhasil
+  // Legacy plaintext
   return String(plain) === String(stored);
 }
 
@@ -4703,7 +4733,7 @@ function cetakLaporanHasil(){
   const soalList=window._hasilSoalList||[];
   const soal=soalList.find(s=>s.kode_soal===kode)||{};
   const data=window._hasil||[];
-  const now=new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const now=new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
 
   // Update kop — re-render sesuai kop_custom / logo_sekolah terkini
   const kopEl=$('phKopH');
@@ -5177,7 +5207,7 @@ async function loadAnalisa(){
 function cetakLaporanAnalisa(){
   const dat=window._analisaData||{};
   const pg=window._analisaPg||{};
-  const now=new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const now=new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
   const soal=dat.soal||{};
 
   // Update kop — re-render sesuai kop_custom / logo_sekolah terkini
@@ -5270,7 +5300,7 @@ function mSiswa(id){
     <div class="mbb">
       <div class="fg"><label class="fl">Nama Lengkap *</label><input id="msN" class="fc" value="${d.nama_siswa||''}" placeholder="Nama lengkap siswa"></div>
       <div class="fr"><div class="fg"><label class="fl">Username/NIS *</label><input id="msU" class="fc" value="${d.username||''}" placeholder="Nomor induk siswa"></div>
-      <div class="fg"><label class="fl">Password *</label><input id="msP" class="fc" value="${d.password||''}" placeholder="${id?'Kosong = tidak ubah':'Password baru'}"></div></div>
+      <div class="fg"><label class="fl">Password *</label><input id="msP" class="fc" value="${id?decryptPassword(d.password||''):''}" placeholder="${id?'Kosong = tidak ubah':'Password baru'}"></div></div>
       <div class="fr3"><div class="fg"><label class="fl">Kelas *</label><select id="msK" class="fc"><option value="" disabled ${!d.kelas?'selected':''}>— Pilih Kelas —</option><optgroup label="SD (1–6)">${['1','2','3','4','5','6'].map(k=>`<option value="${k}" ${d.kelas===k?'selected':''}>${k}</option>`).join('')}</optgroup><optgroup label="SMP (7–9)">${['7','8','9'].map(k=>`<option value="${k}" ${d.kelas===k?'selected':''}>${k}</option>`).join('')}</optgroup><optgroup label="SMA/SMK (10–12)">${['10','11','12'].map(k=>`<option value="${k}" ${d.kelas===k?'selected':''}>${k}</option>`).join('')}</optgroup></select></div>
       <div class="fg"><label class="fl">Rombel *</label><select id="msR" class="fc">${['A','B','C','D','E','F','G'].map(r=>`<option value="${r}" ${d.rombel===r?'selected':''}>${r}</option>`).join('')}</select></div>
       <div class="fg"><label class="fl">Status</label><select id="msSt" class="fc"><option value="Aktif" ${d.status!=='Nonaktif'?'selected':''}>Aktif</option><option value="Nonaktif" ${d.status==='Nonaktif'?'selected':''}>Nonaktif</option></select></div></div>
@@ -5320,7 +5350,7 @@ async function kartulSiswa(id){
             <span style="color:var(--mu)">Nama</span><span style="font-weight:700">: ${s.nama_siswa}</span>
             <span style="color:var(--mu)">NIS</span><span style="font-weight:700">: ${s.username}</span>
             <span style="color:var(--mu)">Kelas</span><span style="font-weight:700">: ${s.kelas} - ${s.rombel}</span>
-            <span style="color:var(--mu)">Password</span><span style="font-weight:700">: ${s.password}</span>
+            <span style="color:var(--mu)">Password</span><span style="font-weight:700">: ${decryptPassword(s.password)}</span>
             <span style="color:var(--mu)">Status</span><span style="font-weight:700">: ${s.status}</span>
           </div>
         </div>
@@ -5441,7 +5471,7 @@ async function cetakKartuSiswa(){
           '<div class="k-row"><span class="k-lbl">Kelas / Rombel</span><span class="k-sep">:</span><span class="k-val">'+([s.kelas,s.rombel].filter(Boolean).join(' - ')||'—')+'</span></div>'+
           '<div class="k-row"><span class="k-lbl">Asal Sekolah</span><span class="k-sep">:</span><span class="k-val">'+namaSkl+'</span></div>'+
           '<div class="k-row"><span class="k-lbl">Username / NIS</span><span class="k-sep">:</span><span class="k-val">'+(s.username||'—')+'</span></div>'+
-          '<div class="k-row"><span class="k-lbl">Password</span><span class="k-sep">:</span><span class="k-val">'+(s.password||'—')+'</span></div>'+
+          '<div class="k-row"><span class="k-lbl">Password</span><span class="k-sep">:</span><span class="k-val">'+decryptPassword(s.password||'')+'</span></div>'+
         '</div>'+
         '<div class="k-foot">'+
           '<div class="k-foto">Foto<br>3 \u00d7 4</div>'+
@@ -5993,7 +6023,7 @@ async function cetakBeritaAcara(){
   const {soal,siswa,kelas,rombel}=data;
   const tglUjian=new Date(soal.tanggal);
   const hari=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][tglUjian.getDay()];
-  const nowStr=new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  const nowStr=new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
 
   // Ambil identitas sekolah dari pengaturan + kabkota dari tenants
   const pg=demoMode?DEMO.pengaturan:((await SB.from('pengaturan').select('*').single()).data||{});
