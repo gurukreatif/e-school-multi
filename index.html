@@ -4564,7 +4564,8 @@ async function delButir(id){
 async function rHasil(el){
   let soalList=demoMode?DEMO.soal:((await SB.from('soal').select('kode_soal,nama_soal,mapel,kelas,tanggal,waktu_ujian').order('id_soal',{ascending:false})).data||[]);
   let pg=demoMode?DEMO.pengaturan:((await SB.from('pengaturan').select('*').single()).data||{});
-  window._hasilPg=pg; window._hasilSoalList=soalList;
+  let tn=demoMode?DEMO.tenants?.[0]:((await SB.from('tenants').select('kabkota').eq('npsn',pg.npsn||'').maybeSingle()).data||{});
+  window._hasilPg=pg; window._hasilTenant=tn; window._hasilSoalList=soalList;
 
   el.innerHTML=`
   <!-- KOP SURAT — hanya tampil saat cetak -->
@@ -4744,7 +4745,8 @@ function cetakLaporanHasil(){
   }
   // TTD kota
   var ttd=$('phTtdLokasiH');
-  if(ttd&&pg.nama_sekolah)ttd.textContent=`${pg.nama_sekolah.split(' ').pop()||'……………'}, ${now}`;
+  const _tnH=window._hasilTenant||{};
+  if(ttd)ttd.textContent=`${_tnH.kabkota||'……………'}, ${now}`;
   window.print();
 }
 async function detailHasil(id){
@@ -4988,7 +4990,8 @@ function ftKoreksi(){
 async function rAnalisa(el){
   let soalList=demoMode?DEMO.soal:((await SB.from('soal').select('kode_soal,nama_soal,mapel,kelas,tanggal,waktu_ujian').order('id_soal',{ascending:false})).data||[]);
   let pg=demoMode?DEMO.pengaturan:((await SB.from('pengaturan').select('*').single()).data||{});
-  window._analisaPg=pg; window._analisaSoalList=soalList;
+  let tn=demoMode?DEMO.tenants?.[0]:((await SB.from('tenants').select('kabkota').eq('npsn',pg.npsn||'').maybeSingle()).data||{});
+  window._analisaPg=pg; window._analisaTenant=tn; window._analisaSoalList=soalList;
 
   el.innerHTML=`
   <!-- KOP CETAK -->
@@ -5210,7 +5213,8 @@ function cetakLaporanAnalisa(){
   var esu=$('pasSulit');if(esu)esu.textContent=dat.sulit||0;
   // TTD
   var ttd=$('phTtdLokasiA');
-  if(ttd&&pg.nama_sekolah)ttd.textContent=`${pg.nama_sekolah}, ${now}`;
+  const _tnA=window._analisaTenant||{};
+  if(ttd)ttd.textContent=`${_tnA.kabkota||'……………'}, ${now}`;
   window.print();
 }
 // ─── DATA SISWA ───
@@ -5377,10 +5381,12 @@ async function cetakKartuSiswa(){
   if(!siswa.length){toast('Tidak ada data siswa!','er');return;}
 
   const pg=demoMode?DEMO.pengaturan:((await SB.from('pengaturan').select('*').maybeSingle()).data||{});
+  const tnK=demoMode?DEMO.tenants?.[0]:((await SB.from('tenants').select('kabkota').eq('npsn',pg.npsn||'').maybeSingle()).data||{});
   const namaSkl    = pg.nama_sekolah   || 'NAMA SEKOLAH';
   const logoSrc    = pg.logo_sekolah   || '';
   const namaKepsek = pg.nama_kepsek    || '';
   const nipKepsek  = pg.nip_kepsek     || '';
+  const kabkotaK   = tnK?.kabkota      || '';
   const tglCetak   = new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
   const thn        = new Date().getFullYear();
 
@@ -5440,7 +5446,7 @@ async function cetakKartuSiswa(){
         '<div class="k-foot">'+
           '<div class="k-foto">Foto<br>3 \u00d7 4</div>'+
           '<div class="k-ttd">'+
-            '<div>Singkawang, '+tglCetak+'</div>'+
+            '<div>'+(kabkotaK||'……………')+', '+tglCetak+'</div>'+
             '<div>Kepala Satuan Pendidikan,</div>'+
             '<div class="k-ttd-ruang"></div>'+
             '<div class="k-ttd-nama">'+(namaKepsek||'.................................')+'</div>'+
@@ -5849,13 +5855,15 @@ async function cetakHadir(){
   const tglUjian=new Date(soal.tanggal);
   const hari=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][tglUjian.getDay()];
 
-  // Ambil data identitas sekolah dari pengaturan
+  // Ambil data identitas sekolah dari pengaturan + kabkota dari tenants
   const pg=demoMode?DEMO.pengaturan:((await SB.from('pengaturan').select('*').single()).data||{});
+  const tn=demoMode?DEMO.tenants?.[0]:((await SB.from('tenants').select('kabkota').eq('npsn',pg.npsn).maybeSingle()).data||{});
   const logoSrc   = pg.kop_custom||pg.logo_sekolah||'';
   const namaSkl   = pg.nama_sekolah||soal.nama_sekolah||'NAMA SEKOLAH';
   const alamatSkl = pg.alamat_sekolah||'';
   const namaKS    = pg.nama_kepsek||'';
   const nipKS     = pg.nip_kepsek||'';
+  const kabkota   = tn?.kabkota||'';
   const useKopImg = !!pg.kop_custom;
 
   // Bangun HTML cetak sendiri agar bisa dikontrol penuh — portrait, tabel kompak
@@ -5945,6 +5953,7 @@ async function cetakHadir(){
       </tbody>
     </table>
 
+    <div style="text-align:right;font-size:9pt;margin-top:20px;margin-bottom:4px">${kabkota||'……………'}, ${tglUjian.toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'})}</div>
     <div class="ttd-row">
       <div class="ttd-box">
         <div class="ttd-role">Proktor,</div>
@@ -5986,13 +5995,15 @@ async function cetakBeritaAcara(){
   const hari=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'][tglUjian.getDay()];
   const nowStr=new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
 
-  // Ambil identitas sekolah dari pengaturan
+  // Ambil identitas sekolah dari pengaturan + kabkota dari tenants
   const pg=demoMode?DEMO.pengaturan:((await SB.from('pengaturan').select('*').single()).data||{});
+  const tn=demoMode?DEMO.tenants?.[0]:((await SB.from('tenants').select('kabkota').eq('npsn',pg.npsn).maybeSingle()).data||{});
   const logoSrc   = pg.kop_custom||pg.logo_sekolah||'';
   const namaSkl   = pg.nama_sekolah||'NAMA SEKOLAH';
   const alamatSkl = pg.alamat_sekolah||'';
   const namaKS    = pg.nama_kepsek||'';
   const nipKS     = pg.nip_kepsek||'';
+  const kabkota   = tn?.kabkota||'';
   const useKopImg = !!pg.kop_custom;
 
   const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Berita Acara Ujian</title>
@@ -6113,6 +6124,7 @@ async function cetakBeritaAcara(){
     </div>
 
     <!-- TANDA TANGAN — 3 kolom: Proktor, Pengawas Ruang, Kepala Sekolah -->
+    <div style="text-align:right;font-size:9pt;margin-top:20px;margin-bottom:4px">${kabkota||'……………'}, ${tglUjian.toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'})}</div>
     <div class="ttd-row">
       <div class="ttd-box">
         <div class="ttd-role">Proktor,</div>
